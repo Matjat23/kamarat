@@ -1,13 +1,14 @@
 // Kamarat: understand an official notice without giving away who you are.
 // Flow: get the notice in -> find personal details on this device ->
 // check and send -> your next steps.
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { detectorModel, checkOnDeviceModel } from './firebase'
 import {
   detectWithAI,
   detectWithPatterns,
   mergeDetails,
   makeUserDetail,
+  occurrences,
 } from './privacy'
 import { LANGUAGES } from './explain'
 import PasteStep from './components/PasteStep'
@@ -41,8 +42,18 @@ export default function App() {
     checkOnDeviceModel().then(setNanoStatus)
   }, [])
 
+  // When the step changes, scroll up and move keyboard and screen reader focus
+  // to the new step's heading (not on the very first load).
+  const firstRender = useRef(true)
   useEffect(() => {
     window.scrollTo({ top: 0 })
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+    requestAnimationFrame(() =>
+      document.querySelector('[data-step-heading]')?.focus({ preventScroll: true }),
+    )
   }, [step])
 
   async function findDetails() {
@@ -83,7 +94,11 @@ export default function App() {
     )
   }
 
+  // Hides a piece of text the person typed or selected. Returns how many places
+  // it was found, so the screen never claims "hidden" for text that is not there.
   function hideText(value) {
+    const places = occurrences(text, value).length
+    if (places === 0) return 0
     setDetails((list) => {
       const exists = list.find((d) => d.text.toLowerCase() === value.toLowerCase())
       if (exists) {
@@ -91,6 +106,7 @@ export default function App() {
       }
       return [...list, makeUserDetail(value)]
     })
+    return places
   }
 
   // One decision: the reviewed text is sent and explained straight away.

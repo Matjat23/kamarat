@@ -27,8 +27,7 @@ const NANO_TEXT = {
   unsupported: 'Basic check only here: review names and addresses yourself.',
 }
 
-const PHONE_TEXT =
-  'On a phone, Kamarat uses a basic check for numbers and emails. You review names and addresses yourself. On a computer with Chrome, Gemini Nano finds them for you.'
+const PHONE_TEXT = 'On a phone, check names and addresses yourself in the next step.'
 
 const TRUST = [
   { icon: LockIcon, title: 'You choose what is shared', text: 'Personal details are found on your device, and you decide what to hide before anything is sent.' },
@@ -70,11 +69,11 @@ export default function PasteStep({ text, setText, nanoStatus, busy, progress, o
     setMessage(null)
     setReading('Opening the file on your device...')
     try {
-      const { text: found, method } = await readFile(file, setReading)
+      const { text: found, method, note } = await readFile(file, setReading)
       setText(found)
       setMessage({
-        kind: 'check',
-        text: `${METHOD_TEXT[method]} Check that the text matches your letter, especially numbers and dates, and fix anything that was misread.`,
+        kind: note.includes('were not read') ? 'warn' : 'check',
+        text: `${METHOD_TEXT[method] ?? METHOD_TEXT.pdf} ${note} Check that the text matches your letter, especially numbers and dates, and fix anything that was misread.`.replace(/\s+/g, ' '),
       })
     } catch (err) {
       setMessage({ kind: 'warn', text: err.message })
@@ -86,7 +85,7 @@ export default function PasteStep({ text, setText, nanoStatus, busy, progress, o
   return (
     <>
       <section className="hero">
-        <h1 className="display">Understand your notice. Choose what you share.</h1>
+        <h1 className="display" tabIndex={-1} data-step-heading>Understand your notice. Choose what you share.</h1>
         <p className="lead">
           Kamarat finds personal details on your device so you can hide them, then explains what
           the notice asks of you, in your language.
@@ -143,8 +142,6 @@ export default function PasteStep({ text, setText, nanoStatus, busy, progress, o
           <input ref={fileInput} type="file" accept="image/*,application/pdf" hidden onChange={onFile} />
         </div>
 
-        {phone && noLocalAI && <p className="notice notice-warn small">{PHONE_TEXT}</p>}
-
         <textarea
           id="notice-input"
           className="letter-input"
@@ -155,6 +152,8 @@ export default function PasteStep({ text, setText, nanoStatus, busy, progress, o
           disabled={working}
           aria-describedby="notice-help"
         />
+
+        {phone && noLocalAI && !reading && <p className="small phone-note">{PHONE_TEXT}</p>}
 
         {reading && (
           <p className="notice notice-ok small" role="status">

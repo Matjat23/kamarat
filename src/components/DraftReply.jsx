@@ -1,11 +1,20 @@
 // "Draft my reply": cloud Gemini writes the reply with labels, and this device
-// fills your real details back in. Shown under the explanation.
+// fills your real details back in. Shown under the next steps.
+//
+// Safety rules here:
+// - Kamarat never guesses who you are: you choose your own name for the signature.
+// - Your own message is checked on the device, and you see exactly what Gemini
+//   will get before it is sent.
+// - If you edit the reply afterwards, the translation is marked as out of date.
 import { useMemo, useState } from 'react'
 import { REPLY_INTENTS, draftReply, maskNote, fillIn, openItems } from '../reply'
 import { detectWithAI } from '../privacy'
+import { languageProps } from '../explain'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { ClipboardIcon, MailIcon, PenIcon, DeviceIcon, Dots } from './Icons'
 import { SharedText } from './ExplainStep'
+
+const WRITE_MYSELF = '__self'
 
 // Labels of the given kinds, in the order they first appear in the notice.
 function labelsOfType(labelMap, types, shared) {
@@ -21,35 +30,42 @@ export default function DraftReply({ shared, labelMap, details, language }) {
 
   const [intent, setIntent] = useState('send')
   const [note, setNote] = useState('')
-  const [selfLabel, setSelfLabel] = useState(nameLabels[0] ?? '')
-  const [caseLabel, setCaseLabel] = useState(caseLabels[0] ?? '')
+  const [selfChoice, setSelfChoice] = useState('')
+  // With exactly one case number there is nothing to guess.
+  const [caseLabel, setCaseLabel] = useState(caseLabels.length === 1 ? caseLabels[0] : '')
   const [state, setState] = useState({ phase: 'idle' })
   const [letter, setLetter] = useState('')
   const [subject, setSubject] = useState('')
   const [showLabels, setShowLabels] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  // Live preview of the note as Gemini would get it (pattern check only;
-  // on-device AI also checks it when you press the button).
+  const selfLabel = selfChoice === WRITE_MYSELF ? '' : selfChoice
   const preview = useMemo(() => maskNote(note, details, labelMap), [note, details, labelMap])
   const option = REPLY_INTENTS.find((o) => o.id === intent)
   const needsNote = option.needsNote && !note.trim()
+  const needsName = !selfChoice
+  const langProps = languageProps(language)
 
-  async function write() {
+  // Step 1: check the message on the device, then show the final version.
+  async function prepare() {
     setCopied(false)
-    try {
-      let aiItems = []
-      if (note.trim() && (await checkOnDeviceModel()) === 'available') {
-        setState({ phase: 'loading', status: 'Checking your note on your device...' })
-        try {
-          aiItems = (await detectWithAI(detectorModel, note)).items
-        } catch (err) {
-          console.warn('On-device check of the note failed, pattern check only.', err)
-        }
+    if (!note.trim()) return write({ masked: '', extraMap: {} })
+    let aiItems = []
+    if ((await checkOnDeviceModel()) === 'available') {
+      setState({ phase: 'loading', status: 'Checking your message on your device...' })
+      try {
+        aiItems = (await detectWithAI(detectorModel, note)).items
+      } catch (err) {
+        console.warn('On-device check of the message failed, pattern check only.', err)
       }
-      const { masked, extraMap } = maskNote(note, details, labelMap, aiItems)
+    }
+    setState({ phase: 'confirm', ...maskNote(note, details, labelMap, aiItems) })
+  }
 
-      setState({ phase: 'loading', status: 'Gemini is writing your reply...' })
+  // Step 2: send the checked message and the notice to Gemini, then fill in.
+  async function write({ masked, extraMap }) {
+    setState({ phase: 'loading', status: 'Gemini is writing your reply...' })
+    try {
       const draft = await draftReply({
         shared,
         intent,
@@ -61,7 +77,7 @@ export default function DraftReply({ shared, labelMap, details, language }) {
       })
 
       // Only these labels may be filled in: your name, the case you chose, and
-      // details from your own note. Anything else stays visible for you to check.
+      // details from your own message. Anything else stays visible for you to check.
       const allLabels = { ...labelMap, ...extraMap }
       const allowed = new Set([selfLabel, caseLabel, ...Object.keys(extraMap)].filter(Boolean))
       const filledLetter = fillIn(draft.reply, allLabels, allowed)
@@ -73,6 +89,7 @@ export default function DraftReply({ shared, labelMap, details, language }) {
         masked,
         allLabels,
         allowed,
+        firstLetter: filledLetter,
         filled: [...allowed].filter((label) => draft.reply.includes(label)),
       })
     } catch (err) {
@@ -92,6 +109,7 @@ export default function DraftReply({ shared, labelMap, details, language }) {
   const open = openItems(`${subject}\n${letter}`)
   const ready = open.fillIns.length === 0 && open.unknownLabels.length === 0
   const mailLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(letter)}`
+  const edited = state.phase === 'done' && letter !== state.firstLetter
 
   return (
     <div className="group reply">
@@ -103,30 +121,36 @@ export default function DraftReply({ shared, labelMap, details, language }) {
         </span>
       </div>
 
-      <div className="intents" role="radiogroup">
+      <fieldset className="intents">
+        <legend className="visually-hidden">What do you want to say?</legend>
         {REPLY_INTENTS.map((o) => (
-          <button
-            key={o.id}
-            role="radio"
-            aria-checked={intent === o.id}
-            className={`chip-button ${intent === o.id ? 'chip-selected' : ''}`}
-            onClick={() => setIntent(o.id)}
-          >
+          <label key={o.id} className={`chip-button chip-radio ${intent === o.id ? 'chip-selected' : ''}`}>
+            <input
+              type="radio"
+              name="reply-intent"
+              value={o.id}
+              checked={intent === o.id}
+              onChange={() => setIntent(o.id)}
+              className="visually-hidden"
+            />
             {o.label}
-          </button>
+          </label>
         ))}
-      </div>
+      </fieldset>
 
       <div className="roles">
         <label>
           <span className="small muted">Sign with your name</span>
-          <select value={selfLabel} onChange={(e) => setSelfLabel(e.target.value)}>
+          <select value={selfChoice} onChange={(e) => setSelfChoice(e.target.value)}>
+            <option value="" disabled>
+              Choose your name...
+            </option>
             {nameLabels.map((label) => (
               <option key={label} value={label}>
                 {labelMap[label]}
               </option>
             ))}
-            <option value="">I will write my name myself</option>
+            <option value={WRITE_MYSELF}>I will write my name myself</option>
           </select>
         </label>
         <label>
@@ -148,7 +172,10 @@ export default function DraftReply({ shared, labelMap, details, language }) {
       <textarea
         id="reply-note"
         value={note}
-        onChange={(e) => setNote(e.target.value)}
+        onChange={(e) => {
+          setNote(e.target.value)
+          if (state.phase === 'confirm') setState({ phase: 'idle' })
+        }}
         rows={3}
         aria-describedby="reply-note-help"
         placeholder={
@@ -160,29 +187,46 @@ export default function DraftReply({ shared, labelMap, details, language }) {
       <p id="reply-note-help" className="small muted">
         Avoid names and health details. Kamarat adds your name and case number for you, on this device.
       </p>
-      {note.trim() && (
-        <div className="review-note" role="status">
-          <span className="quote-head">Review your added message · this is what Gemini gets</span>
+      {note.trim() && state.phase !== 'confirm' && (
+        <div className="review-note">
+          <span className="quote-head">Preview · numbers and emails hidden</span>
           <SharedText text={preview.masked} className="review-note-text" />
-          <span className="small muted">
-            Numbers and emails are hidden automatically. If you see a name or anything private, edit your message.
-          </span>
         </div>
       )}
 
-      <button
-        className="primary"
-        onClick={write}
-        disabled={state.phase === 'loading' || needsNote}
-      >
-        {state.phase === 'loading'
-          ? <><Dots /> {state.status}</>
-          : needsNote
-            ? 'Write your question first'
-            : state.phase === 'done'
-              ? 'Write it again'
-              : 'Write my reply'}
-      </button>
+      {state.phase === 'confirm' ? (
+        <div className="review-note review-final" role="status">
+          <span className="quote-head">Final check · this is exactly what Gemini gets from your message</span>
+          <SharedText text={state.masked} className="review-note-text" />
+          <span className="small muted">
+            If you see a name or anything private, edit your message. Otherwise send it.
+          </span>
+          <div className="buttons">
+            <button className="secondary" onClick={() => setState({ phase: 'idle' })}>
+              Edit message
+            </button>
+            <button className="primary" onClick={() => write(state)}>
+              Send to Gemini and write the reply
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          className="primary"
+          onClick={prepare}
+          disabled={state.phase === 'loading' || needsNote || needsName}
+        >
+          {state.phase === 'loading'
+            ? <span role="status"><Dots /> {state.status}</span>
+            : needsName
+              ? 'Choose your name first'
+              : needsNote
+                ? 'Write your question first'
+                : state.phase === 'done'
+                  ? 'Write it again'
+                  : 'Write my reply'}
+        </button>
+      )}
 
       {state.phase === 'error' && (
         <p className="notice notice-warn" role="alert">Could not write the reply: {state.message}. Try again in a minute.</p>
@@ -209,6 +253,7 @@ export default function DraftReply({ shared, labelMap, details, language }) {
             className="reply-subject"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
+            dir="auto"
           />
           <label className="small muted" htmlFor="reply-letter">Your reply (you can edit it)</label>
           <textarea
@@ -216,10 +261,11 @@ export default function DraftReply({ shared, labelMap, details, language }) {
             value={letter}
             onChange={(e) => setLetter(e.target.value)}
             rows={10}
+            dir="auto"
           />
 
           {!ready && (
-            <p className="notice notice-warn small">
+            <p className="notice notice-warn small" role="status">
               {open.fillIns.length > 0 &&
                 `Replace ${open.fillIns.length} [FILL IN: ...] part(s) with your own words. `}
               {open.unknownLabels.length > 0 &&
@@ -244,7 +290,12 @@ export default function DraftReply({ shared, labelMap, details, language }) {
 
           <details className="translation">
             <summary>What it says in {language}</summary>
-            <p>{fillIn(state.draft.translation, state.allLabels, state.allowed)}</p>
+            {edited && (
+              <p className="small warning-text">
+                You changed the reply after it was written, so this translation shows the first version.
+              </p>
+            )}
+            <p {...langProps}>{fillIn(state.draft.translation, state.allLabels, state.allowed)}</p>
           </details>
 
           <button className="link-button" onClick={() => setShowLabels(!showLabels)}>
@@ -252,8 +303,8 @@ export default function DraftReply({ shared, labelMap, details, language }) {
           </button>
           {showLabels && (
             <>
-              {state.masked && <pre className="shared-text">Your note as sent: {state.masked}</pre>}
-              <pre className="shared-text">{state.draft.reply}</pre>
+              {state.masked && <SharedText text={`Your message as sent: ${state.masked}`} />}
+              <SharedText text={state.draft.reply} />
             </>
           )}
         </div>

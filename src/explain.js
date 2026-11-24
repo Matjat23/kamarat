@@ -15,19 +15,26 @@ import { SOURCES } from './sources'
 
 // Each language is shown in its own script, so people can find theirs.
 export const LANGUAGES = [
-  { name: 'English', native: 'English' },
-  { name: 'Swedish', native: 'Svenska' },
-  { name: 'French', native: 'Français' },
-  { name: 'Spanish', native: 'Español' },
-  { name: 'German', native: 'Deutsch' },
-  { name: 'Arabic', native: 'العربية' },
-  { name: 'Ukrainian', native: 'Українська' },
-  { name: 'Somali', native: 'Soomaali' },
-  { name: 'Persian', native: 'فارسی' },
-  { name: 'Turkish', native: 'Türkçe' },
-  { name: 'Tigrinya', native: 'ትግርኛ' },
-  { name: 'Wolof', native: 'Wolof' },
+  { name: 'English', native: 'English', code: 'en' },
+  { name: 'Swedish', native: 'Svenska', code: 'sv' },
+  { name: 'French', native: 'Français', code: 'fr' },
+  { name: 'Spanish', native: 'Español', code: 'es' },
+  { name: 'German', native: 'Deutsch', code: 'de' },
+  { name: 'Arabic', native: 'العربية', code: 'ar', rtl: true },
+  { name: 'Ukrainian', native: 'Українська', code: 'uk' },
+  { name: 'Somali', native: 'Soomaali', code: 'so' },
+  { name: 'Persian', native: 'فارسی', code: 'fa', rtl: true },
+  { name: 'Turkish', native: 'Türkçe', code: 'tr' },
+  { name: 'Tigrinya', native: 'ትግርኛ', code: 'ti' },
+  { name: 'Wolof', native: 'Wolof', code: 'wo' },
 ]
+
+// lang and dir attributes for text written in the chosen language, so screen
+// readers pronounce it right and Arabic and Persian read right to left.
+export function languageProps(language) {
+  const found = LANGUAGES.find((l) => l.name === language)
+  return found ? { lang: found.code, dir: found.rtl ? 'rtl' : 'ltr' } : {}
+}
 
 const SCHEMA = {
   type: 'object',
@@ -222,8 +229,24 @@ export function quoteIsInText(quote, text) {
 export function parseDay(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? '')
   if (!match) return null
-  const day = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
-  return Number.isNaN(day.getTime()) ? null : day
+  const [year, month, date] = [Number(match[1]), Number(match[2]), Number(match[3])]
+  const day = new Date(year, month - 1, date)
+  // JavaScript quietly turns 2026-02-31 into 3 March. Refuse such dates instead.
+  if (day.getFullYear() !== year || day.getMonth() !== month - 1 || day.getDate() !== date) {
+    return null
+  }
+  return day
+}
+
+// Checks that a date the AI read from the notice can be seen in the quote it
+// gave: the day number, and the year or the month number. If not, the date is
+// shown with a "check this" warning.
+function dateInQuote(day, quote) {
+  const q = ` ${quote ?? ''} `
+  const hasDay = new RegExp(`\\D0?${day.getDate()}\\D`).test(q)
+  const hasYear = q.includes(String(day.getFullYear()))
+  const hasMonthNumber = new RegExp(`[-./]0?${day.getMonth() + 1}[-./]|\\D0?${day.getMonth() + 1}[-./]`).test(q)
+  return hasDay && (hasYear || hasMonthNumber)
 }
 
 export function formatDay(day) {
@@ -247,7 +270,12 @@ function addTime(start, amount, unit) {
   } else if (unit === 'WEEKS') {
     day.setDate(day.getDate() + amount * 7)
   } else if (unit === 'MONTHS') {
+    // 31 January + 1 month is 28 or 29 February, not 3 March.
+    const wanted = day.getDate()
+    day.setDate(1)
     day.setMonth(day.getMonth() + amount)
+    const lastDay = new Date(day.getFullYear(), day.getMonth() + 1, 0).getDate()
+    day.setDate(Math.min(wanted, lastDay))
   } else {
     day.setDate(day.getDate() + amount)
   }
@@ -263,14 +291,17 @@ const UNIT_WORDS = {
 
 // Returns what Kamarat can honestly say about a deadline.
 // needs: 'received' when the person must tell us when they got the notice.
-export function resolveDeadline(deadline, { noticeDate, receivedDate }) {
+export function resolveDeadline(deadline, { noticeDate, receivedDate, quote }) {
   if (!deadline || deadline.kind === 'NONE') return null
 
   if (deadline.kind === 'FIXED_DATE') {
     const day = parseDay(deadline.date)
-    return day
-      ? { date: day, basis: 'The date written in your notice.' }
-      : { text: 'The notice gives a date. Check it in the quote below.' }
+    if (!day) return { text: 'The notice gives a date. Check it in the quote below.' }
+    return {
+      date: day,
+      basis: 'The date written in your notice.',
+      unchecked: !dateInQuote(day, quote),
+    }
   }
 
   const amount = Number(deadline.amount)

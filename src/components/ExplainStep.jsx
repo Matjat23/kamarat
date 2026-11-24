@@ -3,7 +3,7 @@
 // is a small workspace: the next deadline first, then a checklist of actions,
 // each linked to the sentence in the notice it comes from, and a reply draft.
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { explainNotice, resolveDeadline } from '../explain'
+import { explainNotice, resolveDeadline, languageProps } from '../explain'
 import { occurrences } from '../privacy'
 import { downloadDeadline } from '../calendar'
 import DraftReply from './DraftReply'
@@ -110,6 +110,11 @@ function Deadline({ info, action, sender, onNeedReceived }) {
             {info.basis}
             {info.businessNote && ' Weekends are skipped. Public holidays are not, so check if one falls in between.'}
           </span>
+          {info.unchecked && (
+            <span className="small warning-text">
+              Kamarat could not match this date to the quote below. Check it in your notice.
+            </span>
+          )}
         </span>
         <button className="ghost small-btn" onClick={() => addToCalendar(action, info, sender)}>
           <CalendarIcon width={16} height={16} /> Add to calendar
@@ -161,7 +166,9 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
       const result = await explainNotice(shared, language, (status) =>
         setState({ phase: 'loading', status }),
       )
-      setState({ phase: 'done', result })
+      // The note says when the device had to answer in English instead.
+      const shownIn = result.note?.includes('this is in English') ? 'English' : language
+      setState({ phase: 'done', result: { ...result, language: shownIn } })
     } catch (err) {
       setState({ phase: 'error', message: err.message })
     }
@@ -174,6 +181,15 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
     send()
   }, [])
 
+  const langProps = languageProps(state.result?.language ?? language)
+
+  // When the explanation arrives, move focus to its heading.
+  useEffect(() => {
+    if (state.phase === 'done') {
+      document.querySelector('.workspace [data-step-heading]')?.focus({ preventScroll: true })
+    }
+  }, [state.phase])
+
   const actions = useMemo(() => {
     if (state.phase !== 'done') return []
     const { result } = state
@@ -181,7 +197,11 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
       ...action,
       index,
       group: action.quoteFound ? action.kind : 'CHECK',
-      info: resolveDeadline(action.deadline, { noticeDate: result.noticeDate, receivedDate }),
+      info: resolveDeadline(action.deadline, {
+        noticeDate: result.noticeDate,
+        receivedDate,
+        quote: action.quote,
+      }),
     }))
   }, [state, receivedDate])
 
@@ -204,7 +224,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
         <div className="card-head">
           <div>
             <span className="eyebrow">Step 3 of 3</span>
-            <h2>Your next steps</h2>
+            <h2 tabIndex={-1} data-step-heading>Your next steps</h2>
           </div>
         </div>
         {state.phase === 'loading' ? (
@@ -233,10 +253,15 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
 
   const { result } = state
   const needsReceived = actions.some((a) => a.info?.needs === 'received')
+  // The earliest date Kamarat knows, whatever kind of action it belongs to.
+  // If some deadlines are still unknown, say clearly that one of them could come first.
   const dated = actions
     .filter((a) => a.info?.date && a.group !== 'CHECK' && !done.has(a.index))
     .sort((a, b) => a.info.date - b.info.date)
-  const next = dated.find((a) => a.kind === 'MUST') ?? dated[0]
+  const next = dated[0]
+  const openDeadlines = actions.filter(
+    (a) => a.group !== 'CHECK' && !done.has(a.index) && a.info && !a.info.date,
+  ).length
   const countable = actions.filter((a) => a.group !== 'CHECK')
   const doneCount = countable.filter((a) => done.has(a.index)).length
 
@@ -245,7 +270,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
       <div className="card-head">
         <div>
           <span className="eyebrow">Your next steps</span>
-          <h2>Here is what to do</h2>
+          <h2 tabIndex={-1} data-step-heading>Here is what to do</h2>
         </div>
         <SourceBadge source={result.source} />
       </div>
@@ -256,7 +281,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
         <span className="sender-avatar" aria-hidden="true">{initials(result.sender)}</span>
         <div>
           <span className="eyebrow">From {result.sender}</span>
-          <p className="summary-text">{result.summary}</p>
+          <p className="summary-text" {...langProps}>{result.summary}</p>
         </div>
       </div>
 
@@ -264,9 +289,18 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
         <div className="next-up">
           <DateTile date={next.info.date} size="date-tile-big" />
           <div className="next-up-body">
-            <span className="eyebrow">Next deadline · {whenText(next.info.date)}</span>
-            <strong className="next-up-title">{next.title}</strong>
+            <span className="eyebrow">Earliest known date · {whenText(next.info.date)}</span>
+            <strong className="next-up-title" {...langProps}>{next.title}</strong>
             <span className="small">By {longDate(next.info.date)}</span>
+            {openDeadlines > 0 && (
+              <span className="small next-up-warning" role="note">
+                {openDeadlines === 1 ? 'Another deadline is' : `${openDeadlines} other deadlines are`} not
+                known yet and could come first. See below.
+              </span>
+            )}
+            {next.info.unchecked && (
+              <span className="small next-up-warning">Check this date in your notice before you rely on it.</span>
+            )}
             <div className="buttons">
               <button className="primary small-btn" onClick={() => addToCalendar(next, next.info, result.sender)}>
                 <CalendarIcon width={16} height={16} /> Add to calendar
@@ -322,8 +356,8 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
                     </button>
                   )}
                   <div className="action-main">
-                    <h4>{action.title}</h4>
-                    <p>{action.explanation}</p>
+                    <h4 {...langProps}>{action.title}</h4>
+                    <p {...langProps}>{action.explanation}</p>
                     {group.kind !== 'CHECK' && (
                       <Deadline
                         info={action.info}
@@ -336,7 +370,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
                       <span className="quote-head">
                         {action.quoteFound ? 'From your notice' : 'Not found in your notice'}
                       </span>
-                      <span>{action.quote}</span>
+                      <span dir="auto">{action.quote}</span>
                     </blockquote>
                     <div className="action-links">
                       {action.quoteFound && (
@@ -381,7 +415,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
                 <span className="source-body">
                   <span className="eyebrow">{page.agency}</span>
                   <strong>{page.title}</strong>
-                  <span className="small">{why}</span>
+                  <span className="small" {...langProps}>{why}</span>
                   <span className="small source-url">{new URL(page.url).hostname}</span>
                 </span>
                 <ArrowIcon className="source-arrow" />

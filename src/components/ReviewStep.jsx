@@ -26,8 +26,10 @@ export default function ReviewStep({
 }) {
   const [selection, setSelection] = useState('')
   const [extra, setExtra] = useState('')
-  // On phones only one of the two texts is shown at a time.
-  const [view, setView] = useState('notice')
+  const [hideResult, setHideResult] = useState(null)
+  // On phones only one of the two texts is shown at a time. Start with the
+  // text that will actually be sent, since that is the decision being made.
+  const [view, setView] = useState('shared')
   const noticeRef = useRef(null)
   const { segments, shared, labels } = useMemo(
     () => buildRedaction(text, details),
@@ -51,10 +53,27 @@ export default function ReviewStep({
   function hide(value) {
     const clean = value.trim()
     if (clean.length < 2) return
-    onHideText(clean)
+    const places = onHideText(clean)
+    if (places === 0) {
+      setHideResult({
+        ok: false,
+        text: `No matching text found for "${clean}". Check the spelling, or select the text in your notice instead.`,
+      })
+      return
+    }
+    setHideResult({ ok: true, text: `"${clean}" hidden in ${places} place${places === 1 ? '' : 's'}.` })
     setSelection('')
     setExtra('')
     window.getSelection()?.removeAllRanges()
+  }
+
+  // Arrow keys move between the two tabs, as screen reader users expect.
+  function onTabKey(event) {
+    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      const next = view === 'notice' ? 'shared' : 'notice'
+      setView(next)
+      document.getElementById(`tab-${next}`)?.focus()
+    }
   }
 
   function send() {
@@ -72,10 +91,10 @@ export default function ReviewStep({
       <div className="card-head">
         <div>
           <span className="eyebrow">Step 2 of 3</span>
-          <h2>Check what leaves your device</h2>
+          <h2 tabIndex={-1} data-step-heading>Check what leaves your device</h2>
         </div>
         <span className="count-pill" role="status">
-          <LockIcon width={16} height={16} /> {hiddenCount} hidden
+          <LockIcon width={16} height={16} /> {hiddenCount} detail{hiddenCount === 1 ? '' : 's'} hidden
           {sentCount > 0 && <span className="count-sent"> · {sentCount} will be sent</span>}
         </span>
       </div>
@@ -138,23 +157,35 @@ export default function ReviewStep({
           Hide
         </button>
       </div>
-
-      <div className="view-toggle" role="tablist" aria-label="Which text to show">
-        <button
-          role="tab"
-          aria-selected={view === 'notice'}
-          className={view === 'notice' ? 'active' : ''}
-          onClick={() => setView('notice')}
+      {hideResult && (
+        <p
+          className={`small ${hideResult.ok ? 'hide-ok' : 'warning-text'}`}
+          role={hideResult.ok ? 'status' : 'alert'}
         >
-          Your notice
-        </button>
+          {hideResult.text}
+        </p>
+      )}
+
+      <div className="view-toggle" role="tablist" aria-label="Which text to show" onKeyDown={onTabKey}>
         <button
+          id="tab-shared"
           role="tab"
           aria-selected={view === 'shared'}
+          tabIndex={view === 'shared' ? 0 : -1}
           className={view === 'shared' ? 'active' : ''}
           onClick={() => setView('shared')}
         >
           What will be sent
+        </button>
+        <button
+          id="tab-notice"
+          role="tab"
+          aria-selected={view === 'notice'}
+          tabIndex={view === 'notice' ? 0 : -1}
+          className={view === 'notice' ? 'active' : ''}
+          onClick={() => setView('notice')}
+        >
+          Your notice
         </button>
       </div>
 

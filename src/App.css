@@ -1716,3 +1716,71 @@ summary:focus-visible {
     padding: 6px 10px;
   }
 }
+
+/* ===== Round 3 fixes ===== */
+.hide-ok {
+  color: var(--green);
+}
+
+.next-up-warning {
+  color: #8a3a1c;
+  font-weight: 600;
+}
+
+.chip-radio {
+  cursor: pointer;
+}
+
+.chip-radio:focus-within {
+  outline: 3px solid var(--green);
+  outline-offset: 2px;
+}
+
+fieldset.intents {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.review-final {
+  border-style: solid;
+  border-color: var(--green);
+  background: #f4f9f6;
+}
+
+.phone-note {
+  color: #6b4a06;
+}
+
+@media (max-width: 760px) {
+  /* Keep the done box, title and text in reading order; the date is in the text */
+  .action {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .action .date-tile {
+    display: none;
+  }
+
+  /* Keep the language label for screen readers when it is hidden on screen */
+  .language-pick > span {
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
