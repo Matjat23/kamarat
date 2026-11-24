@@ -2,7 +2,7 @@
 import { initializeApp } from 'firebase/app'
 import {
   initializeAppCheck,
-  ReCaptchaV3Provider,
+  ReCaptchaEnterpriseProvider,
   CustomProvider,
 } from 'firebase/app-check'
 import {
@@ -29,7 +29,8 @@ export const app = initializeApp(firebaseConfig)
 // The token is printed in the browser console the first time and has to be
 // added in the Firebase console (App Check > Apps > Manage debug tokens).
 // A fixed token can be put in .env.local, which is never committed.
-// On the hosted site, App Check uses reCAPTCHA v3 (the site key is public).
+// On the hosted site, App Check uses Fraud Defense (reCAPTCHA Enterprise).
+// The site key is public.
 // The debug token is only ever used when running locally with `npm run dev`.
 const recaptchaKey = import.meta.env.PROD
   ? import.meta.env.VITE_RECAPTCHA_SITE_KEY
@@ -41,7 +42,7 @@ if (import.meta.env.DEV) {
 }
 
 const appCheckProvider = recaptchaKey
-  ? new ReCaptchaV3Provider(recaptchaKey)
+  ? new ReCaptchaEnterpriseProvider(recaptchaKey)
   : new CustomProvider({
       getToken: () => Promise.reject(new Error('No App Check provider set up')),
     })
