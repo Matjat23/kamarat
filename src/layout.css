@@ -845,6 +845,40 @@ button.step-main:hover:not(:disabled) {
   font-size: 0.8rem;
 }
 
+.home-country {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-weight: 600;
+}
+
+.home-country select {
+  padding: 8px 10px;
+  border-radius: 999px;
+  max-width: 100%;
+}
+
+.home-country .small {
+  flex-basis: 100%;
+  font-weight: 400;
+}
+
+.official-search {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.official-search .sources {
+  width: 100%;
+}
+
+.search-suggestions {
+  width: 100%;
+}
+
 .answer-next .date-tile {
   display: flex;
   flex-direction: column;

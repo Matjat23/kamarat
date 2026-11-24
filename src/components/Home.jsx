@@ -6,6 +6,7 @@ import { daysUntil } from '../worry'
 import { EXAMPLES } from '../examples'
 import { isPhone } from '../device'
 import { languageProps } from '../explain'
+import { COUNTRIES } from '../countries'
 import { Logo, CameraIcon, FileIcon, ClipboardIcon, ArrowIcon, LockIcon, Flag } from './Icons'
 
 function greeting() {
@@ -30,7 +31,7 @@ const HOW = [
   { title: 'Know what to do', text: 'Clear steps, dates and answers, in your language.' },
 ]
 
-export default function Home({ papers, onResume, onFile, onPaste, onExample, onOpenPaper, onOpenPapers }) {
+export default function Home({ papers, country, onCountry, onResume, onFile, onPaste, onExample, onOpenPaper, onOpenPapers }) {
   const cameraInput = useRef(null)
   const fileInput = useRef(null)
   const phone = isPhone()
@@ -54,6 +55,17 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
           </p>
         </div>
       </section>
+
+      <label className="home-country">
+        <span>Where do you live?</span>
+        <select value={country} onChange={(e) => onCountry(e.target.value)}>
+          <option value="">Choose a country</option>
+          {COUNTRIES.map((c) => (
+            <option key={c.code} value={c.code}>{c.name}</option>
+          ))}
+        </select>
+        <span className="small muted">So Kamarat can find the right official pages and count working days the right way.</span>
+      </label>
 
       {onResume && (
         <button className="home-card resume" onClick={onResume}>

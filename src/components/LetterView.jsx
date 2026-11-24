@@ -13,6 +13,7 @@ import { speak, stopSpeaking, canSpeak, spokenPhrases, spokenDate } from '../spe
 import AskKamarat from './AskKamarat'
 import DraftReply from './DraftReply'
 import LetterText from './LetterText'
+import OfficialSearch from './OfficialSearch'
 import {
   ArrowIcon,
   CalendarIcon,
@@ -115,7 +116,9 @@ function StepRow({ action, sender, langProps, open, onOpen, onToggleDone, onShow
             <p className="small">
               <strong>By {longDate(info.date)}</strong> ({whenText(info.date)}). <span className="muted">{info.basis}</span>
               {info.businessNote && (
-                <span className="muted"> Weekends are skipped. Public holidays are not, so check if one falls in between.</span>
+                <span className="muted">
+                  {' '}Weekends ({info.businessNote}) are skipped. Public holidays are not, so check if one falls in between.
+                </span>
               )}
             </p>
           )}
@@ -158,6 +161,7 @@ export default function LetterView({
   backLabel,
   menu = [],
   currentLanguage,
+  country = '',
   onExplainAgain,
   explaining = false,
 }) {
@@ -174,7 +178,7 @@ export default function LetterView({
 
   const langProps = languageProps(letter.language)
   const actions = useMemo(
-    () => prepareActions(letter.actions, { noticeDate: letter.noticeDate, receivedDate, done }),
+    () => prepareActions(letter.actions, { noticeDate: letter.noticeDate, receivedDate, done, country: letter.country }),
     [letter, receivedDate, done],
   )
   const assessed = assessWorry(letter.worry, actions)
@@ -427,9 +431,9 @@ export default function LetterView({
           </details>
         )}
 
-        {letter.pages.length > 0 && (
-          <section className="read-more">
-            <h2 className="step-group-title">Read more on official sites</h2>
+        <section className="read-more">
+          <h2 className="step-group-title">Read more on official sites</h2>
+          {letter.pages.length > 0 && (
             <div className="sources">
               {letter.pages.map(({ page, why }) => (
                 <a key={page.id} className="source" href={page.url} target="_blank" rel="noopener noreferrer">
@@ -444,8 +448,32 @@ export default function LetterView({
                 </a>
               ))}
             </div>
-          </section>
-        )}
+          )}
+          {(letter.sites ?? []).length > 0 && (
+            <div className="sources">
+              {letter.sites.map((site) => (
+                <a key={site.domain} className="source" href={`https://${site.domain}`} target="_blank" rel="noopener noreferrer">
+                  <span className="source-icon" aria-hidden="true"><LandmarkIcon /></span>
+                  <span className="source-body">
+                    <span className="eyebrow">Official website</span>
+                    <strong>{site.name || site.domain}</strong>
+                    {site.why && <span className="small" {...langProps}>{site.why}</span>}
+                    <span className="small source-url">{site.domain} · government address checked</span>
+                  </span>
+                  <ArrowIcon className="source-arrow" />
+                </a>
+              ))}
+            </div>
+          )}
+          {letter.pages.length === 0 && !(letter.sites ?? []).length && (
+            <p className="small muted">Kamarat found no official pages it could check for this letter.</p>
+          )}
+          {/* Searching the web needs the paid Gemini plan, so it is switched on
+              with VITE_WEB_SEARCH=on once that plan is in place. */}
+          {import.meta.env.VITE_WEB_SEARCH === 'on' && (
+            <OfficialSearch letter={letter} steps={todo.map((a) => a.title)} country={letter.country || country} />
+          )}
+        </section>
       </div>
 
       <div id={`${uid}-panel-ask`} role="tabpanel" aria-labelledby={`${uid}-tab-ask`} hidden={tab !== 'ask'} className="tab-panel">

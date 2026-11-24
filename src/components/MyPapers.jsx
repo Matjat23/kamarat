@@ -30,7 +30,7 @@ function whenText(date) {
   return `In ${days} days`
 }
 
-export function SavedLetter({ id, language, onBack }) {
+export function SavedLetter({ id, language, country, onBack }) {
   const [paper, setPaper] = useState(() => listPapers().find((p) => p.id === id) ?? null)
   const [error, setError] = useState('')
   const [explaining, setExplaining] = useState(false)
@@ -63,7 +63,7 @@ export function SavedLetter({ id, language, onBack }) {
     setExplaining(true)
     setError('')
     try {
-      const result = await explainNotice(paper.shared, language)
+      const result = await explainNotice(paper.shared, language, undefined, paper.country || country)
       update({
         sender: result.sender,
         summary: result.summary,
@@ -80,6 +80,7 @@ export function SavedLetter({ id, language, onBack }) {
           deadline: a.deadline,
         })),
         pages: result.pages.map(({ page }) => page.id),
+        sites: result.sites,
       })
     } catch (err) {
       setError(`Kamarat could not explain it again: ${err.message}.`)
@@ -98,9 +99,11 @@ export function SavedLetter({ id, language, onBack }) {
     summary: paper.summary,
     worry: paper.worry,
     noticeDate: paper.noticeDate,
+    country: paper.country,
     language: paper.language,
     actions: paper.actions,
     pages: paper.pages.map((pid) => ({ page: SOURCES.find((s) => s.id === pid) })).filter((p) => p.page),
+    sites: paper.sites,
     shared: paper.shared,
     note: '',
   }

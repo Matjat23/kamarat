@@ -19,10 +19,11 @@ import {
   makeUserDetail,
   occurrences,
 } from './privacy'
-import { LANGUAGES } from './explain'
+import { LANGUAGES, languageLabel } from './explain'
 import { readFile } from './scan'
 import { readClipboard } from './device'
 import { stopSpeaking } from './speak'
+import { guessCountry, savedCountry, saveCountry } from './countries'
 import Home from './components/Home'
 import AddLetter from './components/AddLetter'
 import CheckLetter from './components/CheckLetter'
@@ -68,6 +69,8 @@ export default function App() {
   const [route, setRoute] = useState(readRoute)
   const [text, setText] = useState('')
   const [language, setLanguage] = useState('English')
+  // Where the person lives: their own choice, or a guess from the browser.
+  const [country, setCountryState] = useState(() => savedCountry() || guessCountry())
   const [nanoStatus, setNanoStatus] = useState('checking')
   const [busy, setBusy] = useState(false)
   const [progress, setProgress] = useState('')
@@ -88,6 +91,11 @@ export default function App() {
   const [liveSavedId, setLiveSavedId] = useState(null)
   const [papers, setPapers] = useState(listPapers)
   const detectRun = useRef(0)
+
+  function setCountry(code) {
+    setCountryState(code)
+    saveCountry(code)
+  }
 
   function go(path = '', { replace = false } = {}) {
     const url = `#/${path}`
@@ -314,7 +322,7 @@ export default function App() {
           <select value={language} onChange={(e) => setLanguage(e.target.value)}>
             {LANGUAGES.map((l) => (
               <option key={l.name} value={l.name}>
-                {l.native}
+                {languageLabel(l)}
               </option>
             ))}
           </select>
@@ -329,6 +337,8 @@ export default function App() {
         {view === 'home' && (
           <Home
             papers={papers}
+            country={country}
+            onCountry={setCountry}
             onResume={shared ? () => go('letter') : null}
             onFile={(file) => readLetterFile(file, { fresh: true })}
             onPaste={startPaste}
@@ -372,7 +382,7 @@ export default function App() {
 
         {view === 'papers' && !route.id && <MyPapers onOpen={(id) => go(`papers/${id}`)} onNew={newLetter} />}
         {view === 'papers' && route.id && (
-          <SavedLetter key={route.id} id={route.id} language={language} onBack={() => go('papers')} />
+          <SavedLetter key={route.id} id={route.id} language={language} country={country} onBack={() => go('papers')} />
         )}
 
         {/* The explained letter stays mounted while you look elsewhere, so going
@@ -385,6 +395,7 @@ export default function App() {
               labelMap={labelMap}
               details={details}
               language={language}
+              country={country}
               onSavedChange={setLiveSavedId}
               onBack={() => go('check')}
               onHome={() => go('')}

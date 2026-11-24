@@ -8,6 +8,7 @@
 // received it, all as YYYY-MM-DD. The dates are worked out again every time the
 // paper is opened, with the same code as the explanation screen.
 import { resolveDeadline, quoteIsInText, parseDay } from './explain'
+import { hostOf, isOfficialDomain } from './officialDomains'
 
 const KEY = 'kamarat.papers.v1'
 
@@ -77,11 +78,16 @@ export function cleanPaper(raw) {
       quoteFound: typeof worry.quoteFound === 'boolean' ? worry.quoteFound : quoteIsInText(worry.quote, shared),
     },
     noticeDate: day(raw.noticeDate),
+    country: /^[A-Z]{2}$/.test(raw.country ?? '') ? raw.country : '',
     receivedDate: day(raw.receivedDate),
     shared,
     done: (Array.isArray(raw.done) ? raw.done : []).filter((i) => Number.isInteger(i) && i >= 0 && i < actions.length),
     actions,
     pages: (Array.isArray(raw.pages) ? raw.pages : []).filter((p) => typeof p === 'string'),
+    sites: (Array.isArray(raw.sites) ? raw.sites : [])
+      .filter((s) => s && typeof s === 'object')
+      .map((s) => ({ name: text(s.name), why: text(s.why), domain: hostOf(text(s.domain)) }))
+      .filter((s) => isOfficialDomain(s.domain)),
   }
 }
 
@@ -138,14 +144,14 @@ export function deleteAllPapers() {
 
 // Steps with their deadlines worked out. Used by the letter screen for new and
 // saved letters alike. Steps whose quote was not found go to CHECK.
-export function prepareActions(actions, { noticeDate, receivedDate, done = [] }) {
+export function prepareActions(actions, { noticeDate, receivedDate, done = [], country = '' }) {
   const doneSet = new Set(done)
   return actions.map((action, index) => ({
     ...action,
     index,
     group: action.quoteFound ? action.kind : 'CHECK',
     done: doneSet.has(index),
-    info: resolveDeadline(action.deadline, { noticeDate, receivedDate, quote: action.quote }),
+    info: resolveDeadline(action.deadline, { noticeDate, receivedDate, quote: action.quote, country }),
   }))
 }
 

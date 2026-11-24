@@ -35,7 +35,7 @@ function Progress({ stage, status }) {
   )
 }
 
-export default function ExplainStep({ shared, labelMap, details, language, onSavedChange, onBack, onHome }) {
+export default function ExplainStep({ shared, labelMap, details, language, country, onSavedChange, onBack, onHome }) {
   const [state, setState] = useState({ phase: 'loading', status: '' })
   const [stage, setStage] = useState(0)
   const [receivedDate, setReceivedDate] = useState('')
@@ -54,11 +54,11 @@ export default function ExplainStep({ shared, labelMap, details, language, onSav
     setState({ phase: 'loading', status: '' })
     const timer = setTimeout(() => setStage(1), 2500)
     try {
-      const result = await explainNotice(shared, language, (status) => setState({ phase: 'loading', status }))
+      const result = await explainNotice(shared, language, (status) => setState({ phase: 'loading', status }), country)
       clearTimeout(timer)
       // The note says when the device had to answer in English instead.
       const shownIn = result.note?.includes('this is in English') ? 'English' : language
-      setState({ phase: 'done', result: { ...result, language: shownIn } })
+      setState({ phase: 'done', result: { ...result, language: shownIn, country } })
     } catch (err) {
       clearTimeout(timer)
       setState({ phase: 'error', message: err.message })
@@ -115,6 +115,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onSav
       worry: result.worry,
       language: result.language,
       noticeDate: result.noticeDate,
+      country: result.country,
       receivedDate,
       shared,
       done,
@@ -127,6 +128,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onSav
         deadline: a.deadline,
       })),
       pages: result.pages.map(({ page }) => page.id),
+      sites: result.sites,
     })
     if (ok) {
       setSavedId(id)

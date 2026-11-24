@@ -81,6 +81,18 @@ const PATTERNS = [
   { type: 'ID', re: /\bN\d{10}\b/g },
   // Spanish foreigner number (NIE) and national ID (DNI): Y7654321K, 12345678Z
   { type: 'ID', re: /\b[XYZ]\d{7}[A-Z]\b|\b\d{8}[A-HJ-NP-TV-Z]\b/g },
+  // Bank account numbers (IBAN): SE45 5000 0000 0583 9825 7466
+  { type: 'ID', re: /\b[A-Z]{2}\d{2}(?: ?[A-Z0-9]{4}){3,7}(?: ?[A-Z0-9]{1,3})?\b/g },
+  // UK National Insurance number: QQ 12 34 56 C
+  { type: 'ID', re: /\b[A-CEGHJ-PR-TW-Z]{2} ?\d{2} ?\d{2} ?\d{2} ?[A-D]\b/g },
+  // Italian tax code (codice fiscale): RSSMRA85T10A562S
+  { type: 'ID', re: /\b[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]\b/g },
+  // Finnish personal identity code: 131052-308T
+  { type: 'ID', re: /\b\d{6}[-+A]\d{3}[0-9A-Y]\b/g },
+  // French social security number: 1 85 05 78 006 084 36
+  { type: 'ID', re: /\b[12] ?\d{2} ?\d{2} ?\d{2} ?\d{3} ?\d{3}(?: ?\d{2})?\b/g },
+  // Brazilian CPF (123.456.789-09), Indian Aadhaar (1234 5678 9012) and PAN (ABCDE1234F)
+  { type: 'ID', re: /\b\d{3}\.\d{3}\.\d{3}-\d{2}\b|\b\d{4} \d{4} \d{4}\b|\b[A-Z]{5}\d{4}[A-Z]\b/g },
   // Phones: international (+46 ...), Swedish/French (070-123 45 67, 06 12 34 56 78), US ((352) 555-0147)
   { type: 'PHONE', re: /\+\d{1,3}[\s-]?\(?\d{1,4}\)?(?:[\s-]?\d{2,4}){2,4}/g },
   { type: 'PHONE', re: /\b0\d{1,3}[\s-]\d{2,3}(?:[\s-]?\d{2,3}){1,3}\b/g },
@@ -91,11 +103,11 @@ const PATTERNS = [
 const LABELLED_NUMBERS = [
   {
     type: 'CASE',
-    re: /(?:ärendenummer|diarienummer|dnr|case number|case no\.?|reference number|referensnummer|numéro de dossier|référence|aktenzeichen|geschäftszeichen|número de expediente|expediente)\s*\(?\s*(?:nr|no|n°|nº)?\.?\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-/.]{3,30})/gi,
+    re: /(?:ärendenummer|diarienummer|dnr|kundnummer|case number|case no\.?|file number|reference number|customer number|account number|referensnummer|numéro de dossier|numéro client|référence|aktenzeichen|geschäftszeichen|kundennummer|número de expediente|expediente|número de cliente|protocollo|numero di pratica|zaaknummer|kenmerk|klantnummer|saksnummer|sagsnummer|journalnummer|asiankohta|diaarinumero|numer sprawy|sygnatura|номер дела|رقم الملف|رقم المرجع)\s*\(?\s*(?:nr|no|n°|nº)?\.?\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-/.]{3,30})/gi,
   },
   {
     type: 'ID',
-    re: /(?:personnummer|samordningsnummer|personal identity number|social security number|taxpayer id(?: number)?|student id|sevis id|passport number|passport no\.?|reisepass|passnummer|steuer-?id|numéro fiscal|numéro de sécurité sociale|n° allocataire|numéro (?:d')?allocataire)\s*\(?\s*(?:nr|no|n°|nº)?\.?\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-/ ]{4,30}?)(?=\s*(?:\n|,|;|\)|\.\s|\.$|$))/gi,
+    re: /(?:personnummer|samordningsnummer|personal identity number|national insurance number|ni number|social security number|tax (?:id|identification number|number)|taxpayer id(?: number)?|student id|student number|sevis id|passport number|passport no\.?|residence permit number|reisepass|passnummer|steuer-?id|steuernummer|steueridentifikationsnummer|sozialversicherungsnummer|numéro fiscal|numéro de sécurité sociale|numéro de passeport|numéro étranger|n° allocataire|numéro (?:d')?allocataire|número de pasaporte|número de seguridad social|codice fiscale|numero di passaporto|burgerservicenummer|bsn|fødselsnummer|cpr-nummer|henkilötunnus|pesel|номер паспорта|رقم جواز السفر|رقم الهوية|pasaport numarası|kimlik numarası)\s*\(?\s*(?:nr|no|n°|nº)?\.?\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-/ ]{4,30}?)(?=\s*(?:\n|,|;|\)|\.\s|\.$|$))/gi,
   },
 ]
 
@@ -108,7 +120,7 @@ export function detectWithPatterns(text) {
   }
   for (const { type, re } of LABELLED_NUMBERS) {
     for (const match of text.matchAll(re)) {
-      found.push({ text: match[1].trim(), type })
+      found.push({ text: match[1].trim().replace(/[.,;:]+$/, ''), type })
     }
   }
   return found

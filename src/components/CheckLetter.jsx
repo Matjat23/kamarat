@@ -3,7 +3,7 @@
 // more text, see exactly what will be sent, pick the language, and send.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildRedaction, TYPE_LABELS } from '../privacy'
-import { LANGUAGES } from '../explain'
+import { LANGUAGES, languageLabel } from '../explain'
 import { LockIcon, ArrowIcon } from './Icons'
 import { SharedText } from './Text'
 import FlowHead from './FlowHead'
@@ -230,7 +230,7 @@ export default function CheckLetter({
             <select value={language} onChange={(e) => setLanguage(e.target.value)}>
               {LANGUAGES.map((l) => (
                 <option key={l.name} value={l.name}>
-                  {l.native}
+                  {languageLabel(l)}
                 </option>
               ))}
             </select>
