@@ -21,7 +21,7 @@ export const WORRY = {
   UNSURE: {
     short: 'Read carefully',
     title: "Kamarat isn't sure how serious this is.",
-    help: 'Read the notice carefully. If you are unsure, ask the sender or someone you trust.',
+    help: 'Read the letter carefully. If you are unsure, ask the sender or someone you trust.',
   },
   URGENT: {
     short: 'Time-sensitive',
@@ -76,7 +76,7 @@ export function assessWorry(worry, actions) {
       level = 'ACTION'
       raised = unknownDate
         ? 'Kamarat raised this because there is a deadline it cannot work out yet.'
-        : 'Kamarat raised this because the notice asks you to do something.'
+        : 'Kamarat raised this because the letter asks you to do something.'
     }
   }
 

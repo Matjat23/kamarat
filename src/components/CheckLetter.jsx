@@ -1,11 +1,12 @@
-// Step 2: check what is shared and send it, in one decision.
-// The person sees their notice next to what would be sent, can show or hide
-// each detail, hide more text, pick the language, and send.
+// Step 2: check what is private, then send, in one decision.
+// The person sees the details Kamarat found, can show or hide each one, hide
+// more text, see exactly what will be sent, pick the language, and send.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildRedaction, TYPE_LABELS } from '../privacy'
 import { LANGUAGES } from '../explain'
-import { LockIcon, DeviceIcon, ArrowIcon, CloudIcon } from './Icons'
-import { SharedText } from './ExplainStep'
+import { LockIcon, ArrowIcon } from './Icons'
+import { SharedText } from './Text'
+import FlowHead from './FlowHead'
 
 const FOUND_BY_TEXT = {
   ai: 'Found by on-device AI',
@@ -13,7 +14,7 @@ const FOUND_BY_TEXT = {
   you: 'Added by you',
 }
 
-export default function ReviewStep({
+export default function CheckLetter({
   text,
   details,
   detection,
@@ -57,7 +58,7 @@ export default function ReviewStep({
     if (places === 0) {
       setHideResult({
         ok: false,
-        text: `No matching text found for "${clean}". Check the spelling, or select the text in your notice instead.`,
+        text: `No matching text found for "${clean}". Check the spelling, or select the text in your letter instead.`,
       })
       return
     }
@@ -87,31 +88,18 @@ export default function ReviewStep({
   }
 
   return (
-    <section className="card">
-      <div className="card-head">
-        <div>
-          <span className="eyebrow">Step 2 of 3</span>
-          <h2 tabIndex={-1} data-step-heading>Before anything leaves your device, let's check it together</h2>
-        </div>
-        <span className="count-pill" role="status">
-          <LockIcon width={16} height={16} /> {hiddenCount} detail{hiddenCount === 1 ? '' : 's'} hidden
-          {sentCount > 0 && <span className="count-sent"> · {sentCount} will be sent</span>}
-        </span>
-      </div>
+    <section className="card flow-card">
+      <FlowHead step={2} title="Check what is private" backLabel="Back" onBack={onBack} />
 
-      {detection.mode === 'ai' ? (
-        <p className="notice notice-ok">
-          <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> On your device</span>
-          Gemini Nano looked for personal details without sending anything. Check the list, and hide anything it missed.
-          {detection.ignored > 0 &&
-            ` It also suggested ${detection.ignored} item(s) that are not in your text, so they were ignored.`}
-        </p>
-      ) : (
-        <p className="notice notice-warn" role="status">
-          Basic check only: Kamarat looked for numbers and emails on your device. Names and addresses
-          may be missing from the list. Read your notice and hide anything else that is about you.
-        </p>
-      )}
+      <p className="lead-small">
+        {detection.mode === 'ai'
+          ? 'Gemini Nano found these personal details on your device. They stay here. Hide anything it missed.'
+          : 'Kamarat found these numbers and emails on your device. They stay here. Names and addresses are not found here, so hide them yourself below.'}
+      </p>
+      <span className="count-pill" role="status">
+        <LockIcon width={16} height={16} /> {hiddenCount} detail{hiddenCount === 1 ? '' : 's'} hidden
+        {sentCount > 0 && <span className="count-sent"> · {sentCount} will be sent</span>}
+      </span>
 
       <div className="details-list" role="list">
         {details.length === 0 && (
@@ -151,7 +139,7 @@ export default function ReviewStep({
           value={extra}
           onChange={(e) => setExtra(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && hide(extra)}
-          placeholder="Hide something else, for example your employer"
+          placeholder="Hide something else, for example your name or employer"
         />
         <button className="secondary" onClick={() => hide(extra)} disabled={extra.trim().length < 2}>
           Hide
@@ -185,14 +173,14 @@ export default function ReviewStep({
           className={view === 'notice' ? 'active' : ''}
           onClick={() => setView('notice')}
         >
-          Your notice
+          Your letter
         </button>
       </div>
 
       <div className={`compare show-${view}`}>
         <div className="pane pane-notice">
           <div className="pane-head">
-            <span>Your notice</span>
+            <span>Your letter</span>
             {selection ? (
               <button className="primary hide-selection" onClick={() => hide(selection)}>
                 Hide "{selection.length > 24 ? `${selection.slice(0, 24)}...` : selection}"
@@ -212,7 +200,7 @@ export default function ReviewStep({
               ),
             )}
           </div>
-          <p className="small muted">Tip: select any text here (press and hold on a phone) to hide it.</p>
+          <p className="small muted">Select any text here (press and hold on a phone) to hide it.</p>
         </div>
 
         <div className="pane pane-shared">
@@ -225,12 +213,9 @@ export default function ReviewStep({
       </div>
 
       <div className="send-box">
-        <p className="send-explainer">
-          <CloudIcon width={18} height={18} />
-          <span>
-            The visible text goes to Google Gemini through Firebase to be explained. Hidden details
-            are replaced with labels and stay on this device.
-          </span>
+        <p className="small muted">
+          When you continue, the text under "What will be sent" goes to Google Gemini to be explained. The black
+          bars stay on this device.
         </p>
         <div className="action-bar is-sticky row-between">
           <label className="language">
@@ -243,14 +228,9 @@ export default function ReviewStep({
               ))}
             </select>
           </label>
-          <div className="buttons">
-            <button className="secondary" onClick={onBack}>
-              Back
-            </button>
-            <button className="primary big" onClick={send}>
-              Send reviewed text and explain <ArrowIcon />
-            </button>
-          </div>
+          <button className="primary big" onClick={send}>
+            Explain my letter <ArrowIcon />
+          </button>
         </div>
       </div>
     </section>

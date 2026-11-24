@@ -63,7 +63,7 @@ export function stopSpeaking() {
 // A few fixed sentences for the spoken summary, in the languages Kamarat can
 // say them in correctly. Other languages hear only the AI's own text and dates.
 const PHRASES = {
-  en: { by: (d) => `By ${d}.`, check: 'Check this date in your notice.', unknown: 'The date is not known yet.' },
+  en: { by: (d) => `By ${d}.`, check: 'Check this date in your letter.', unknown: 'The date is not known yet.' },
   sv: { by: (d) => `Senast ${d}.`, check: 'Kontrollera datumet i ditt brev.', unknown: 'Datumet är inte känt än.' },
   fr: { by: (d) => `Au plus tard le ${d}.`, check: 'Vérifiez cette date dans votre courrier.', unknown: "La date n'est pas encore connue." },
   es: { by: (d) => `Como muy tarde el ${d}.`, check: 'Compruebe esta fecha en su carta.', unknown: 'La fecha todavía no se conoce.' },

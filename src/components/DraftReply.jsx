@@ -6,13 +6,13 @@
 // - Your own message is checked on the device, and you see exactly what Gemini
 //   will get before it is sent.
 // - If you edit the reply afterwards, the translation is marked as out of date.
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { REPLY_INTENTS, draftReply, maskNote, fillIn, openItems } from '../reply'
 import { detectWithAI } from '../privacy'
 import { languageProps } from '../explain'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
-import { ClipboardIcon, MailIcon, PenIcon, DeviceIcon, Dots } from './Icons'
-import { SharedText } from './ExplainStep'
+import { ClipboardIcon, MailIcon, DeviceIcon, Dots } from './Icons'
+import { SharedText } from './Text'
 
 const WRITE_MYSELF = '__self'
 
@@ -38,6 +38,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
   const [subject, setSubject] = useState('')
   const [showLabels, setShowLabels] = useState(false)
   const [copied, setCopied] = useState(false)
+  const uid = useId()
 
   // "Ask the sender" in the chat starts a question reply with the suggested text.
   // It is checked on the device again like any other message.
@@ -46,7 +47,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
     setIntent(prefill.intent)
     setNote(prefill.note)
     setState({ phase: 'idle' })
-    document.getElementById('reply-note')?.focus({ preventScroll: true })
+    document.getElementById(`${uid}-note`)?.focus({ preventScroll: true })
   }, [prefill])
 
   const selfLabel = selfChoice === WRITE_MYSELF ? '' : selfChoice
@@ -122,14 +123,8 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
   const edited = state.phase === 'done' && letter !== state.firstLetter
 
   return (
-    <div className="group reply">
-      <div className="group-head">
-        <span className="group-icon" aria-hidden="true"><PenIcon width={18} height={18} /></span>
-        <h3>Draft my reply</h3>
-        <span className="small muted">
-          Gemini writes it with labels. Your real details are filled in on this device.
-        </span>
-      </div>
+    <div className="reply">
+      <p className="tab-intro">Kamarat writes the reply with labels, and your real name and case number are filled in on this device.</p>
 
       <fieldset className="intents">
         <legend className="visually-hidden">What do you want to say?</legend>
@@ -176,25 +171,25 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
         </label>
       </div>
 
-      <label htmlFor="reply-note" className="small muted">
+      <label htmlFor={`${uid}-note`} className="small muted">
         {intent === 'question' ? 'Your question' : 'Your message (optional)'}
       </label>
       <textarea
-        id="reply-note"
+        id={`${uid}-note`}
         value={note}
         onChange={(e) => {
           setNote(e.target.value)
           if (state.phase === 'confirm') setState({ phase: 'idle' })
         }}
         rows={3}
-        aria-describedby="reply-note-help"
+        aria-describedby={`${uid}-note-help`}
         placeholder={
           intent === 'question'
             ? 'Your question, in your own words.'
             : 'For example which documents you attach, or why you need more time.'
         }
       />
-      <p id="reply-note-help" className="small muted">
+      <p id={`${uid}-note-help`} className="small muted">
         Avoid names and health details. Kamarat adds your name and case number for you, on this device.
       </p>
       {note.trim() && state.phase !== 'confirm' && (
@@ -257,17 +252,17 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
               : 'Nothing personal needed to be added.'}
           </p>
 
-          <label className="small muted" htmlFor="reply-subject">Subject</label>
+          <label className="small muted" htmlFor={`${uid}-subject`}>Subject</label>
           <input
-            id="reply-subject"
+            id={`${uid}-subject`}
             className="reply-subject"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             dir="auto"
           />
-          <label className="small muted" htmlFor="reply-letter">Your reply (you can edit it)</label>
+          <label className="small muted" htmlFor={`${uid}-letter`}>Your reply (you can edit it)</label>
           <textarea
-            id="reply-letter"
+            id={`${uid}-letter`}
             value={letter}
             onChange={(e) => setLetter(e.target.value)}
             rows={10}

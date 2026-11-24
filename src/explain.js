@@ -368,10 +368,10 @@ export function resolveDeadline(deadline, { noticeDate, receivedDate, quote }) {
 
   if (deadline.kind === 'FIXED_DATE') {
     const day = parseDay(deadline.date)
-    if (!day) return { text: 'The notice gives a date. Check it in the quote below.' }
+    if (!day) return { text: 'The letter gives a date. Check it in your letter.' }
     return {
       date: day,
-      basis: 'The date written in your notice.',
+      basis: 'The date written in your letter.',
       unchecked: !dateInQuote(day, quote),
     }
   }
@@ -383,7 +383,7 @@ export function resolveDeadline(deadline, { noticeDate, receivedDate, quote }) {
 
   if (deadline.kind === 'AFTER_RECEIVING') {
     const start = parseDay(receivedDate)
-    if (!start) return { needs: 'received', text: `${span} from the day you received the notice.` }
+    if (!start) return { needs: 'received', text: `${span} from the day you got the letter.` }
     return {
       date: addTime(start, amount, unit),
       basis: `${span} from ${formatDay(start)}, the day you received it.`,
@@ -393,15 +393,15 @@ export function resolveDeadline(deadline, { noticeDate, receivedDate, quote }) {
 
   if (deadline.kind === 'AFTER_NOTICE_DATE') {
     const start = parseDay(noticeDate)
-    if (!start) return { text: `${span} from the date of the notice.` }
+    if (!start) return { text: `${span} from the date on the letter.` }
     return {
       date: addTime(start, amount, unit),
-      basis: `${span} from ${formatDay(start)}, the date on the notice.`,
+      basis: `${span} from ${formatDay(start)}, the date on the letter.`,
       businessNote: unit === 'BUSINESS_DAYS',
     }
   }
 
   return {
-    text: `${span} after: ${deadline.event || 'an event the notice describes'}. Kamarat cannot work out this date for you.`,
+    text: `${span} after: ${deadline.event || 'something the letter describes'}. Kamarat cannot work out this date for you.`,
   }
 }

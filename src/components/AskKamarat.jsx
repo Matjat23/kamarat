@@ -8,15 +8,15 @@
 // - When the notice does not say, Kamarat suggests asking the sender and can
 //   start that reply for you.
 // - The chat is not saved anywhere.
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { askAboutNotice, MAX_QUESTIONS, SUGGESTED_QUESTIONS } from '../ask'
 import { maskNote } from '../reply'
 import { detectWithAI } from '../privacy'
 import { languageProps, LANGUAGES } from '../explain'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { speak, stopSpeaking, canSpeak } from '../speak'
-import { SharedText, QuoteInNotice } from './ExplainStep'
-import { ChatIcon, CloudIcon, DeviceIcon, LandmarkIcon, ArrowIcon, PenIcon, SpeakerIcon, Dots } from './Icons'
+import { SharedText, QuoteInNotice } from './Text'
+import { CloudIcon, DeviceIcon, LandmarkIcon, ArrowIcon, PenIcon, SpeakerIcon, Dots } from './Icons'
 
 function Answer({ turn, shared, language, speakingId, onListen, onAskSender }) {
   const [showQuote, setShowQuote] = useState(false)
@@ -28,23 +28,23 @@ function Answer({ turn, shared, language, speakingId, onListen, onAskSender }) {
 
       {turn.basis === 'NOTICE' && turn.quoteFound && (
         <blockquote className="bubble-quote">
-          <span className="quote-head">From your notice</span>
+          <span className="quote-head">From your letter</span>
           <span dir="auto">{turn.quote}</span>
           <button className="link-button" aria-expanded={showQuote} onClick={() => setShowQuote(!showQuote)}>
-            {showQuote ? 'Hide' : 'Show in my notice'}
+            {showQuote ? 'Hide' : 'Show in my letter'}
           </button>
           {showQuote && <QuoteInNotice shared={shared} quote={turn.quote} />}
         </blockquote>
       )}
       {turn.basis === 'NOTICE' && !turn.quoteFound && (
         <p className="small warning-text">
-          Kamarat could not find the sentence this answer is based on in your notice. Check your notice before
+          Kamarat could not find the sentence this answer is based on in your letter. Check your letter before
           you rely on it.
         </p>
       )}
       {turn.basis === 'NOT_IN_NOTICE' && (
         <div className="bubble-open">
-          <span className="quote-head">Your notice does not say</span>
+          <span className="quote-head">Your letter does not say</span>
           {turn.askSender && (
             <span className="small" {...langProps}>
               You could ask them: "{turn.askSender}"
@@ -90,6 +90,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
   const [speakingId, setSpeakingId] = useState(null)
   const [voiceMissing, setVoiceMissing] = useState(false)
   const nextId = useRef(1)
+  const uid = useId()
 
   const busy = checking || turns.some((t) => t.status === 'loading')
   const left = MAX_QUESTIONS - turns.length
@@ -125,7 +126,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
     if (fromInput) setQuestion('')
     const id = nextId.current++
     const history = turns.filter((t) => t.status === 'done').map((t) => ({ question: t.question, answer: t.answer }))
-    setTurns((list) => [...list, { id, question: masked, status: 'loading', statusText: 'Reading your notice again...' }])
+    setTurns((list) => [...list, { id, question: masked, status: 'loading', statusText: 'Reading your letter again...' }])
     const update = (patch) => setTurns((list) => list.map((t) => (t.id === id ? { ...t, ...patch } : t)))
     try {
       const answer = await askAboutNotice({
@@ -163,14 +164,8 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
   }
 
   return (
-    <div className="group ask">
-      <div className="group-head">
-        <span className="group-icon" aria-hidden="true"><ChatIcon width={18} height={18} /></span>
-        <h3>Ask Kamarat about this notice</h3>
-        <span className="small muted">
-          Answers come only from your notice. If it does not say, Kamarat tells you.
-        </span>
-      </div>
+    <div className="ask">
+      <p className="tab-intro">Ask anything about this letter. Answers come only from your letter, and Kamarat tells you when it does not say.</p>
 
       {turns.length > 0 && (
         <ol className="chat" role="log" aria-live="polite">
@@ -233,20 +228,20 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
             send(question)
           }}
         >
-          <label htmlFor="ask-question" className="small muted">Your question, in any language</label>
+          <label htmlFor={`${uid}-question`} className="small muted">Your question, in any language</label>
           <textarea
-            id="ask-question"
+            id={`${uid}-question`}
             rows={2}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={onKeyDown}
-            aria-describedby="ask-help"
+            aria-describedby={`${uid}-help`}
             placeholder="For example: Do I need to send the originals?"
             dir="auto"
           />
-          <p id="ask-help" className="small muted">
+          <p id={`${uid}-help`} className="small muted">
             Kamarat hides names and numbers on your device before sending. Leave out anything else you would
-            rather not share. {left} of {MAX_QUESTIONS} questions left for this notice.
+            rather not share. {left} of {MAX_QUESTIONS} questions left for this letter.
           </p>
           {preview && preview !== question.trim() && (
             <div className="review-note">
@@ -260,7 +255,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
         </form>
       ) : (
         <p className="small muted">
-          That's {MAX_QUESTIONS} questions for this notice. If something is still unclear, ask the sender.
+          That's {MAX_QUESTIONS} questions for this letter. If something is still unclear, ask the sender.
         </p>
       )}
     </div>

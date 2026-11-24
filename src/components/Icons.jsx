@@ -157,6 +157,24 @@ export function PenIcon(props) {
   )
 }
 
+export function HomeIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 11.5 12 5l8 6.5" />
+      <path d="M6 10v9h12v-9" />
+      <path d="M10 19v-5h4v5" />
+    </svg>
+  )
+}
+
+export function PlusIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  )
+}
+
 export function ChatIcon(props) {
   return (
     <svg {...base} {...props}>

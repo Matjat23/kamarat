@@ -127,20 +127,21 @@ export function deleteAllPapers() {
   }
 }
 
-// The steps of a saved paper with their deadlines worked out, the same way as
-// on the explanation screen. Steps whose quote was not found go to CHECK.
-export function paperActions(paper) {
-  return paper.actions.map((action, index) => ({
+// Steps with their deadlines worked out. Used by the letter screen for new and
+// saved letters alike. Steps whose quote was not found go to CHECK.
+export function prepareActions(actions, { noticeDate, receivedDate, done = [] }) {
+  const doneSet = new Set(done)
+  return actions.map((action, index) => ({
     ...action,
     index,
     group: action.quoteFound ? action.kind : 'CHECK',
-    done: paper.done.includes(index),
-    info: resolveDeadline(action.deadline, {
-      noticeDate: paper.noticeDate,
-      receivedDate: paper.receivedDate,
-      quote: action.quote,
-    }),
+    done: doneSet.has(index),
+    info: resolveDeadline(action.deadline, { noticeDate, receivedDate, quote: action.quote }),
   }))
+}
+
+export function paperActions(paper) {
+  return prepareActions(paper.actions, paper)
 }
 
 // Open steps across every saved paper: the ones with a known date (soonest
