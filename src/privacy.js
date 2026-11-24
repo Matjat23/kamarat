@@ -79,6 +79,8 @@ const PATTERNS = [
   // US social security number and SEVIS ID
   { type: 'ID', re: /\b\d{3}-\d{2}-\d{4}\b/g },
   { type: 'ID', re: /\bN\d{10}\b/g },
+  // Spanish foreigner number (NIE) and national ID (DNI): Y7654321K, 12345678Z
+  { type: 'ID', re: /\b[XYZ]\d{7}[A-Z]\b|\b\d{8}[A-HJ-NP-TV-Z]\b/g },
   // Phones: international (+46 ...), Swedish/French (070-123 45 67, 06 12 34 56 78), US ((352) 555-0147)
   { type: 'PHONE', re: /\+\d{1,3}[\s-]?\(?\d{1,4}\)?(?:[\s-]?\d{2,4}){2,4}/g },
   { type: 'PHONE', re: /\b0\d{1,3}[\s-]\d{2,3}(?:[\s-]?\d{2,3}){1,3}\b/g },
@@ -89,11 +91,11 @@ const PATTERNS = [
 const LABELLED_NUMBERS = [
   {
     type: 'CASE',
-    re: /(?:ärendenummer|diarienummer|dnr|case number|case no\.?|reference number|referensnummer|numéro de dossier|référence)\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-/.]{3,30})/gi,
+    re: /(?:ärendenummer|diarienummer|dnr|case number|case no\.?|reference number|referensnummer|numéro de dossier|référence|aktenzeichen|geschäftszeichen|número de expediente|expediente)\s*\(?\s*(?:nr|no|n°|nº)?\.?\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-/.]{3,30})/gi,
   },
   {
     type: 'ID',
-    re: /(?:personnummer|personal identity number|social security number|student id|sevis id|passport number|passport no\.?|numéro fiscal|numéro de sécurité sociale)\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-/ ]{4,30}?)(?=\s*(?:\n|,|;|\)|$))/gi,
+    re: /(?:personnummer|samordningsnummer|personal identity number|social security number|taxpayer id(?: number)?|student id|sevis id|passport number|passport no\.?|reisepass|passnummer|steuer-?id|numéro fiscal|numéro de sécurité sociale|n° allocataire|numéro (?:d')?allocataire)\s*\(?\s*(?:nr|no|n°|nº)?\.?\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-/ ]{4,30}?)(?=\s*(?:\n|,|;|\)|\.\s|\.$|$))/gi,
   },
 ]
 

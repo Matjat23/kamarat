@@ -1,7 +1,13 @@
 """Make fake official notices for testing Kamarat's privacy check.
 
 Every notice is made up, and for each one we know exactly which personal
-details it contains. tools/score.py compares that list with what Kamarat found.
+details it contains. tools/score.py checks that none of them is left in the
+text Kamarat would send.
+
+Most notices come from four templates with random people. A few are written by
+hand with other layouts (names inside sentences, titles, capitals, addresses on
+one line, a letter with no personal details) so the test is not only the
+templates.
 
 Usage:
     python tools/make_test_notices.py            # writes public/eval/notices.json
@@ -180,6 +186,147 @@ Pour toute question : {phone}."""
 
 KINDS = [swedish_migration, swedish_tax, us_university, french_prefecture]
 
+# Written by hand. Every person, number and address is made up.
+HANDWRITTEN = [
+    {
+        "id": "hand-de-auslaenderbehoerde",
+        "kind": "de-immigration",
+        "text": """Landesamt für Einwanderung
+Friedrich-Krause-Ufer 24, 13353 Berlin
+
+Aktenzeichen: LEA-2026-448190
+
+Sehr geehrte Frau Nguyen Thi Lan,
+
+wohnhaft Hauptstraße 5, 10115 Berlin, Ihr Antrag auf Verlängerung der Aufenthaltserlaubnis ist bei uns eingegangen. Bitte reichen Sie bis zum 18. Dezember 2026 einen aktuellen Mietvertrag und Ihren Reisepass (Nr. C4H7K92LM) ein.
+
+Bei Fragen erreichen Sie Herrn Becker unter 030 90269-4471.
+
+Mit freundlichen Grüßen
+Im Auftrag""",
+        "details": [
+            {"text": "LEA-2026-448190", "type": "CASE"},
+            {"text": "Nguyen Thi Lan", "type": "NAME"},
+            {"text": "Hauptstraße 5, 10115 Berlin", "type": "ADDRESS"},
+            {"text": "C4H7K92LM", "type": "ID"},
+            {"text": "Becker", "type": "NAME"},
+            {"text": "030 90269-4471", "type": "PHONE"},
+        ],
+    },
+    {
+        "id": "hand-es-extranjeria",
+        "kind": "es-immigration",
+        "text": """Oficina de Extranjería de Valencia
+
+Estimado Sr. Carlos Mendoza Ruiz:
+
+Le informamos de que su cita para la toma de huellas (TIE) es el 9 de enero de 2027 a las 10:30. Debe traer su pasaporte y el resguardo de la tasa 790-012. Su NIE es Y7654321K.
+
+Si no puede asistir, escriba a citas.valencia@example.es o llame al +34 612 345 678 antes del 5 de enero de 2027.
+
+Atentamente,
+Oficina de Extranjería""",
+        "details": [
+            {"text": "Carlos Mendoza Ruiz", "type": "NAME"},
+            {"text": "Y7654321K", "type": "ID"},
+            {"text": "citas.valencia@example.es", "type": "EMAIL"},
+            {"text": "+34 612 345 678", "type": "PHONE"},
+        ],
+    },
+    {
+        "id": "hand-se-forsakringskassan",
+        "kind": "se-benefits",
+        "text": """Försäkringskassan
+
+Hej Ahmed Yusuf Ali!
+
+Vi har fått din ansökan om bostadsbidrag. Ditt personnummer 199003154321 är registrerat på adressen Bergsgatan 14 lgh 1102, 214 22 Malmö.
+
+Vi behöver ditt hyresavtal senast den 4 januari 2027. Logga in på Mina sidor eller skicka det med post. Om vi inte får det kan vi inte betala ut bidraget.
+
+Du kan nå mig, Karin Holm, på karin.holm@example.se.
+
+Vänliga hälsningar
+Försäkringskassan""",
+        "details": [
+            {"text": "Ahmed Yusuf Ali", "type": "NAME"},
+            {"text": "199003154321", "type": "ID"},
+            {"text": "Bergsgatan 14 lgh 1102, 214 22 Malmö", "type": "ADDRESS"},
+            {"text": "Karin Holm", "type": "NAME"},
+            {"text": "karin.holm@example.se", "type": "EMAIL"},
+        ],
+    },
+    {
+        "id": "hand-us-irs",
+        "kind": "us-tax",
+        "text": """Department of the Treasury
+Internal Revenue Service
+
+MARIA L. GONZALEZ
+PO BOX 1123
+TAMPA FL 33601
+
+Taxpayer ID number: 912-78-4567
+Notice date: November 17, 2026
+
+We changed your 2025 Form 1040 to correct a math error. You owe $412.00. Pay by December 8, 2026 to avoid more interest. If you disagree, call us at 1-800-555-0148 within 60 days of the date of this notice.""",
+        "details": [
+            {"text": "MARIA L. GONZALEZ", "type": "NAME"},
+            {"text": "PO BOX 1123, TAMPA FL 33601", "type": "ADDRESS"},
+            {"text": "912-78-4567", "type": "ID"},
+        ],
+    },
+    {
+        "id": "hand-fr-caf",
+        "kind": "fr-benefits",
+        "text": """Caisse d'allocations familiales de la Haute-Garonne
+
+M. Mamadou Diop
+Appartement 12, 5 allée des Lilas, 31400 Toulouse
+
+N° allocataire : 1234567
+
+Monsieur,
+
+Pour continuer à recevoir votre aide au logement, merci de déclarer vos ressources trimestrielles avant le 31 décembre 2026 sur caf.fr. Sans déclaration, le paiement sera suspendu.
+
+Votre conseillère, Mme Sophie Laurent""",
+        "details": [
+            {"text": "Mamadou Diop", "type": "NAME"},
+            {"text": "Appartement 12, 5 allée des Lilas, 31400 Toulouse", "type": "ADDRESS"},
+            {"text": "1234567", "type": "ID"},
+            {"text": "Sophie Laurent", "type": "NAME"},
+        ],
+    },
+    {
+        "id": "hand-se-general",
+        "kind": "se-information",
+        "text": """Skatteverket informerar
+
+Nu kan du deklarera digitalt från den 17 mars 2027. Om du godkänner deklarationen senast den 2 maj 2027 kan du få pengar tillbaka före midsommar.
+
+Du behöver inte göra något om uppgifterna stämmer. Läs mer på skatteverket.se.""",
+        "details": [],
+    },
+]
+
+
+def norm(text):
+    return " ".join(text.lower().replace(",", " ").split())
+
+
+def check(notices):
+    ids = [n["id"] for n in notices]
+    duplicates = sorted({i for i in ids if ids.count(i) > 1})
+    if duplicates:
+        raise SystemExit(f"Duplicate notice ids: {', '.join(duplicates)}")
+    for notice in notices:
+        text = norm(notice["text"])
+        for detail in notice["details"]:
+            for piece in detail["text"].split(","):
+                if norm(piece) not in text:
+                    raise SystemExit(f"{notice['id']}: '{piece.strip()}' is not in the text")
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -193,12 +340,14 @@ def main():
     for i in range(args.count):
         kind, text, details = KINDS[i % len(KINDS)](rng)
         notices.append({"id": f"{kind}-{i + 1:02d}", "kind": kind, "text": text, "details": details})
+    notices += HANDWRITTEN
+    check(notices)
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(notices, ensure_ascii=False, indent=2), encoding="utf-8")
     total = sum(len(n["details"]) for n in notices)
-    print(f"Wrote {len(notices)} made-up notices with {total} personal details to {out}")
+    print(f"Wrote {len(notices)} made-up notices ({len(HANDWRITTEN)} written by hand) with {total} personal details to {out}")
 
 
 if __name__ == "__main__":

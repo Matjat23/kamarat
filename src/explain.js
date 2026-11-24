@@ -12,6 +12,7 @@ import {
   ON_DEVICE_LANGUAGES,
 } from './firebase'
 import { SOURCES } from './sources'
+import { QuotaError, isDailyLimit, markUsedUp, usableModels } from './quota'
 
 // Each language is shown in its own script, so people can find theirs.
 export const LANGUAGES = [
@@ -143,16 +144,22 @@ export async function explainNotice(sharedText, language, onStatus = () => {}) {
     // leave the device.
     const code = ON_DEVICE_LANGUAGES[language] ?? 'en'
     const deviceLanguage = code === 'en' ? 'English' : language
+    const why = err.quota ? "Today's free cloud Gemini requests are used up" : 'Cloud Gemini did not answer'
     if (deviceLanguage !== language) {
-      note = `Cloud Gemini did not answer, so Kamarat finished the explanation on your device. On-device AI cannot write ${language} yet, so this is in English.`
+      note = `${why}, so Kamarat finished the explanation on your device. On-device AI cannot write ${language} yet, so this is in English.`
     } else {
-      note = 'Cloud Gemini did not answer, so Kamarat finished the explanation on your device instead.'
+      note = `${why}, so Kamarat finished the explanation on your device instead.`
     }
-    onStatus('Cloud Gemini is busy. Explaining on your device with Gemini Nano...')
+    onStatus(
+      err.quota
+        ? "Today's cloud limit is reached. Explaining on your device with Gemini Nano..."
+        : 'Cloud Gemini is busy. Explaining on your device with Gemini Nano...',
+    )
     try {
       result = await askOnDevice(buildPrompt(sharedText, deviceLanguage, true), code)
     } catch (deviceErr) {
       console.warn('On-device explanation failed too.', deviceErr)
+      if (err.quota) throw err
       throw new Error(
         'Cloud Gemini is busy right now and on-device AI is not available here. Please try again in a minute',
       )
@@ -201,24 +208,33 @@ function readAnswer(result, sharedText, note) {
 // Gemini sometimes answers "high demand, try again", takes too long, or the
 // person is offline. Those errors are temporary; anything else (for example a
 // blocked request) is shown straight away.
-function isTemporary(err) {
+export function isTemporary(err) {
+  if (err?.quota) return true
   return /\b(500|503|429)\b|high demand|overloaded|unavailable|timed? ?out|abort|network|failed to fetch|offline/i.test(
     err?.message ?? '',
   )
 }
 
-// One try on the main model, then one on the backup model.
+// One try on the main model, then one on the backup model. A model whose daily
+// free limit is used up is skipped until the limit resets.
 export async function askCloudJSON(schema, systemInstruction, prompt, onStatus = () => {}) {
+  const models = usableModels(EXPLAIN_MODELS)
+  if (models.length === 0) throw new QuotaError()
   let lastError
-  for (const [index, modelName] of EXPLAIN_MODELS.entries()) {
+  for (const [index, modelName] of models.entries()) {
     if (index > 0) onStatus('Gemini is busy. Trying a backup model...')
     try {
       return await getExplainModel(schema, systemInstruction, modelName).generateContent(prompt)
     } catch (err) {
       lastError = err
+      if (isDailyLimit(err)) {
+        markUsedUp(modelName)
+        continue
+      }
       if (!isTemporary(err)) throw err
     }
   }
+  if (usableModels(EXPLAIN_MODELS).length === 0) throw new QuotaError()
   throw lastError
 }
 
@@ -259,15 +275,50 @@ export function parseDay(value) {
   return day
 }
 
-// Checks that a date the AI read from the notice can be seen in the quote it
-// gave: the day number, and the year or the month number. If not, the date is
-// shown with a "check this" warning.
-function dateInQuote(day, quote) {
-  const q = ` ${quote ?? ''} `
-  const hasDay = new RegExp(`\\D0?${day.getDate()}\\D`).test(q)
-  const hasYear = q.includes(String(day.getFullYear()))
-  const hasMonthNumber = new RegExp(`[-./]0?${day.getMonth() + 1}[-./]|\\D0?${day.getMonth() + 1}[-./]`).test(q)
-  return hasDay && (hasYear || hasMonthNumber)
+// Month names in the languages notices are often written in, so a date can be
+// matched to the quote whatever language the letter uses.
+const MONTH_LOCALES = ['en', 'sv', 'fr', 'es', 'de', 'it', 'pt', 'nl', 'da', 'nb', 'fi', 'pl', 'tr']
+const monthNames = Array.from({ length: 12 }, (_, m) => {
+  const names = new Set()
+  for (const locale of MONTH_LOCALES) {
+    for (const style of ['long', 'short']) {
+      const name = new Date(2026, m, 15)
+        .toLocaleDateString(locale, { month: style })
+        .toLowerCase()
+        .replace(/\.$/, '')
+      if (name.length >= 3) names.add(name)
+    }
+  }
+  return [...names]
+})
+
+// Checks that the whole date the AI read is really in the quote it gave:
+// the day, the month (as a name or a number) and the year if the quote has one.
+// If not, the date is treated as unchecked.
+export function dateInQuote(day, quote) {
+  const q = ` ${(quote ?? '').toLowerCase()} `
+  const d = day.getDate()
+  const m = day.getMonth() + 1
+  const y = day.getFullYear()
+  const dd = String(d).padStart(2, '0')
+  const mm = String(m).padStart(2, '0')
+
+  // Numeric forms: 2026-12-15, 15/12/2026, 12/15/2026, 15.12.2026
+  const numeric = [
+    `${y}-${mm}-${dd}`,
+    `${y}-${m}-${d}`,
+    new RegExp(`\\D0?${d}[./-]0?${m}[./-](${y}|${String(y).slice(2)})\\D`),
+    new RegExp(`\\D0?${m}/0?${d}/(${y}|${String(y).slice(2)})\\D`),
+  ]
+  if (numeric.some((p) => (typeof p === 'string' ? q.includes(p) : p.test(q)))) return true
+
+  // Written forms: "15 december 2026", "December 15, 2026", "le 15 janvier"
+  const hasDay = new RegExp(`\\D0?${d}(st|nd|rd|th|e|:e|er)?\\D`).test(q)
+  const names = monthNames[m - 1]
+  const hasMonth = names.some((name) => new RegExp(`(^|[^\\p{L}])${name}([^\\p{L}]|$)`, 'u').test(q))
+  const years = q.match(/\b(19|20)\d{2}\b/g)
+  const yearOk = !years || years.includes(String(y))
+  return hasDay && hasMonth && yearOk
 }
 
 export function formatDay(day) {

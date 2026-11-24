@@ -12,6 +12,8 @@ I have lived in Senegal, France, Sweden and the US, and every move came with let
 4. Only the approved text goes to cloud Gemini, which explains what the notice asks of you: what you must do, what you can do and what is unclear. Every point quotes the sentence it comes from, and my code checks that the quote is really in the notice.
 5. Deadlines are calculated by the code, not the AI. If a deadline counts from the day you received the letter, Kamarat asks you for that date.
 
+Word help explains a word from the approved text, on the device when Gemini Nano can write your language, otherwise in the cloud, and the screen says which. Listen reads the explanation with a voice that runs on your device. My papers keeps saved explanations in your browser only and works the deadlines out again each time you open them.
+
 If the on-device model is not available, nothing is sent anywhere. Kamarat falls back to the pattern check and lets you hide details yourself.
 
 Kamarat is not legal advice and does not make you anonymous. It shows you exactly what leaves your device and where every answer comes from.
@@ -44,10 +46,10 @@ and register the same token in the Firebase console under App Check, Apps, Manag
 
 The `tools` folder has two small Python scripts:
 
-- `tools/make_test_notices.py` writes made-up notices with known personal details to `public/eval/notices.json` (Swedish, English and French, 30 by default).
-- `tools/score.py` compares those details with what Kamarat found and writes a short report.
+- `tools/make_test_notices.py` writes made-up notices with known personal details to `public/eval/notices.json`: 30 from templates (Swedish, English and French) plus 6 I wrote by hand in other layouts and languages, including one with no personal details at all.
+- `tools/score.py` checks the exact text Kamarat would send. A detail only counts as protected if no part of it is left in that text. It also reports how much of the rest of the letter was kept, so hiding everything would not score well.
 
-Open the app with `?eval` at the end of the address, press "Run the test", download `results.json`, then run `python tools/score.py results.json`. Without Gemini Nano only the pattern check runs: in my test it found every ID, case, phone and email number (88 of 88) with no false hits, and no names or addresses, which is the part Gemini Nano is there for.
+Open the app with `?eval` at the end of the address, press "Run the test", download `results.json`, then run `python tools/score.py results.json`. Without Gemini Nano only the pattern check runs: in my test it kept every ID, case, phone and email number out of the shared text (100 of 100) and kept 96 to 100 percent of the other text, but no names or addresses, which is the part Gemini Nano is there for.
 
 ## License
 

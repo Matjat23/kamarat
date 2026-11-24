@@ -153,8 +153,12 @@ export function getOnDeviceExplainModel(responseConstraint, languageCode) {
 // may run on the device first and fall back to the cloud on its own
 // (PREFER_ON_DEVICE). If the on-device model cannot write the chosen language,
 // it goes to the cloud directly.
-export function getWordModel(languageCode) {
-  const deviceCanWrite = Object.values(ON_DEVICE_LANGUAGES).includes(languageCode)
+export function wordHelpRunsOnDevice(languageCode) {
+  return Object.values(ON_DEVICE_LANGUAGES).includes(languageCode)
+}
+
+export function getWordModel(languageCode, modelName = EXPLAIN_MODELS[0]) {
+  const deviceCanWrite = wordHelpRunsOnDevice(languageCode)
   return getGenerativeModel(
     ai,
     {
@@ -165,7 +169,7 @@ export function getWordModel(languageCode) {
           expectedOutputs: [{ type: 'text', languages: [deviceCanWrite ? languageCode : 'en'] }],
         },
       },
-      inCloudParams: { model: EXPLAIN_MODELS[0], generationConfig: { temperature: 0.2 } },
+      inCloudParams: { model: modelName, generationConfig: { temperature: 0.2 } },
     },
     { timeout: 20000 },
   )

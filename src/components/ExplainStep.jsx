@@ -9,8 +9,9 @@ import { downloadDeadline } from '../calendar'
 import DraftReply from './DraftReply'
 import WordHelp from './WordHelp'
 import { savePaper, updatePaper } from '../papers'
-import { speak, stopSpeaking, canSpeak } from '../speak'
+import { speak, stopSpeaking, canSpeak, spokenPhrases, spokenDate } from '../speak'
 import { LANGUAGES } from '../explain'
+import { WORRY, assessWorry, daysUntil } from '../worry'
 import {
   CalendarIcon,
   CloudIcon,
@@ -23,30 +24,6 @@ import {
   LockIcon,
   SpeakerIcon,
 } from './Icons'
-
-// How worried to be, said the way a calm friend would say it.
-export const WORRY = {
-  INFO: {
-    short: 'Just information',
-    title: 'Good news: this is just information.',
-    help: '',
-  },
-  ACTION: {
-    short: 'Action needed',
-    title: 'This needs something from you, but it is routine.',
-    help: '',
-  },
-  URGENT: {
-    short: 'Time-sensitive',
-    title: "This one is time-sensitive. Let's not wait.",
-    help: '',
-  },
-  HELP: {
-    short: 'Get help',
-    title: "This is serious. You don't have to handle it alone.",
-    help: "Consider talking to a person before the deadline: the sender's customer service, a free legal aid service, or your school's or employer's support. You can show them this page.",
-  },
-}
 
 const GROUPS = [
   { kind: 'MUST', title: 'You must', hint: 'The notice requires this.' },
@@ -101,12 +78,6 @@ function DateTile({ date, size = '' }) {
       <span className="date-weekday">{date.toLocaleDateString('en-GB', { weekday: 'short' })}</span>
     </div>
   )
-}
-
-function daysUntil(date) {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  return Math.round((date - today) / 86400000)
 }
 
 function whenText(date) {
@@ -190,10 +161,18 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
   const [savedId, setSavedId] = useState(null)
   const [speaking, setSpeaking] = useState(false)
   const [voiceMissing, setVoiceMissing] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const replyRef = useRef(null)
   const started = useRef(false)
 
   async function send() {
+    // A new explanation can have different steps, so old ticks would point at
+    // the wrong ones. If the paper was saved, it is saved again with the new
+    // explanation once it arrives.
+    stopSpeaking()
+    setSpeaking(false)
+    setDone(new Set())
+    setOpenQuote(null)
     setState({ phase: 'loading', status: 'Reading your letter carefully...' })
     try {
       const result = await explainNotice(shared, language, (status) =>
@@ -230,52 +209,68 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
       ...action,
       index,
       group: action.quoteFound ? action.kind : 'CHECK',
+      done: done.has(index),
       info: resolveDeadline(action.deadline, {
         noticeDate: result.noticeDate,
         receivedDate,
         quote: action.quote,
       }),
     }))
-  }, [state, receivedDate])
+  }, [state, receivedDate, done])
+
+  // One worry level for the banner, Listen and My papers.
+  const assessed = useMemo(
+    () => (state.phase === 'done' ? assessWorry(state.result.worry, actions) : null),
+    [state, actions],
+  )
 
   function toggleDone(index) {
-    setDone((prev) => {
-      const next = new Set(prev)
-      if (next.has(index)) next.delete(index)
-      else next.add(index)
-      if (savedId) updatePaper(savedId, { done: [...next] })
-      return next
-    })
+    const next = new Set(done)
+    if (next.has(index)) next.delete(index)
+    else next.add(index)
+    setDone(next)
+    if (savedId && !updatePaper(savedId, { done: [...next] })) {
+      setSaveError('Kamarat could not update My papers on this device.')
+    }
   }
 
-  // Keeps the explanation in "My papers", only in this browser.
-  function save() {
+  // Keeps the explanation in "My papers", only in this browser. It stores the
+  // deadlines as the notice states them, so My papers works them out again
+  // with the same rules.
+  function save(id = savedId ?? crypto.randomUUID()) {
     const { result } = state
-    const id = savedId ?? crypto.randomUUID()
-    savePaper({
+    const ok = savePaper({
       id,
       savedAt: new Date().toISOString(),
       sender: result.sender,
       summary: result.summary,
       worry: result.worry,
       language: result.language,
-      shared,
+      noticeDate: result.noticeDate,
       receivedDate,
+      shared,
       done: [...done],
-      actions: actions.map((a) => ({
+      actions: result.actions.map((a) => ({
         title: a.title,
         explanation: a.explanation,
         kind: a.kind,
         quote: a.quote,
-        date: a.info?.date ? a.info.date.toISOString() : null,
-        when: a.info?.text ?? '',
+        quoteFound: a.quoteFound,
+        deadline: a.deadline,
       })),
       pages: result.pages.map(({ page }) => page.id),
     })
-    setSavedId(id)
+    if (ok) {
+      setSavedId(id)
+      setSaveError('')
+    } else {
+      setSaveError('Kamarat could not save on this device. The browser may be in private mode or out of space.')
+    }
   }
 
-  // Reads the most important parts aloud with the device's own voice.
+  // Reads the most important parts aloud with an on-device voice. Fixed
+  // sentences are only spoken in languages Kamarat has them in, so an English
+  // sentence is never read with a Swedish voice.
   async function listen() {
     if (speaking) {
       stopSpeaking()
@@ -284,24 +279,31 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
     }
     const { result } = state
     const code = LANGUAGES.find((l) => l.name === result.language)?.code ?? 'en'
-    const worry = WORRY[result.worry?.level]
-    const parts = [
-      worry?.title,
-      result.worry?.reason,
-      result.summary,
-      ...actions
-        .filter((a) => a.group === 'MUST' || a.group === 'CAN')
-        .map((a) => `${a.title}. ${a.explanation}`),
-    ]
+    const phrases = spokenPhrases(code)
+    const parts = []
+    if (code === 'en') parts.push(WORRY[assessed.level].title, assessed.raised)
+    parts.push(result.worry?.reason, result.summary)
+    for (const a of actions) {
+      if (a.group === 'CHECK' || a.done) continue
+      parts.push(`${a.title}. ${a.explanation}`)
+      if (a.info?.date && (!a.info.unchecked || phrases)) {
+        const when = spokenDate(a.info.date, code)
+        parts.push(phrases ? phrases.by(when) : when)
+        if (a.info.unchecked && phrases) parts.push(phrases.check)
+      } else if (a.info && phrases) {
+        parts.push(phrases.unknown)
+      }
+    }
     const started = await speak(parts, code, () => setSpeaking(false))
     setVoiceMissing(!started)
     setSpeaking(started)
   }
 
-  // Keep a saved paper up to date when the received date is added later.
+  // Keep a saved paper up to date when the received date is added later, or
+  // when the notice is explained again.
   useEffect(() => {
-    if (savedId && state.phase === 'done') save()
-  }, [receivedDate])
+    if (savedId && state.phase === 'done') save(savedId)
+  }, [receivedDate, state.result])
 
   useEffect(() => () => stopSpeaking(), [])
 
@@ -347,21 +349,15 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
   // The earliest date Kamarat knows, whatever kind of action it belongs to.
   // If some deadlines are still unknown, say clearly that one of them could come first.
   const dated = actions
-    .filter((a) => a.info?.date && a.group !== 'CHECK' && !done.has(a.index))
+    .filter((a) => a.info?.date && a.group !== 'CHECK' && !a.done)
     .sort((a, b) => a.info.date - b.info.date)
   const next = dated[0]
   const openDeadlines = actions.filter(
-    (a) => a.group !== 'CHECK' && !done.has(a.index) && a.info && !a.info.date,
+    (a) => a.group !== 'CHECK' && !a.done && a.info && !a.info.date,
   ).length
   const countable = actions.filter((a) => a.group !== 'CHECK')
-  const doneCount = countable.filter((a) => done.has(a.index)).length
-
-  // The code can raise the level: a deadline within a week is always time-sensitive.
-  let worryLevel = result.worry?.level ?? 'ACTION'
-  const soonDays = next ? Math.round((next.info.date - new Date().setHours(0, 0, 0, 0)) / 86400000) : null
-  const raisedBySoonDate =
-    soonDays !== null && soonDays <= 7 && (worryLevel === 'INFO' || worryLevel === 'ACTION')
-  if (raisedBySoonDate) worryLevel = 'URGENT'
+  const doneCount = countable.filter((a) => a.done).length
+  const worryLevel = assessed.level
   const worry = WORRY[worryLevel]
 
   return (
@@ -379,13 +375,11 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
       <div className={`worry worry-${worryLevel}`} role="status">
         <span className={`worry-chip worry-${worryLevel}`}>{worry.short}</span>
         <strong className="worry-title">{worry.title}</strong>
-        {result.worry?.reason && <p {...langProps}>{result.worry.reason}</p>}
-        {raisedBySoonDate && (
-          <p className="small">Kamarat raised this because a deadline is less than a week away.</p>
-        )}
+        {assessed.reason && <p {...langProps}>{assessed.reason}</p>}
+        {assessed.raised && <p className="small">{assessed.raised}</p>}
         {worry.help && <p className="small worry-help">{worry.help}</p>}
-        {result.worry?.quote && result.worry.quoteFound && (
-          <span className="small muted worry-quote" dir="auto">Based on: "{result.worry.quote}"</span>
+        {assessed.quote && (
+          <span className="small muted worry-quote" dir="auto">Based on: "{assessed.quote}"</span>
         )}
       </div>
 
@@ -403,7 +397,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
             <SpeakerIcon width={16} height={16} /> {speaking ? 'Stop reading' : 'Listen'}
           </button>
         )}
-        <button className="secondary small-btn" onClick={save} disabled={!!savedId}>
+        <button className="secondary small-btn" onClick={() => save()} disabled={!!savedId}>
           <LockIcon width={16} height={16} /> {savedId ? 'Saved to My papers' : 'Save to My papers'}
         </button>
         {voiceMissing && (
@@ -412,6 +406,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
           </span>
         )}
         {savedId && <span className="small muted">Saved only on this device. Ticks and dates stay up to date.</span>}
+        {saveError && <span className="small warning-text" role="alert">{saveError}</span>}
       </div>
 
       {next && (
@@ -471,7 +466,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
               <span className="small muted">{group.hint}</span>
             </div>
             {items.map((action) => {
-              const isDone = done.has(action.index)
+              const isDone = action.done
               return (
                 <article key={action.index} className={`action ${isDone ? 'action-done' : ''}`}>
                   {group.kind !== 'CHECK' && (
