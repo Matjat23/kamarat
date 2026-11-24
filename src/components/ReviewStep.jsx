@@ -2,6 +2,7 @@
 // can show or hide each detail, hide more text, and then approve.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildRedaction, TYPE_LABELS } from '../privacy'
+import { LockIcon, DeviceIcon, ArrowIcon } from './Icons'
 
 const FOUND_BY_TEXT = {
   ai: 'found by on-device AI',
@@ -52,11 +53,19 @@ export default function ReviewStep({
 
   return (
     <section className="card">
-      <h2>Check what leaves your device</h2>
+      <div className="card-head">
+        <div>
+          <span className="eyebrow">Step 2 of 3</span>
+          <h2>Check what leaves your device</h2>
+        </div>
+        <span className="count-pill">
+          <LockIcon width={16} height={16} /> {hiddenCount} hidden
+        </span>
+      </div>
 
       {detection.mode === 'ai' ? (
         <p className="notice notice-ok">
-          <span className="badge badge-on_device">On your device</span>
+          <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> On your device</span>
           Gemini Nano looked for personal details without sending anything.
           {detection.ignored > 0 &&
             ` It also suggested ${detection.ignored} item(s) that are not in your text, so they were ignored.`}
@@ -74,19 +83,25 @@ export default function ReviewStep({
           <p className="muted small">No personal details found yet. Hide anything you want below.</p>
         )}
         {details.map((detail) => (
-          <label key={detail.id} className={`detail detail-${detail.type}`}>
+          <label key={detail.id} className={`detail detail-${detail.type} ${detail.hidden ? '' : 'detail-shown'}`}>
+            <span className={`type-dot type-${detail.type}`} aria-hidden="true" />
+            <span className="detail-body">
+              <span className="detail-text">{detail.text}</span>
+              <span className="detail-meta">
+                {detail.type === 'HIDDEN'
+                  ? TYPE_LABELS.HIDDEN
+                  : `${TYPE_LABELS[detail.type]}, ${detail.foundBy.map((f) => FOUND_BY_TEXT[f]).join(' and ')}`}
+                {detail.hidden && labels.get(detail.id) ? ` · shared as ${labels.get(detail.id)}` : ' · will be shared'}
+              </span>
+            </span>
             <input
+              className="switch"
               type="checkbox"
+              role="switch"
+              aria-label={`Hide ${detail.text}`}
               checked={detail.hidden}
               onChange={() => onToggle(detail.id)}
             />
-            <span className="detail-text">{detail.text}</span>
-            <span className="detail-meta">
-              {detail.hidden && labels.get(detail.id) ? `${labels.get(detail.id)} · ` : ''}
-              {detail.type === 'HIDDEN'
-                ? TYPE_LABELS.HIDDEN
-                : `${TYPE_LABELS[detail.type]}, ${detail.foundBy.map((f) => FOUND_BY_TEXT[f]).join(' and ')}`}
-            </span>
           </label>
         ))}
       </div>
@@ -98,7 +113,7 @@ export default function ReviewStep({
           onKeyDown={(e) => e.key === 'Enter' && hide(extra)}
           placeholder="Hide something else, for example your employer"
         />
-        <button onClick={() => hide(extra)} disabled={extra.trim().length < 2}>
+        <button className="secondary" onClick={() => hide(extra)} disabled={extra.trim().length < 2}>
           Hide
         </button>
       </div>
@@ -156,8 +171,8 @@ export default function ReviewStep({
           <div className="pane-body">
             {segments.map((seg, i) =>
               seg.detail ? (
-                <span key={i} className={`label label-${seg.detail.type}`}>
-                  {seg.label}
+                <span key={i} className="redact" title={seg.label}>
+                  <span className="redact-label">{seg.label.slice(1, -1).replace('_', ' ')}</span>
                 </span>
               ) : (
                 <span key={i}>{seg.text}</span>
@@ -168,9 +183,9 @@ export default function ReviewStep({
       </div>
 
       <div className="action-bar row-between">
-        <button onClick={onBack}>Back</button>
+        <button className="secondary" onClick={onBack}>Back</button>
         <button
-          className="primary"
+          className="primary big"
           onClick={() => {
             // Label to real text, for filling a drafted reply back in on this device.
             const labelMap = {}
@@ -181,7 +196,7 @@ export default function ReviewStep({
             onApprove(shared, labelMap)
           }}
         >
-          Approve what is shared
+          Approve what is shared <ArrowIcon />
         </button>
       </div>
     </section>

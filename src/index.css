@@ -1,14 +1,52 @@
+/* Kamarat's colours and type. Warm paper, deep green, terracotta. */
 :root {
-  font: 17px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
-  color: #1d1b20;
-  background: #faf8f5;
+  --paper: #fbf8f3;
+  --paper-deep: #f3ede4;
+  --card: #ffffff;
+  --ink: #1f1b16;
+  --ink-soft: #3d362f;
+  --muted: #6e655c;
+  --line: #e9e2d8;
+  --line-strong: #d8cfc2;
+
+  --green: #2f5d50;
+  --green-dark: #1f4339;
+  --green-soft: #e4efe9;
+  --terracotta: #c2603f;
+  --terracotta-soft: #f8e4da;
+  --amber: #a8730f;
+  --amber-soft: #f7edd3;
+  --cloud: #2f5a8c;
+  --cloud-soft: #e3ecf7;
+  --redact: #1f1b16;
+
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 1px 2px rgba(31, 27, 22, 0.04), 0 8px 24px rgba(31, 27, 22, 0.06);
+
+  --font-body: 'Figtree', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+
+  font: 17px/1.55 var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
+  background:
+    radial-gradient(1200px 500px at 10% -10%, #efe6d6 0%, transparent 60%),
+    radial-gradient(900px 400px at 110% 0%, #e7efe9 0%, transparent 55%),
+    var(--paper);
+  min-height: 100vh;
 }
 
 p {
   margin: 0;
+}
+
+::selection {
+  background: #f1d9cd;
 }

@@ -4,6 +4,9 @@ export const EXAMPLES = [
   {
     id: 'se-migration',
     label: 'Swedish migration letter',
+    country: 'SE',
+    sender: 'Migrationsverket',
+    kind: 'Request for documents',
     text: `Migrationsverket
 
 Göteborg 2026-11-18
@@ -35,6 +38,9 @@ Migrationsverket`,
   {
     id: 'us-university',
     label: 'US university letter',
+    country: 'US',
+    sender: 'University international office',
+    kind: 'Action before your program ends',
     text: `Example State University
 International Student and Scholar Services
 

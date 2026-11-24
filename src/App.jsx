@@ -11,6 +11,7 @@ import {
 import PasteStep from './components/PasteStep'
 import ReviewStep from './components/ReviewStep'
 import ExplainStep from './components/ExplainStep'
+import { Logo, CheckIcon } from './components/Icons'
 import './App.css'
 
 const STEPS = [
@@ -100,16 +101,24 @@ export default function App() {
   return (
     <div className="app">
       <header className="top">
-        <div>
-          <h1>Kamarat</h1>
-          <p className="muted">A friend who knows the system.</p>
-        </div>
-        <ol className="steps">
-          {STEPS.map((s, i) => (
-            <li key={s.id} className={s.id === step ? 'current' : ''}>
-              <span>{i + 1}</span> {s.label}
-            </li>
-          ))}
+        <button className="brand" onClick={restart} aria-label="Kamarat, start over">
+          <Logo size={42} />
+          <span className="brand-text">
+            <span className="wordmark">Kamarat</span>
+            <span className="tagline">A friend who knows the system</span>
+          </span>
+        </button>
+        <ol className="steps" aria-label="Progress">
+          {STEPS.map((s, i) => {
+            const current = STEPS.findIndex((x) => x.id === step)
+            const state = i < current ? 'done' : i === current ? 'current' : ''
+            return (
+              <li key={s.id} className={state} aria-current={state === 'current' ? 'step' : undefined}>
+                <span className="step-dot">{state === 'done' ? <CheckIcon width={14} height={14} /> : i + 1}</span>
+                <span className="step-label">{s.label}</span>
+              </li>
+            )
+          })}
         </ol>
       </header>
 
@@ -146,8 +155,11 @@ export default function App() {
         />
       )}
 
-      <footer className="small muted">
-        Kamarat explains notices. It is not legal advice, and it does not make you anonymous.
+      <footer className="footer">
+        <span>Kamarat explains notices. It is not legal advice, and it does not make you anonymous.</span>
+        <span>
+          Built with Gemini Nano on your device and Gemini in the cloud, through Firebase AI Logic.
+        </span>
       </footer>
     </div>
   )

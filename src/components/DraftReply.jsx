@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { REPLY_INTENTS, draftReply, maskNote, fillIn, openItems } from '../reply'
 import { detectWithAI } from '../privacy'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
+import { ClipboardIcon, MailIcon, PenIcon, DeviceIcon, Dots } from './Icons'
 
 // Labels of the given kinds, in the order they first appear in the notice.
 function labelsOfType(labelMap, types, shared) {
@@ -94,6 +95,7 @@ export default function DraftReply({ shared, labelMap, details, language }) {
   return (
     <div className="group reply">
       <div className="group-head">
+        <span className="group-icon" aria-hidden="true"><PenIcon width={18} height={18} /></span>
         <h3>Draft my reply</h3>
         <span className="small muted">
           Gemini writes it with labels. Your real details are filled in on this device.
@@ -161,7 +163,7 @@ export default function DraftReply({ shared, labelMap, details, language }) {
         disabled={state.phase === 'loading' || needsNote}
       >
         {state.phase === 'loading'
-          ? state.status
+          ? <><Dots /> {state.status}</>
           : needsNote
             ? 'Write your question first'
             : state.phase === 'done'
@@ -176,7 +178,7 @@ export default function DraftReply({ shared, labelMap, details, language }) {
       {state.phase === 'done' && (
         <div className="reply-result">
           <p className="notice notice-ok small">
-            <span className="badge badge-on_device">Filled in on your device</span>
+            <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> Filled in on your device</span>
             {state.filled.length > 0
               ? `${state.filled.map((l) => `${l} → ${state.allLabels[l]}`).join(', ')}. Gemini never saw these.`
               : 'Nothing to fill in.'}
@@ -208,15 +210,15 @@ export default function DraftReply({ shared, labelMap, details, language }) {
 
           <div className="buttons">
             <button className="primary" onClick={copy}>
-              {copied ? 'Copied' : 'Copy reply'}
+              <ClipboardIcon width={18} height={18} /> {copied ? 'Copied' : 'Copy reply'}
             </button>
             {ready ? (
               <a className="button-link" href={mailLink}>
-                Open in email
+                <MailIcon width={18} height={18} /> Open in email
               </a>
             ) : (
               <span className="button-link disabled" aria-disabled="true">
-                Open in email (finish the gaps first)
+                <MailIcon width={18} height={18} /> Open in email (finish the gaps first)
               </span>
             )}
           </div>
