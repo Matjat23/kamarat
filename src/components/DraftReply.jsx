@@ -5,6 +5,7 @@ import { REPLY_INTENTS, draftReply, maskNote, fillIn, openItems } from '../reply
 import { detectWithAI } from '../privacy'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { ClipboardIcon, MailIcon, PenIcon, DeviceIcon, Dots } from './Icons'
+import { SharedText } from './ExplainStep'
 
 // Labels of the given kinds, in the order they first appear in the notice.
 function labelsOfType(labelMap, types, shared) {
@@ -141,20 +142,32 @@ export default function DraftReply({ shared, labelMap, details, language }) {
         </label>
       </div>
 
+      <label htmlFor="reply-note" className="small muted">
+        {intent === 'question' ? 'Your question' : 'Your message (optional)'}
+      </label>
       <textarea
+        id="reply-note"
         value={note}
         onChange={(e) => setNote(e.target.value)}
         rows={3}
+        aria-describedby="reply-note-help"
         placeholder={
           intent === 'question'
             ? 'Your question, in your own words.'
-            : 'Optional: which documents you attach, or why you need more time. Avoid names and health details; Kamarat adds your name and case number for you.'
+            : 'For example which documents you attach, or why you need more time.'
         }
       />
+      <p id="reply-note-help" className="small muted">
+        Avoid names and health details. Kamarat adds your name and case number for you, on this device.
+      </p>
       {note.trim() && (
-        <p className="small muted">
-          Gemini will get your note as: <em>{preview.masked}</em>
-        </p>
+        <div className="review-note" role="status">
+          <span className="quote-head">Review your added message · this is what Gemini gets</span>
+          <SharedText text={preview.masked} className="review-note-text" />
+          <span className="small muted">
+            Numbers and emails are hidden automatically. If you see a name or anything private, edit your message.
+          </span>
+        </div>
       )}
 
       <button
@@ -172,16 +185,22 @@ export default function DraftReply({ shared, labelMap, details, language }) {
       </button>
 
       {state.phase === 'error' && (
-        <p className="notice notice-warn">Could not write the reply: {state.message}. Try again in a minute.</p>
+        <p className="notice notice-warn" role="alert">Could not write the reply: {state.message}. Try again in a minute.</p>
       )}
 
       {state.phase === 'done' && (
         <div className="reply-result">
+          <h4>Draft ready. Check it before you send it.</h4>
           <p className="notice notice-ok small">
             <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> Filled in on your device</span>
             {state.filled.length > 0
-              ? `${state.filled.map((l) => `${l} → ${state.allLabels[l]}`).join(', ')}. Gemini never saw these.`
-              : 'Nothing to fill in.'}
+              ? `Your ${state.filled
+                  .map((l) =>
+                    l === selfLabel ? 'name' : l === caseLabel ? 'case number' : 'details from your message',
+                  )
+                  .filter((v, i, all) => all.indexOf(v) === i)
+                  .join(' and ')} were added on this device. Gemini never saw them.`
+              : 'Nothing personal needed to be added.'}
           </p>
 
           <label className="small muted" htmlFor="reply-subject">Subject</label>

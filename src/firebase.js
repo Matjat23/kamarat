@@ -52,7 +52,7 @@ initializeAppCheck(app, {
   isTokenAutoRefreshEnabled: true,
 })
 
-const ai = getAI(app, { backend: new GoogleAIBackend() })
+export const ai = getAI(app, { backend: new GoogleAIBackend() })
 
 const englishText = [{ type: 'text', languages: ['en'] }]
 

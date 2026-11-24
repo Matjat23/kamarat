@@ -13,17 +13,20 @@ import {
 } from './firebase'
 import { SOURCES } from './sources'
 
+// Each language is shown in its own script, so people can find theirs.
 export const LANGUAGES = [
-  'English',
-  'Swedish',
-  'French',
-  'Spanish',
-  'German',
-  'Arabic',
-  'Ukrainian',
-  'Somali',
-  'Persian',
-  'Turkish',
+  { name: 'English', native: 'English' },
+  { name: 'Swedish', native: 'Svenska' },
+  { name: 'French', native: 'Français' },
+  { name: 'Spanish', native: 'Español' },
+  { name: 'German', native: 'Deutsch' },
+  { name: 'Arabic', native: 'العربية' },
+  { name: 'Ukrainian', native: 'Українська' },
+  { name: 'Somali', native: 'Soomaali' },
+  { name: 'Persian', native: 'فارسی' },
+  { name: 'Turkish', native: 'Türkçe' },
+  { name: 'Tigrinya', native: 'ትግርኛ' },
+  { name: 'Wolof', native: 'Wolof' },
 ]
 
 const SCHEMA = {

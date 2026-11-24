@@ -114,6 +114,24 @@ export function ArrowIcon(props) {
   )
 }
 
+export function CameraIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 8.5h3l1.5-2.5h7L17 8.5h3a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a1 1 0 0 1 1-1z" />
+      <circle cx="12" cy="13.5" r="3.5" />
+    </svg>
+  )
+}
+
+export function FileIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M7 3.5h7l4.5 4.5v12.5H7z" />
+      <path d="M14 3.5V8h4.5" />
+    </svg>
+  )
+}
+
 export function PenIcon(props) {
   return (
     <svg {...base} {...props}>

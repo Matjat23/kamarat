@@ -1,5 +1,6 @@
 // Kamarat: understand an official notice without giving away who you are.
-// Flow: paste -> find personal details on this device -> review and approve.
+// Flow: get the notice in -> find personal details on this device ->
+// check and send -> your next steps.
 import { useEffect, useState } from 'react'
 import { detectorModel, checkOnDeviceModel } from './firebase'
 import {
@@ -8,6 +9,7 @@ import {
   mergeDetails,
   makeUserDetail,
 } from './privacy'
+import { LANGUAGES } from './explain'
 import PasteStep from './components/PasteStep'
 import ReviewStep from './components/ReviewStep'
 import ExplainStep from './components/ExplainStep'
@@ -15,14 +17,15 @@ import { Logo, CheckIcon } from './components/Icons'
 import './App.css'
 
 const STEPS = [
-  { id: 'paste', label: 'Paste' },
-  { id: 'review', label: 'Check' },
-  { id: 'explain', label: 'Understand' },
+  { id: 'paste', label: 'Your notice' },
+  { id: 'review', label: 'Check & send' },
+  { id: 'explain', label: 'Next steps' },
 ]
 
 export default function App() {
   const [step, setStep] = useState('paste')
   const [text, setText] = useState('')
+  const [language, setLanguage] = useState('English')
   const [nanoStatus, setNanoStatus] = useState('checking')
   const [busy, setBusy] = useState(false)
   const [progress, setProgress] = useState('')
@@ -31,10 +34,16 @@ export default function App() {
   const [shared, setShared] = useState('')
   // Label -> real detail. Kept in this page's memory only, never sent anywhere.
   const [labelMap, setLabelMap] = useState({})
+  // Changes each time the person sends, so the explanation starts fresh.
+  const [sendId, setSendId] = useState(0)
 
   useEffect(() => {
     checkOnDeviceModel().then(setNanoStatus)
   }, [])
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 })
+  }, [step])
 
   async function findDetails() {
     setBusy(true)
@@ -84,9 +93,11 @@ export default function App() {
     })
   }
 
-  function approve(sharedText, map) {
+  // One decision: the reviewed text is sent and explained straight away.
+  function sendReviewed(sharedText, map) {
     setShared(sharedText)
     setLabelMap(map)
+    setSendId((n) => n + 1)
     setStep('explain')
   }
 
@@ -108,6 +119,18 @@ export default function App() {
             <span className="tagline">A friend who knows the system</span>
           </span>
         </button>
+
+        <label className="language-pick">
+          <span className="small muted">Explanations in</span>
+          <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+            {LANGUAGES.map((l) => (
+              <option key={l.name} value={l.name}>
+                {l.native}
+              </option>
+            ))}
+          </select>
+        </label>
+
         <ol className="steps" aria-label="Progress">
           {STEPS.map((s, i) => {
             const current = STEPS.findIndex((x) => x.id === step)
@@ -122,38 +145,44 @@ export default function App() {
         </ol>
       </header>
 
-      {step === 'paste' && (
-        <PasteStep
-          text={text}
-          setText={setText}
-          nanoStatus={nanoStatus}
-          busy={busy}
-          progress={progress}
-          onFind={findDetails}
-        />
-      )}
+      <main className="main">
+        {step === 'paste' && (
+          <PasteStep
+            text={text}
+            setText={setText}
+            nanoStatus={nanoStatus}
+            busy={busy}
+            progress={progress}
+            onFind={findDetails}
+          />
+        )}
 
-      {step === 'review' && (
-        <ReviewStep
-          text={text}
-          details={details}
-          detection={detection}
-          onToggle={toggleDetail}
-          onHideText={hideText}
-          onBack={() => setStep('paste')}
-          onApprove={approve}
-        />
-      )}
+        {step === 'review' && (
+          <ReviewStep
+            text={text}
+            details={details}
+            detection={detection}
+            language={language}
+            setLanguage={setLanguage}
+            onToggle={toggleDetail}
+            onHideText={hideText}
+            onBack={() => setStep('paste')}
+            onSend={sendReviewed}
+          />
+        )}
 
-      {step === 'explain' && (
-        <ExplainStep
-          shared={shared}
-          labelMap={labelMap}
-          details={details}
-          onBack={() => setStep('review')}
-          onRestart={restart}
-        />
-      )}
+        {step === 'explain' && (
+          <ExplainStep
+            key={sendId}
+            shared={shared}
+            labelMap={labelMap}
+            details={details}
+            language={language}
+            onBack={() => setStep('review')}
+            onRestart={restart}
+          />
+        )}
+      </main>
 
       <footer className="footer">
         <span>Kamarat explains notices. It is not legal advice, and it does not make you anonymous.</span>
