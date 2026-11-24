@@ -21,7 +21,7 @@ export default function TranslationsPage() {
     for (const lang of LANGUAGES.filter((l) => chosen.has(l.code) && l.code !== 'en')) {
       add(`${lang.name}: translating...`)
       try {
-        const map = await translateAll(lang.name, () => {})
+        const map = await translateAll(lang.name, () => {}, { code: lang.code })
         const response = await fetch('/__save-translation', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

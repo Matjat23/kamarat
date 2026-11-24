@@ -79,6 +79,7 @@ export default function AddLetter({
         placeholder={t('The text of your letter appears here. You can also type or paste it.')}
         rows={phone ? 9 : 12}
         disabled={working}
+        dir="auto"
       />
 
       {reading && (

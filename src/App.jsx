@@ -20,11 +20,11 @@ import {
   occurrences,
 } from './privacy'
 import { LANGUAGES } from './explain'
-import { readFile } from './scan'
+import { readFile, readerLanguages } from './scan'
 import { readClipboard } from './device'
 import { stopSpeaking } from './speak'
 import { guessCountry, savedCountry, saveCountry } from './countries'
-import { t, msg, setUiTranslation, loadUiTranslation } from './i18n'
+import { t, msg, setUiTranslation, loadUiTranslation, primeUiTranslation } from './i18n'
 import Home from './components/Home'
 import AddLetter from './components/AddLetter'
 import CheckLetter from './components/CheckLetter'
@@ -99,7 +99,16 @@ function Expired({ onAdd, onHome }) {
 export default function App() {
   const [route, setRoute] = useState(readRoute)
   const [text, setText] = useState('')
-  const [language, setLanguageState] = useState(startLanguage)
+  const [language, setLanguageState] = useState(() => {
+    const name = startLanguage()
+    const lang = LANGUAGES.find((l) => l.name === name)
+    // A translation saved earlier is used before the first paint.
+    if (lang && primeUiTranslation(lang.code)) {
+      document.documentElement.lang = lang.code
+      document.documentElement.dir = lang.rtl ? 'rtl' : 'ltr'
+    }
+    return name
+  })
   // Whether Kamarat's own texts are being translated, or could not be.
   const [uiStatus, setUiStatus] = useState({ code: 'en', state: 'ready' })
   const [uiRetry, setUiRetry] = useState(0)
@@ -155,7 +164,7 @@ export default function App() {
       return undefined
     }
     setUiStatus({ code: lang.code, state: 'loading' })
-    loadUiTranslation(lang.name, lang.code)
+    loadUiTranslation(lang.name, lang.code, { isCancelled: () => cancelled })
       .then((map) => {
         if (cancelled) return
         apply(lang.code, map, lang.rtl)
@@ -264,10 +273,11 @@ export default function App() {
     setMessage(null)
     setReading(t('Opening the file on your device...'))
     try {
-      const { text: found, method, note } = await readFile(file, setReading)
+      const lang = LANGUAGES.find((l) => l.name === language)
+      const { text: found, method, note, missing } = await readFile(file, setReading, readerLanguages(lang?.code, country))
       setText(found)
       setMessage({
-        kind: note.includes('were not read') ? 'warn' : 'check',
+        kind: missing ? 'warn' : 'check',
         text: `${t(METHOD_TEXT[method] ?? METHOD_TEXT.pdf)} ${note} ${t('Check that the text matches your letter, especially numbers and dates.')}`.replace(/\s+/g, ' '),
       })
     } catch (err) {
@@ -400,6 +410,8 @@ export default function App() {
           onLanguage={setLanguage}
           onCountry={setCountry}
           onDone={finishSetup}
+          uiStatus={uiStatus.state === 'ready' ? '' : uiStatus.state}
+          onRetry={() => setUiRetry((n) => n + 1)}
         />
       </div>
     )

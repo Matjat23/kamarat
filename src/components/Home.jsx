@@ -26,7 +26,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
 
   const how = [
     { title: t('Add your letter'), text: t('Take a photo, upload a PDF or paste the text.') },
-    { title: t('Check what is private'), text: t('Your personal details are found and hidden on your device.') },
+    { title: t('Check what is private'), text: t('Kamarat hides your personal details on your device, and you see exactly what is sent.') },
     { title: t('Know what to do'), text: t('Clear steps, dates and answers, in your language.') },
   ]
 

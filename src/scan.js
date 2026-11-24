@@ -7,32 +7,60 @@
 // - Photo on a computer with Gemini Nano: Nano reads the image on the device.
 // - Photo anywhere else (phones): Tesseract, a text reader that runs in the browser.
 // The libraries are only loaded when someone scans, so the app stays fast.
+import { t } from './i18n'
 import { getGenerativeModel, InferenceMode } from 'firebase/ai'
 import { ai, checkOnDeviceModel } from './firebase'
 
 const MAX_SIDE = 2000
 const MAX_PDF_PAGES = 15
 
-// Returns { text, method, note }. "note" says honestly what was and was not read.
-export async function readFile(file, onProgress = () => {}) {
+// Text reader (Tesseract) languages: English, the language of the country you
+// live in, and your own language, so a letter can be read on a phone without
+// Gemini Nano in more than a few languages. Each one is downloaded once.
+const TESSERACT = {
+  en: 'eng', sv: 'swe', fr: 'fra', es: 'spa', de: 'deu', it: 'ita', pt: 'por', nl: 'nld', da: 'dan', nb: 'nor',
+  fi: 'fin', pl: 'pol', tr: 'tur', ro: 'ron', cs: 'ces', hu: 'hun', hr: 'hrv', sq: 'sqi', el: 'ell', bg: 'bul',
+  ru: 'rus', uk: 'ukr', ar: 'ara', fa: 'fas', 'fa-AF': 'fas', ur: 'urd', he: 'heb', hi: 'hin', bn: 'ben',
+  zh: 'chi_sim', ja: 'jpn', ko: 'kor', th: 'tha', vi: 'vie', id: 'ind', ms: 'msa', sw: 'swa', am: 'amh', ta: 'tam',
+  pa: 'pan', ne: 'nep', uz: 'uzb', ti: 'tir', ps: 'pus', bs: 'bos', sr: 'srp',
+}
+const COUNTRY_TESSERACT = {
+  SE: 'swe', NO: 'nor', DK: 'dan', FI: 'fin', IS: 'isl', DE: 'deu', AT: 'deu', CH: 'deu', FR: 'fra', BE: 'fra',
+  LU: 'fra', ES: 'spa', IT: 'ita', PT: 'por', BR: 'por', NL: 'nld', PL: 'pol', CZ: 'ces', SK: 'slk', HU: 'hun',
+  RO: 'ron', GR: 'ell', BG: 'bul', HR: 'hrv', SI: 'slv', RS: 'srp', TR: 'tur', UA: 'ukr', RU: 'rus', JP: 'jpn',
+  KR: 'kor', CN: 'chi_sim', TW: 'chi_tra', IN: 'hin', IL: 'heb', IR: 'fas', AF: 'fas', PK: 'urd', TH: 'tha',
+  VN: 'vie', ID: 'ind', MY: 'msa', ET: 'amh', KE: 'swa', TZ: 'swa', CA: 'fra', MA: 'fra', DZ: 'fra', TN: 'fra',
+  SN: 'fra', CI: 'fra', ML: 'fra', CM: 'fra', CD: 'fra', SA: 'ara', AE: 'ara', EG: 'ara', JO: 'ara', LB: 'ara',
+  IQ: 'ara', SY: 'ara', KW: 'ara', QA: 'ara', BH: 'ara', OM: 'ara', YE: 'ara', LY: 'ara', SD: 'ara', MX: 'spa',
+  AR: 'spa', CO: 'spa', CL: 'spa', PE: 'spa', VE: 'spa', EC: 'spa', BO: 'spa', PY: 'spa', UY: 'spa', CU: 'spa',
+  DO: 'spa', GT: 'spa', HN: 'spa', SV: 'spa', NI: 'spa', CR: 'spa', PA: 'spa',
+}
+
+export function readerLanguages(languageCode, country) {
+  return [...new Set(['eng', COUNTRY_TESSERACT[country], TESSERACT[languageCode]].filter(Boolean))]
+}
+
+// Returns { text, method, note, missing }. "note" says honestly what was and
+// was not read; "missing" is true when pages were left out.
+export async function readFile(file, onProgress = () => {}, languages = ['eng']) {
   if (file.type === 'application/pdf' || file.name?.toLowerCase().endsWith('.pdf')) {
-    return readPdf(file, onProgress)
+    return readPdf(file, onProgress, languages)
   }
   if (!file.type.startsWith('image/')) {
-    throw new Error('Kamarat can read photos (JPG, PNG) and PDF files.')
+    throw new Error(t('Kamarat can read photos (JPG, PNG) and PDF files.'))
   }
-  const reader = await makeImageReader(onProgress)
+  const reader = await makeImageReader(onProgress, languages)
   try {
-    const text = await reader.read(await toJpeg(file), 'your photo')
-    if (!text.trim()) throw new Error('No text was found in the photo. Try a sharper photo in good light.')
-    return { text, method: reader.method, note: '' }
+    const text = await reader.read(await toJpeg(file), t('your photo'))
+    if (!text.trim()) throw new Error(t('No text was found in the photo. Try a sharper photo in good light.'))
+    return { text, method: reader.method, note: '', missing: false }
   } finally {
     await reader.close()
   }
 }
 
-async function readPdf(file, onProgress) {
-  onProgress('Reading the PDF on your device...')
+async function readPdf(file, onProgress, languages) {
+  onProgress(t('Reading the PDF on your device...'))
   const pdfjs = await import('pdfjs-dist')
   const { default: workerUrl } = await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
   pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
@@ -57,9 +85,9 @@ async function readPdf(file, onProgress) {
 
       // Little or no text on this page: it is a scan, so read it like a photo.
       if (text.length < 40) {
-        reader ??= await makeImageReader(onProgress)
+        reader ??= await makeImageReader(onProgress, languages)
         const image = await renderPage(page)
-        text = await reader.read(image, `page ${n} of ${limit}`)
+        text = await reader.read(image, t('page {n} of {total}', { n, total: limit }))
         imagePages += 1
       }
       pages.push(text)
@@ -69,15 +97,15 @@ async function readPdf(file, onProgress) {
   }
 
   const text = pages.filter(Boolean).join('\n\n').trim()
-  if (!text) throw new Error('No text was found in this PDF.')
+  if (!text) throw new Error(t('No text was found in this PDF.'))
 
-  const parts = [`Read ${limit} of ${total} page${total === 1 ? '' : 's'}`]
-  if (imagePages > 0) parts.push(`${imagePages} of them from images`)
-  let note = `${parts.join(', ')}.`
-  if (total > limit) {
-    note += ` Pages ${limit + 1} to ${total} were not read. If they matter, paste their text below the rest.`
+  let note = t('Read {read} of {total} pages.', { read: limit, total })
+  if (imagePages > 0) note += ` ${t('{count} of them were read from images.', { count: imagePages })}`
+  const missing = total > limit
+  if (missing) {
+    note += ` ${t('Pages {from} to {to} were not read. If they matter, paste their text below the rest.', { from: limit + 1, to: total })}`
   }
-  return { text, method: imagePages === limit ? reader?.method ?? 'pdf' : 'pdf', note }
+  return { text, method: imagePages === limit ? reader?.method ?? 'pdf' : 'pdf', note, missing }
 }
 
 async function renderPage(page) {
@@ -92,18 +120,18 @@ async function renderPage(page) {
 
 // Picks the best way to read images on this device, once per file.
 // Gemini Nano on a computer that has it, otherwise Tesseract.
-async function makeImageReader(onProgress) {
+async function makeImageReader(onProgress, languages) {
   let tesseract = null
   const nano = (await checkOnDeviceModel()) === 'available'
 
   async function withTesseract(image, label) {
     if (!tesseract) {
-      onProgress('Loading the text reader (first time only)...')
+      onProgress(t('Loading the text reader (first time only)...'))
       const { createWorker } = await import('tesseract.js')
-      tesseract = await createWorker(['swe', 'eng', 'fra'], 1, {
+      tesseract = await createWorker(languages, 1, {
         logger: (m) => {
           if (m.status === 'recognizing text') {
-            onProgress(`Reading ${reader.current} on this device: ${Math.round(m.progress * 100)}%`)
+            onProgress(t('Reading {what} on this device: {percent}%', { what: reader.current, percent: Math.round(m.progress * 100) }))
           }
         },
       })
@@ -119,7 +147,7 @@ async function makeImageReader(onProgress) {
       reader.current = label
       if (nano) {
         try {
-          onProgress(`Gemini Nano is reading ${label} on this device...`)
+          onProgress(t('Gemini Nano is reading {what} on this device...', { what: label }))
           const text = await readImageWithNano(image)
           if (text.trim().length > 20) return text
         } catch (err) {

@@ -42,6 +42,9 @@ export default function CheckLetter({
   // On phones only one of the two texts is shown at a time. Start with the
   // text that will actually be sent, since that is the decision being made.
   const [view, setView] = useState('shared')
+  // Without Gemini Nano, the person confirms they checked for names and addresses.
+  const [confirmed, setConfirmed] = useState(false)
+  const needsConfirm = detection.mode !== 'ai'
   const noticeRef = useRef(null)
   const { segments, shared, labels } = useMemo(
     () => buildRedaction(text, details),
@@ -110,7 +113,7 @@ export default function CheckLetter({
       <p className="lead-small">
         {detection.mode === 'ai'
           ? t('Gemini Nano found these personal details on your device. They stay here. Hide anything it missed.')
-          : t('Kamarat found these numbers and emails on your device. They stay here. Names and addresses are not found here, so hide them yourself below.')}
+          : t('There is no on-device AI here, so Kamarat looked for personal details with simple rules. They stay on your device. Rules can miss things: read "What will be sent" and hide anything about you.')}
       </p>
       <span className="count-pill" role="status">
         <LockIcon width={16} height={16} /> {t('{count} hidden', { count: hiddenCount })}
@@ -212,7 +215,7 @@ export default function CheckLetter({
               <span className="small muted">{t('stays on this device')}</span>
             )}
           </div>
-          <div className="pane-body" ref={noticeRef}>
+          <div className="pane-body" ref={noticeRef} dir="auto">
             {segments.map((seg, i) =>
               seg.detail ? (
                 <mark key={i} className={`hl hl-${seg.detail.type}`} title={seg.label}>
@@ -239,6 +242,12 @@ export default function CheckLetter({
         <p className="small muted">
           {t('When you continue, the text under "What will be sent" goes to Google Gemini to be explained. The black bars stay on this device.')}
         </p>
+        {needsConfirm && (
+          <label className="check-line confirm-line">
+            <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
+            {t('I read "What will be sent". My name, address and other details about me are hidden.')}
+          </label>
+        )}
         <div className="action-bar is-sticky row-between">
           <label className="language">
             <span className="small muted">{t('Language')}</span>
@@ -250,7 +259,7 @@ export default function CheckLetter({
               ))}
             </select>
           </label>
-          <button className="primary big" onClick={send}>
+          <button className="primary big" onClick={send} disabled={needsConfirm && !confirmed}>
             {t('Explain my letter')} <ArrowIcon className="arrow-forward" />
           </button>
         </div>

@@ -57,9 +57,18 @@ function cached(code) {
 
 const placeholders = (s) => (s.match(/\{\w+\}/g) ?? []).sort().join(',')
 
-const SCHEMA = { type: 'array', items: { type: 'string' } }
+// Each text comes back with its number, so a mix-up in the order cannot swap
+// the meaning of two buttons.
+const SCHEMA = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: { i: { type: 'integer' }, text: { type: 'string' } },
+    required: ['i', 'text'],
+  },
+}
 
-const SYSTEM = `You translate the interface of Kamarat, a calm, friendly web app that helps newcomers understand official letters. Translate each English text into the requested language. Use plain, warm, everyday words that a person new to the country understands. Keep it short, like app buttons and headings. Keep words in curly braces, like {days}, exactly as they are. Keep "Kamarat", "Gemini", "Gemini Nano", "Google" and "Firebase" unchanged. Answer with a JSON array of the translations, in the same order and with the same number of items.`
+const SYSTEM = `You translate the interface of Kamarat, a calm, friendly web app that helps newcomers understand official letters. Translate each English text into the requested language. Use plain, warm, everyday words that a person new to the country understands. Keep it short, like app buttons and headings. Keep words in curly braces, like {days}, exactly as they are. Keep "Kamarat", "Gemini", "Gemini Nano", "Google" and "Firebase" unchanged. Answer with a JSON array of objects { "i": number, "text": translation }, one for every text, using the same number "i" as the English text.`
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -77,22 +86,54 @@ async function askWithRetries(prompt, onStatus) {
   }
 }
 
-export async function translateAll(language, onStatus) {
-  const map = {}
-  // A few calls of about 120 texts each keep every answer small and reliable.
-  for (let start = 0; start < STRINGS.length; start += 120) {
-    const batch = STRINGS.slice(start, start + 120)
-    const prompt = `Language: ${language}\n\nTexts:\n${JSON.stringify(batch)}`
+const partialKey = (code) => `${cacheKey(code)}.partial`
+
+function readPartial(code) {
+  try {
+    return JSON.parse(localStorage.getItem(partialKey(code)) ?? '{}')
+  } catch {
+    return {}
+  }
+}
+
+function savePartial(code, map) {
+  try {
+    localStorage.setItem(partialKey(code), JSON.stringify(map))
+  } catch {
+    // private mode: progress is kept until the page closes
+  }
+}
+
+export class Cancelled extends Error {}
+
+// Translates every text that is not translated yet, about 120 at a time.
+// Finished parts are kept, so a retry continues where it stopped. isCancelled
+// is checked between parts, so choosing another language stops this one.
+export async function translateAll(language, onStatus = () => {}, { code = '', isCancelled = () => false } = {}) {
+  const map = code ? readPartial(code) : {}
+  const todo = STRINGS.filter((english) => !map[english])
+  for (let start = 0; start < todo.length; start += 120) {
+    if (isCancelled()) throw new Cancelled()
+    const batch = todo.slice(start, start + 120)
+    const numbered = batch.map((text, i) => ({ i, text }))
+    const prompt = `Language: ${language}\n\nTexts:\n${JSON.stringify(numbered)}`
     const result = await askWithRetries(prompt, onStatus)
     const raw = result.response.text()
     const list = JSON.parse(raw.slice(raw.indexOf('['), raw.lastIndexOf(']') + 1))
-    if (!Array.isArray(list) || list.length !== batch.length) throw new Error('The translation did not match')
-    batch.forEach((english, i) => {
-      const translated = typeof list[i] === 'string' ? list[i].trim() : ''
+    let good = 0
+    for (const item of Array.isArray(list) ? list : []) {
+      const english = batch[item?.i]
+      const translated = typeof item?.text === 'string' ? item.text.trim() : ''
       // A translation that lost a {placeholder} would show wrong numbers, so
       // that one text stays in English.
-      if (translated && placeholders(translated) === placeholders(english)) map[english] = translated
-    })
+      if (english && translated && placeholders(translated) === placeholders(english)) {
+        map[english] = translated
+        good += 1
+      }
+    }
+    // A part that came back mostly empty or broken counts as failed.
+    if (good < batch.length * 0.9) throw new Error('The translation came back incomplete')
+    if (code) savePartial(code, map)
   }
   return map
 }
@@ -116,15 +157,26 @@ async function shipped(code) {
   }
 }
 
+// Uses a translation already saved in this browser straight away, so the page
+// does not flash in English first. Returns true when one was found.
+export function primeUiTranslation(code) {
+  const saved = code && code !== 'en' ? cached(code) : null
+  if (saved) setUiTranslation(code, saved)
+  return Boolean(saved)
+}
+
 // Returns the translation for a language: from this browser, from the files
 // shipped with the app, or from Gemini.
-export async function loadUiTranslation(language, code, onStatus = () => {}) {
+export async function loadUiTranslation(language, code, { onStatus = () => {}, isCancelled = () => false } = {}) {
   if (code === 'en') return null
   const saved = cached(code)
   if (saved) return saved
-  const map = (await shipped(code)) ?? (await translateAll(language, onStatus))
+  const map = (await shipped(code)) ?? (await translateAll(language, onStatus, { code, isCancelled }))
+  // Only a translation that covers nearly everything is kept.
+  if (Object.keys(map).length < STRINGS.length * 0.9) throw new Error('The translation is incomplete')
   try {
     localStorage.setItem(cacheKey(code), JSON.stringify(map))
+    localStorage.removeItem(partialKey(code))
   } catch {
     // private mode: translated again next time
   }

@@ -6,7 +6,7 @@ import { occurrences } from '../privacy'
 export function SharedText({ text, className = 'shared-text', highlight }) {
   const parts = text.split(/(\[[A-Z]+_\d+\])/g)
   return (
-    <div className={className}>
+    <div className={className} dir="auto">
       {parts.map((part, i) =>
         /^\[[A-Z]+_\d+\]$/.test(part) ? (
           <span key={i} className="redact" title={part}>

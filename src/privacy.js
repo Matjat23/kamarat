@@ -5,6 +5,7 @@
 // 2. Pattern checks catch things with a fixed shape (personal numbers, emails, phones).
 // 3. The code keeps only details that really appear in the text, then replaces
 //    them with labels like [NAME_1]. Dates, amounts and deadlines are never touched.
+import { findNamesAndAddresses } from './namesAddresses.js'
 
 export const TYPE_LABELS = {
   NAME: 'Name',
@@ -123,6 +124,9 @@ export function detectWithPatterns(text) {
       found.push({ text: match[1].trim().replace(/[.,;:]+$/, ''), type })
     }
   }
+  // Names and addresses by simple rules, so a device without Gemini Nano
+  // still finds most of them.
+  found.push(...findNamesAndAddresses(text))
   return found
 }
 

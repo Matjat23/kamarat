@@ -305,3 +305,38 @@ button.search-item.is-chosen {
     bottom: 16px;
   }
 }
+
+/* Logo on the left of the header, also on phones */
+.top .brand {
+  justify-self: start;
+  justify-content: flex-start;
+  width: auto;
+}
+
+/* Reply choices look like buttons, chosen or not */
+.intents .chip-button {
+  border: 1px solid var(--line-strong);
+  background: #fff;
+}
+
+/* Words in the letter: underlined only when pointed at or chosen */
+button.word {
+  border-bottom-color: transparent;
+}
+
+button.word:hover,
+button.word:focus-visible,
+button.word.word-active {
+  border-bottom-color: var(--amber);
+}
+
+.confirm-line {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--amber-soft);
+  font-weight: 600;
+}
+
+.setup-note {
+  margin: 0;
+}
