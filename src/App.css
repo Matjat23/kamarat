@@ -564,3 +564,99 @@ button.wide {
     padding: 6px 0;
   }
 }
+
+/* Draft my reply */
+.reply {
+  border-top: 1px solid #e7e2da;
+  padding-top: 16px;
+}
+
+.intents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip-selected {
+  background: #2f5d50;
+  border-color: #2f5d50;
+  color: #fff;
+}
+
+.chip-selected:hover:not(:disabled) {
+  background: #244a40;
+}
+
+.reply-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reply-subject,
+.reply-result textarea {
+  font: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d9d2c7;
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: #fffdfa;
+}
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid #cfc8bd;
+  color: #1d1b20;
+  text-decoration: none;
+  min-height: 24px;
+}
+
+.button-link:hover {
+  background: #f4f0ea;
+}
+
+.translation summary {
+  cursor: pointer;
+  color: #2f5d50;
+}
+
+.translation p {
+  margin-top: 8px;
+  white-space: pre-wrap;
+}
+
+.roles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.roles label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.roles select {
+  font: inherit;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #cfc8bd;
+  background: #fff;
+}
+
+.button-link.disabled {
+  color: #9a93a3;
+  border-style: dashed;
+  cursor: default;
+}
+
+@media (max-width: 760px) {
+  .roles {
+    grid-template-columns: 1fr;
+  }
+}

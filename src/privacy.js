@@ -39,23 +39,25 @@ Letter:
 {LETTER}
 """`
 
-// Asks Gemini Nano for the list. Throws if the on-device model is not available.
+// Asks Gemini Nano for the list. Throws if the on-device model is not available,
+// and also if its answer cannot be read, so a broken answer never looks like
+// "no personal details found".
 export async function detectWithAI(model, text) {
   const result = await model.generateContent(
     DETECT_PROMPT.replace('{LETTER}', text),
   )
-  return {
-    items: parseDetailList(result.response.text()),
-    source: result.response.inferenceSource,
-  }
+  const items = parseDetailList(result.response.text())
+  if (items === null) throw new Error('On-device detection returned an answer Kamarat could not read')
+  return { items, source: result.response.inferenceSource }
 }
 
 function parseDetailList(raw) {
   const start = raw.indexOf('[')
   const end = raw.lastIndexOf(']')
-  if (start === -1 || end === -1) return []
+  if (start === -1 || end === -1) return null
   try {
     const list = JSON.parse(raw.slice(start, end + 1))
+    if (!Array.isArray(list)) return null
     return list.filter(
       (item) =>
         item &&
@@ -64,7 +66,7 @@ function parseDetailList(raw) {
         TYPE_LABELS[item.type],
     )
   } catch {
-    return []
+    return null
   }
 }
 
@@ -195,7 +197,16 @@ export function buildRedaction(text, details) {
   let shared = ''
 
   for (const span of spans) {
-    if (span.start < cursor) continue
+    if (span.start < cursor) {
+      // Overlaps the previous hidden part: widen that part so nothing between
+      // the two leaks out, for example "Alice Smith" + "Smith Jones".
+      const last = segments[segments.length - 1]
+      if (last?.detail && span.end > cursor) {
+        last.text = text.slice(last.start, span.end)
+        cursor = span.end
+      }
+      continue
+    }
     if (span.start > cursor) {
       const plain = text.slice(cursor, span.start)
       segments.push({ text: plain })
@@ -207,7 +218,12 @@ export function buildRedaction(text, details) {
       labels.set(span.detail.id, `[${type}_${counters[type]}]`)
     }
     const label = labels.get(span.detail.id)
-    segments.push({ text: text.slice(span.start, span.end), detail: span.detail, label })
+    segments.push({
+      text: text.slice(span.start, span.end),
+      start: span.start,
+      detail: span.detail,
+      label,
+    })
     shared += label
     cursor = span.end
   }

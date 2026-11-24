@@ -28,6 +28,8 @@ export default function App() {
   const [details, setDetails] = useState([])
   const [detection, setDetection] = useState({ mode: 'ai', ignored: 0 })
   const [shared, setShared] = useState('')
+  // Label -> real detail. Kept in this page's memory only, never sent anywhere.
+  const [labelMap, setLabelMap] = useState({})
 
   useEffect(() => {
     checkOnDeviceModel().then(setNanoStatus)
@@ -81,8 +83,9 @@ export default function App() {
     })
   }
 
-  function approve(sharedText) {
+  function approve(sharedText, map) {
     setShared(sharedText)
+    setLabelMap(map)
     setStep('explain')
   }
 
@@ -90,6 +93,7 @@ export default function App() {
     setText('')
     setDetails([])
     setShared('')
+    setLabelMap({})
     setStep('paste')
   }
 
@@ -135,6 +139,8 @@ export default function App() {
       {step === 'explain' && (
         <ExplainStep
           shared={shared}
+          labelMap={labelMap}
+          details={details}
           onBack={() => setStep('review')}
           onRestart={restart}
         />

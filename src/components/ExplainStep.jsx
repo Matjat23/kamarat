@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { explainNotice, resolveDeadline, formatDay, LANGUAGES } from '../explain'
 import { downloadDeadline } from '../calendar'
+import DraftReply from './DraftReply'
 
 const GROUPS = [
   { kind: 'MUST', title: 'You must', hint: 'The notice requires this.' },
@@ -46,7 +47,7 @@ function Deadline({ info, action, sender, onNeedReceived }) {
   )
 }
 
-export default function ExplainStep({ shared, onBack, onRestart }) {
+export default function ExplainStep({ shared, labelMap, details, onBack, onRestart }) {
   const [language, setLanguage] = useState('English')
   const [state, setState] = useState({ phase: 'ready' })
   const [receivedDate, setReceivedDate] = useState('')
@@ -196,6 +197,8 @@ export default function ExplainStep({ shared, onBack, onRestart }) {
           ))}
         </div>
       )}
+
+      <DraftReply shared={shared} labelMap={labelMap} details={details} language={language} />
 
       <button className="link-button" onClick={() => setShowPayload(!showPayload)}>
         {showPayload ? 'Hide' : 'Show'} exactly what was sent to Gemini

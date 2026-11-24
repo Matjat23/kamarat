@@ -117,9 +117,9 @@ export async function explainNotice(sharedText, language, onStatus = () => {}) {
     const code = ON_DEVICE_LANGUAGES[language] ?? 'en'
     const deviceLanguage = code === 'en' ? 'English' : language
     if (deviceLanguage !== language) {
-      note = `Cloud Gemini was busy, so Kamarat explained this on your device. On-device AI cannot write ${language} yet, so this is in English.`
+      note = `Cloud Gemini did not answer, so Kamarat finished the explanation on your device. On-device AI cannot write ${language} yet, so this is in English.`
     } else {
-      note = 'Cloud Gemini was busy, so Kamarat explained this on your device instead. Nothing was sent.'
+      note = 'Cloud Gemini did not answer, so Kamarat finished the explanation on your device instead.'
     }
     onStatus('Cloud Gemini is busy. Explaining on your device with Gemini Nano...')
     try {
@@ -177,18 +177,22 @@ function isTemporary(err) {
 }
 
 // One try on the main model, then one on the backup model.
-async function askCloud(prompt, onStatus) {
+export async function askCloudJSON(schema, systemInstruction, prompt, onStatus = () => {}) {
   let lastError
   for (const [index, modelName] of EXPLAIN_MODELS.entries()) {
     if (index > 0) onStatus('Gemini is busy. Trying a backup model...')
     try {
-      return await getExplainModel(SCHEMA, SYSTEM_INSTRUCTION, modelName).generateContent(prompt)
+      return await getExplainModel(schema, systemInstruction, modelName).generateContent(prompt)
     } catch (err) {
       lastError = err
       if (!isTemporary(err)) throw err
     }
   }
   throw lastError
+}
+
+function askCloud(prompt, onStatus) {
+  return askCloudJSON(SCHEMA, SYSTEM_INSTRUCTION, prompt, onStatus)
 }
 
 async function askOnDevice(prompt, languageCode) {

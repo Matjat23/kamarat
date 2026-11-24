@@ -169,7 +169,18 @@ export default function ReviewStep({
 
       <div className="action-bar row-between">
         <button onClick={onBack}>Back</button>
-        <button className="primary" onClick={() => onApprove(shared)}>
+        <button
+          className="primary"
+          onClick={() => {
+            // Label to real text, for filling a drafted reply back in on this device.
+            const labelMap = {}
+            for (const detail of details) {
+              const label = labels.get(detail.id)
+              if (label) labelMap[label] = detail.text
+            }
+            onApprove(shared, labelMap)
+          }}
+        >
           Approve what is shared
         </button>
       </div>
