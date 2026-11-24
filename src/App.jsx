@@ -31,6 +31,7 @@ import CheckLetter from './components/CheckLetter'
 import ExplainStep from './components/ExplainStep'
 import MyPapers, { SavedLetter } from './components/MyPapers'
 import EvalPage from './components/EvalPage'
+import TranslationsPage from './components/TranslationsPage'
 import { listPapers, PAPERS_CHANGED } from './papers'
 import { Logo, FolderIcon, HomeIcon, PlusIcon } from './components/Icons'
 import './App.css'
@@ -394,6 +395,7 @@ export default function App() {
 
       <main className="main">
         {new URLSearchParams(window.location.search).has('eval') && <EvalPage />}
+        {import.meta.env.DEV && new URLSearchParams(window.location.search).has('translations') && <TranslationsPage />}
 
         {uiStatus.state === 'loading' && (
           <p className="notice notice-ok small" role="status">Translating Kamarat into {language}...</p>
