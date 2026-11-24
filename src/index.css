@@ -1,0 +1,14 @@
+:root {
+  font: 17px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
+  color: #1d1b20;
+  background: #faf8f5;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
