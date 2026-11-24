@@ -91,7 +91,7 @@ export default function ReviewStep({
       <div className="card-head">
         <div>
           <span className="eyebrow">Step 2 of 3</span>
-          <h2 tabIndex={-1} data-step-heading>Check what leaves your device</h2>
+          <h2 tabIndex={-1} data-step-heading>Before anything leaves your device, let's check it together</h2>
         </div>
         <span className="count-pill" role="status">
           <LockIcon width={16} height={16} /> {hiddenCount} detail{hiddenCount === 1 ? '' : 's'} hidden

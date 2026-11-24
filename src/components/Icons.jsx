@@ -132,6 +132,23 @@ export function FileIcon(props) {
   )
 }
 
+export function SpeakerIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
+      <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />
+    </svg>
+  )
+}
+
+export function FolderIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z" />
+    </svg>
+  )
+}
+
 export function PenIcon(props) {
   return (
     <svg {...base} {...props}>

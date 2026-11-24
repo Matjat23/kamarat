@@ -14,7 +14,10 @@ import { LANGUAGES } from './explain'
 import PasteStep from './components/PasteStep'
 import ReviewStep from './components/ReviewStep'
 import ExplainStep from './components/ExplainStep'
-import { Logo, CheckIcon } from './components/Icons'
+import MyPapers from './components/MyPapers'
+import EvalPage from './components/EvalPage'
+import { listPapers } from './papers'
+import { Logo, CheckIcon, FolderIcon } from './components/Icons'
 import './App.css'
 
 const STEPS = [
@@ -35,6 +38,10 @@ export default function App() {
   const [shared, setShared] = useState('')
   // Label -> real detail. Kept in this page's memory only, never sent anywhere.
   const [labelMap, setLabelMap] = useState({})
+  const [paperCount, setPaperCount] = useState(() => listPapers().length)
+  useEffect(() => {
+    setPaperCount(listPapers().length)
+  }, [step])
   // Changes each time the person sends, so the explanation starts fresh.
   const [sendId, setSendId] = useState(0)
 
@@ -136,6 +143,11 @@ export default function App() {
           </span>
         </button>
 
+        <button className="ghost papers-link" onClick={() => setStep('papers')}>
+          <FolderIcon width={18} height={18} /> My papers
+          {paperCount > 0 && <span className="papers-count">{paperCount}</span>}
+        </button>
+
         <label className="language-pick">
           <span className="small muted">Explanations in</span>
           <select value={language} onChange={(e) => setLanguage(e.target.value)}>
@@ -147,6 +159,7 @@ export default function App() {
           </select>
         </label>
 
+        {step !== 'papers' && (
         <ol className="steps" aria-label="Progress">
           {STEPS.map((s, i) => {
             const current = STEPS.findIndex((x) => x.id === step)
@@ -159,9 +172,12 @@ export default function App() {
             )
           })}
         </ol>
+        )}
       </header>
 
       <main className="main">
+        {new URLSearchParams(window.location.search).has('eval') && <EvalPage />}
+
         {step === 'paste' && (
           <PasteStep
             text={text}
@@ -186,6 +202,8 @@ export default function App() {
             onSend={sendReviewed}
           />
         )}
+
+        {step === 'papers' && <MyPapers onNew={restart} />}
 
         {step === 'explain' && (
           <ExplainStep

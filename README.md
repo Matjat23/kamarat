@@ -40,6 +40,15 @@ VITE_APPCHECK_DEBUG_TOKEN=your-debug-token
 
 and register the same token in the Firebase console under App Check, Apps, Manage debug tokens.
 
+## Testing the privacy check
+
+The `tools` folder has two small Python scripts:
+
+- `tools/make_test_notices.py` writes made-up notices with known personal details to `public/eval/notices.json` (Swedish, English and French, 30 by default).
+- `tools/score.py` compares those details with what Kamarat found and writes a short report.
+
+Open the app with `?eval` at the end of the address, press "Run the test", download `results.json`, then run `python tools/score.py results.json`. Without Gemini Nano only the pattern check runs: in my test it found every ID, case, phone and email number (88 of 88) with no false hits, and no names or addresses, which is the part Gemini Nano is there for.
+
 ## License
 
 Apache 2.0

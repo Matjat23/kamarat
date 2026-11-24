@@ -1784,3 +1784,225 @@ fieldset.intents {
     scroll-behavior: auto !important;
   }
 }
+
+/* ===== Friend features ===== */
+.papers-link {
+  margin-left: auto;
+  position: relative;
+}
+
+.language-pick {
+  margin-left: 0;
+}
+
+.papers-count {
+  display: inline-flex;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--terracotta);
+  color: #fff;
+  font-size: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+/* How worried should I be? */
+.worry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  border-left-width: 6px;
+}
+
+.worry-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  line-height: 1.25;
+}
+
+.worry-INFO { background: #eef6f1; border-left-color: var(--green); }
+.worry-ACTION { background: #f3f6f2; border-left-color: #5f8b7e; }
+.worry-URGENT { background: var(--amber-soft); border-left-color: var(--amber); }
+.worry-HELP { background: #fbe3dc; border-left-color: #a8371a; }
+
+.worry-chip {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border-left-width: 0;
+}
+
+.worry-chip.worry-INFO { background: var(--green); color: #fff; }
+.worry-chip.worry-ACTION { background: #5f8b7e; color: #fff; }
+.worry-chip.worry-URGENT { background: var(--amber); color: #fff; }
+.worry-chip.worry-HELP { background: #a8371a; color: #fff; }
+
+.worry-help {
+  font-weight: 600;
+}
+
+.worry-quote {
+  font-style: italic;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Word help */
+.word-text {
+  white-space: pre-wrap;
+  line-height: 2;
+  padding: 16px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: #fffdf9;
+  max-height: 420px;
+  overflow: auto;
+}
+
+button.word {
+  display: inline;
+  font: inherit;
+  font-weight: 400;
+  padding: 0 1px;
+  margin: 0;
+  min-height: 0;
+  border: none;
+  border-bottom: 1px dotted var(--line-strong);
+  border-radius: 2px;
+  background: none;
+  color: inherit;
+  cursor: help;
+  line-height: inherit;
+}
+
+button.word:hover,
+button.word.word-active {
+  background: #fde9a8;
+  border-bottom-color: var(--amber);
+}
+
+.word-sheet {
+  position: sticky;
+  bottom: 12px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  border: 1px solid var(--green);
+  box-shadow: 0 8px 24px rgba(31, 27, 22, 0.12);
+}
+
+.word-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+/* My papers */
+.empty {
+  padding: 24px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--line-strong);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.upcoming {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upcoming li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.upcoming-date {
+  display: flex;
+  flex-direction: column;
+  min-width: 110px;
+}
+
+.upcoming-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.paper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.paper-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.paper-head > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.paper-actions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.paper-actions li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+@media (max-width: 760px) {
+  .papers-link {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: start;
+    margin-left: 0;
+    padding: 4px 8px;
+  }
+
+  .upcoming li {
+    flex-wrap: wrap;
+  }
+}

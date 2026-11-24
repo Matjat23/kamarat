@@ -7,6 +7,10 @@ import { explainNotice, resolveDeadline, languageProps } from '../explain'
 import { occurrences } from '../privacy'
 import { downloadDeadline } from '../calendar'
 import DraftReply from './DraftReply'
+import WordHelp from './WordHelp'
+import { savePaper, updatePaper } from '../papers'
+import { speak, stopSpeaking, canSpeak } from '../speak'
+import { LANGUAGES } from '../explain'
 import {
   CalendarIcon,
   CloudIcon,
@@ -16,7 +20,33 @@ import {
   CheckIcon,
   PenIcon,
   Dots,
+  LockIcon,
+  SpeakerIcon,
 } from './Icons'
+
+// How worried to be, said the way a calm friend would say it.
+export const WORRY = {
+  INFO: {
+    short: 'Just information',
+    title: 'Good news: this is just information.',
+    help: '',
+  },
+  ACTION: {
+    short: 'Action needed',
+    title: 'This needs something from you, but it is routine.',
+    help: '',
+  },
+  URGENT: {
+    short: 'Time-sensitive',
+    title: "This one is time-sensitive. Let's not wait.",
+    help: '',
+  },
+  HELP: {
+    short: 'Get help',
+    title: "This is serious. You don't have to handle it alone.",
+    help: "Consider talking to a person before the deadline: the sender's customer service, a free legal aid service, or your school's or employer's support. You can show them this page.",
+  },
+}
 
 const GROUPS = [
   { kind: 'MUST', title: 'You must', hint: 'The notice requires this.' },
@@ -152,16 +182,19 @@ function initials(name) {
 }
 
 export default function ExplainStep({ shared, labelMap, details, language, onBack, onRestart }) {
-  const [state, setState] = useState({ phase: 'loading', status: 'Gemini is reading your notice...' })
+  const [state, setState] = useState({ phase: 'loading', status: 'Reading your letter carefully...' })
   const [receivedDate, setReceivedDate] = useState('')
   const [done, setDone] = useState(() => new Set())
   const [openQuote, setOpenQuote] = useState(null)
   const [showPayload, setShowPayload] = useState(false)
+  const [savedId, setSavedId] = useState(null)
+  const [speaking, setSpeaking] = useState(false)
+  const [voiceMissing, setVoiceMissing] = useState(false)
   const replyRef = useRef(null)
   const started = useRef(false)
 
   async function send() {
-    setState({ phase: 'loading', status: 'Gemini is reading your notice...' })
+    setState({ phase: 'loading', status: 'Reading your letter carefully...' })
     try {
       const result = await explainNotice(shared, language, (status) =>
         setState({ phase: 'loading', status }),
@@ -210,9 +243,67 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
       const next = new Set(prev)
       if (next.has(index)) next.delete(index)
       else next.add(index)
+      if (savedId) updatePaper(savedId, { done: [...next] })
       return next
     })
   }
+
+  // Keeps the explanation in "My papers", only in this browser.
+  function save() {
+    const { result } = state
+    const id = savedId ?? crypto.randomUUID()
+    savePaper({
+      id,
+      savedAt: new Date().toISOString(),
+      sender: result.sender,
+      summary: result.summary,
+      worry: result.worry,
+      language: result.language,
+      shared,
+      receivedDate,
+      done: [...done],
+      actions: actions.map((a) => ({
+        title: a.title,
+        explanation: a.explanation,
+        kind: a.kind,
+        quote: a.quote,
+        date: a.info?.date ? a.info.date.toISOString() : null,
+        when: a.info?.text ?? '',
+      })),
+      pages: result.pages.map(({ page }) => page.id),
+    })
+    setSavedId(id)
+  }
+
+  // Reads the most important parts aloud with the device's own voice.
+  async function listen() {
+    if (speaking) {
+      stopSpeaking()
+      setSpeaking(false)
+      return
+    }
+    const { result } = state
+    const code = LANGUAGES.find((l) => l.name === result.language)?.code ?? 'en'
+    const worry = WORRY[result.worry?.level]
+    const parts = [
+      worry?.title,
+      result.worry?.reason,
+      result.summary,
+      ...actions
+        .filter((a) => a.group === 'MUST' || a.group === 'CAN')
+        .map((a) => `${a.title}. ${a.explanation}`),
+    ]
+    const started = await speak(parts, code, () => setSpeaking(false))
+    setVoiceMissing(!started)
+    setSpeaking(started)
+  }
+
+  // Keep a saved paper up to date when the received date is added later.
+  useEffect(() => {
+    if (savedId && state.phase === 'done') save()
+  }, [receivedDate])
+
+  useEffect(() => () => stopSpeaking(), [])
 
   function focusReceived() {
     document.getElementById('received-date')?.focus()
@@ -224,7 +315,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
         <div className="card-head">
           <div>
             <span className="eyebrow">Step 3 of 3</span>
-            <h2 tabIndex={-1} data-step-heading>Your next steps</h2>
+            <h2 tabIndex={-1} data-step-heading>Okay, let's see what this is about</h2>
           </div>
         </div>
         {state.phase === 'loading' ? (
@@ -265,17 +356,38 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
   const countable = actions.filter((a) => a.group !== 'CHECK')
   const doneCount = countable.filter((a) => done.has(a.index)).length
 
+  // The code can raise the level: a deadline within a week is always time-sensitive.
+  let worryLevel = result.worry?.level ?? 'ACTION'
+  const soonDays = next ? Math.round((next.info.date - new Date().setHours(0, 0, 0, 0)) / 86400000) : null
+  const raisedBySoonDate =
+    soonDays !== null && soonDays <= 7 && (worryLevel === 'INFO' || worryLevel === 'ACTION')
+  if (raisedBySoonDate) worryLevel = 'URGENT'
+  const worry = WORRY[worryLevel]
+
   return (
     <section className="card workspace">
       <div className="card-head">
         <div>
           <span className="eyebrow">Your next steps</span>
-          <h2 tabIndex={-1} data-step-heading>Here is what to do</h2>
+          <h2 tabIndex={-1} data-step-heading>Okay. Here's what's going on.</h2>
         </div>
         <SourceBadge source={result.source} />
       </div>
 
       {result.note && <p className="notice notice-ok">{result.note}</p>}
+
+      <div className={`worry worry-${worryLevel}`} role="status">
+        <span className={`worry-chip worry-${worryLevel}`}>{worry.short}</span>
+        <strong className="worry-title">{worry.title}</strong>
+        {result.worry?.reason && <p {...langProps}>{result.worry.reason}</p>}
+        {raisedBySoonDate && (
+          <p className="small">Kamarat raised this because a deadline is less than a week away.</p>
+        )}
+        {worry.help && <p className="small worry-help">{worry.help}</p>}
+        {result.worry?.quote && result.worry.quoteFound && (
+          <span className="small muted worry-quote" dir="auto">Based on: "{result.worry.quote}"</span>
+        )}
+      </div>
 
       <div className="summary">
         <span className="sender-avatar" aria-hidden="true">{initials(result.sender)}</span>
@@ -283,6 +395,23 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
           <span className="eyebrow">From {result.sender}</span>
           <p className="summary-text" {...langProps}>{result.summary}</p>
         </div>
+      </div>
+
+      <div className="toolbar">
+        {canSpeak() && (
+          <button className="secondary small-btn" onClick={listen} aria-pressed={speaking}>
+            <SpeakerIcon width={16} height={16} /> {speaking ? 'Stop reading' : 'Listen'}
+          </button>
+        )}
+        <button className="secondary small-btn" onClick={save} disabled={!!savedId}>
+          <LockIcon width={16} height={16} /> {savedId ? 'Saved to My papers' : 'Save to My papers'}
+        </button>
+        {voiceMissing && (
+          <span className="small muted">
+            Your device has no voice for {result.language}. Try English, or add a voice in your system settings.
+          </span>
+        )}
+        {savedId && <span className="small muted">Saved only on this device. Ticks and dates stay up to date.</span>}
       </div>
 
       {next && (
@@ -400,6 +529,8 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
           </div>
         )
       })}
+
+      <WordHelp shared={shared} language={result.language} />
 
       {result.pages.length > 0 && (
         <div className="group">

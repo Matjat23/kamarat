@@ -149,6 +149,28 @@ export function getOnDeviceExplainModel(responseConstraint, languageCode) {
   })
 }
 
+// Word help model. A single word from the approved text is not personal, so it
+// may run on the device first and fall back to the cloud on its own
+// (PREFER_ON_DEVICE). If the on-device model cannot write the chosen language,
+// it goes to the cloud directly.
+export function getWordModel(languageCode) {
+  const deviceCanWrite = Object.values(ON_DEVICE_LANGUAGES).includes(languageCode)
+  return getGenerativeModel(
+    ai,
+    {
+      mode: deviceCanWrite ? InferenceMode.PREFER_ON_DEVICE : InferenceMode.ONLY_IN_CLOUD,
+      onDeviceParams: {
+        createOptions: {
+          expectedInputs: englishText,
+          expectedOutputs: [{ type: 'text', languages: [deviceCanWrite ? languageCode : 'en'] }],
+        },
+      },
+      inCloudParams: { model: EXPLAIN_MODELS[0], generationConfig: { temperature: 0.2 } },
+    },
+    { timeout: 20000 },
+  )
+}
+
 // Asks Chrome whether Gemini Nano is ready, without starting a download.
 // Returns 'available', 'downloadable', 'downloading', 'unavailable'
 // or 'unsupported' when the browser has no Prompt API at all.

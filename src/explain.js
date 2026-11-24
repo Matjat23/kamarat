@@ -51,6 +51,21 @@ const SCHEMA = {
       type: 'string',
       description: 'The date written on the notice as YYYY-MM-DD, or an empty string.',
     },
+    worry: {
+      type: 'object',
+      description: 'How worried the person should be, like a calm friend would say it.',
+      properties: {
+        level: {
+          type: 'string',
+          enum: ['INFO', 'ACTION', 'URGENT', 'HELP'],
+          description:
+            'INFO: just information, nothing to do. ACTION: something to do, routine. URGENT: a short deadline or a consequence if ignored. HELP: a refusal, a removal, a fine, a court or anything serious where talking to a person is wise.',
+        },
+        reason: { type: 'string', description: 'One calm, kind sentence explaining the level.' },
+        quote: { type: 'string', description: 'The exact sentence from the notice the level is based on.' },
+      },
+      required: ['level', 'reason', 'quote'],
+    },
     actions: {
       type: 'array',
       items: {
@@ -94,7 +109,7 @@ const SCHEMA = {
       },
     },
   },
-  required: ['sender', 'summary', 'actions', 'sources'],
+  required: ['sender', 'summary', 'worry', 'actions', 'sources'],
 }
 
 // The list Gemini may choose from. It only ever returns an id; the link itself
@@ -103,9 +118,10 @@ const SOURCE_MENU = SOURCES.map(
   (s) => `- ${s.id}: ${s.agency} (${s.country}), "${s.title}". Topics: ${s.topics.join(', ')}`,
 ).join('\n')
 
-const SYSTEM_INSTRUCTION = `You are Kamarat, a calm and honest helper for people who received an official notice in a system they do not know well, for example newcomers, students and workers in a new country.
+const SYSTEM_INSTRUCTION = `You are Kamarat, a calm and honest friend for people who received an official notice in a system they do not know well, for example newcomers, students and workers in a new country. You talk like a kind friend who has been through it: warm, plain and reassuring, but never hiding a real risk.
 
 Rules:
+- Start by judging how worried the person should be. Do not make routine letters sound scary, and do not make serious letters sound harmless.
 - Use only what the notice says. Do not add rules, fees or deadlines from outside knowledge.
 - Labels like [NAME_1], [ID_1], [ADDRESS_1], [CASE_1], [PHONE_1], [EMAIL_1] and [HIDDEN_1] replace personal details the person chose to hide. Never guess what they hide. You may refer to them, for example "your case number".
 - MUST: the notice clearly requires it. CAN: the notice allows or offers it. UNCLEAR: it is ambiguous, conditional, or depends on facts the notice does not give.
@@ -120,6 +136,7 @@ export async function explainNotice(sharedText, language, onStatus = () => {}) {
   try {
     result = await askCloud(buildPrompt(sharedText, language), onStatus)
   } catch (err) {
+    console.warn("Cloud explanation failed:", err.message)
     if (!isTemporary(err)) throw err
     // Hybrid fallback: the cloud is busy or unreachable, so explain on this
     // device instead. The text is already approved, and now it does not even
@@ -168,8 +185,12 @@ function readAnswer(result, sharedText, note) {
     .map((pick) => ({ page: SOURCES.find((s) => s.id === pick.id), why: pick.why }))
     .filter(({ page }) => page && !seen.has(page.id) && seen.add(page.id))
     .slice(0, 3)
+  const worry = data.worry
+    ? { ...data.worry, quoteFound: quoteIsInText(data.worry.quote, sharedText) }
+    : null
   return {
     ...data,
+    worry,
     actions,
     pages,
     note,

@@ -1,0 +1,872 @@
+[
+  {
+    "id": "se-migration-01",
+    "kind": "se-migration",
+    "text": "Migrationsverket\n\nStockholm 2026-11-12\n\nOmar Ndiaye\nSkolgatan 56\n111 22 Stockholm\n\nÄrendenummer: 2026-85047-80\nPersonnummer: 20011225-9042\n\nBegäran om komplettering\n\nHej Omar Ndiaye,\n\nVi har tagit emot din ansökan om förlängning av uppehållstillstånd för arbete. Vi behöver ett nytt anställningsavtal och dina tre senaste lönebesked.\n\nSkicka in kompletteringen inom 30 dagar från att du har tagit emot detta brev.\n\nHar du frågor? Kontakta din handläggare Aisha Sato på 073-551 40 10 eller aisha.sato@example.se.\n\nMed vänlig hälsning\nMigrationsverket",
+    "details": [
+      {
+        "text": "Omar Ndiaye",
+        "type": "NAME"
+      },
+      {
+        "text": "Aisha Sato",
+        "type": "NAME"
+      },
+      {
+        "text": "Skolgatan 56, 111 22 Stockholm",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "2026-85047-80",
+        "type": "CASE"
+      },
+      {
+        "text": "20011225-9042",
+        "type": "ID"
+      },
+      {
+        "text": "073-551 40 10",
+        "type": "PHONE"
+      },
+      {
+        "text": "aisha.sato@example.se",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "se-tax-02",
+    "kind": "se-tax",
+    "text": "Skatteverket\n\nBeslut om kvarskatt\n\nOmar Berg\nStorgatan 29\n413 01 Göteborg\n\nPersonnummer: 20011116-6148\nDiarienummer: 315-7508\n\nDu har fått ett beslut om slutlig skatt. Du ska betala 3 480 kr senast den 12 mars 2027.\n\nOm du inte betalar i tid kan skulden lämnas till Kronofogden.\n\nDu kan begära omprövning inom fem år efter beskattningsåret.",
+    "details": [
+      {
+        "text": "Omar Berg",
+        "type": "NAME"
+      },
+      {
+        "text": "Storgatan 29, 413 01 Göteborg",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "20011116-6148",
+        "type": "ID"
+      },
+      {
+        "text": "315-7508",
+        "type": "CASE"
+      }
+    ]
+  },
+  {
+    "id": "us-university-03",
+    "kind": "us-university",
+    "text": "Example State University\nInternational Student and Scholar Services\n\nNovember 22, 2026\n\nKarim Mansour\n1350 Lakeview Road, Apt 3\nMadison, WI 53703\n\nSEVIS ID: N7605937692\nStudent ID: 48601278\n\nDear Karim Mansour,\n\nYour I-20 program end date is December 19, 2026. Please upload your updated financial documents within 10 business days of this notice.\n\nIf you have questions, contact your advisor Ingrid Sato at (668) 555-3308 or ingrid.sato@example.edu.\n\nSincerely,\nInternational Student and Scholar Services",
+    "details": [
+      {
+        "text": "Karim Mansour",
+        "type": "NAME"
+      },
+      {
+        "text": "Ingrid Sato",
+        "type": "NAME"
+      },
+      {
+        "text": "1350 Lakeview Road, Apt 3, Madison, WI 53703",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "N7605937692",
+        "type": "ID"
+      },
+      {
+        "text": "48601278",
+        "type": "ID"
+      },
+      {
+        "text": "(668) 555-3308",
+        "type": "PHONE"
+      },
+      {
+        "text": "ingrid.sato@example.edu",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "fr-prefecture-04",
+    "kind": "fr-prefecture",
+    "text": "Préfecture du Rhône\nService des étrangers\n\nJonas Okafor\n109 rue Victor Hugo\n31000 Toulouse\n\nNuméro de dossier : 568735513\n\nMadame, Monsieur,\n\nVotre demande de titre de séjour est incomplète. Merci de transmettre un justificatif de domicile de moins de trois mois avant le 15 janvier 2027.\n\nSans réponse de votre part, votre demande pourra être classée sans suite.\n\nPour toute question : 04 21 61 84 80.",
+    "details": [
+      {
+        "text": "Jonas Okafor",
+        "type": "NAME"
+      },
+      {
+        "text": "109 rue Victor Hugo, 31000 Toulouse",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "568735513",
+        "type": "CASE"
+      },
+      {
+        "text": "04 21 61 84 80",
+        "type": "PHONE"
+      }
+    ]
+  },
+  {
+    "id": "se-migration-05",
+    "kind": "se-migration",
+    "text": "Migrationsverket\n\nUppsala 2026-11-26\n\nNils Haddad\nRingvägen 57A\n753 20 Uppsala\n\nÄrendenummer: 2026-65045-82\nPersonnummer: 20040817-9486\n\nBegäran om komplettering\n\nHej Nils Haddad,\n\nVi har tagit emot din ansökan om förlängning av uppehållstillstånd för arbete. Vi behöver ett nytt anställningsavtal och dina tre senaste lönebesked.\n\nSkicka in kompletteringen inom 14 dagar från att du har tagit emot detta brev.\n\nHar du frågor? Kontakta din handläggare Daniel Sato på 010-689 38 26 eller daniel.sato@example.se.\n\nMed vänlig hälsning\nMigrationsverket",
+    "details": [
+      {
+        "text": "Nils Haddad",
+        "type": "NAME"
+      },
+      {
+        "text": "Daniel Sato",
+        "type": "NAME"
+      },
+      {
+        "text": "Ringvägen 57A, 753 20 Uppsala",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "2026-65045-82",
+        "type": "CASE"
+      },
+      {
+        "text": "20040817-9486",
+        "type": "ID"
+      },
+      {
+        "text": "010-689 38 26",
+        "type": "PHONE"
+      },
+      {
+        "text": "daniel.sato@example.se",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "se-tax-06",
+    "kind": "se-tax",
+    "text": "Skatteverket\n\nBeslut om kvarskatt\n\nOmar Silva\nLinnégatan 10\n753 20 Uppsala\n\nPersonnummer: 20030428-2999\nDiarienummer: 741-8484\n\nDu har fått ett beslut om slutlig skatt. Du ska betala 12 900 kr senast den 12 mars 2027.\n\nOm du inte betalar i tid kan skulden lämnas till Kronofogden.\n\nDu kan begära omprövning inom fem år efter beskattningsåret.",
+    "details": [
+      {
+        "text": "Omar Silva",
+        "type": "NAME"
+      },
+      {
+        "text": "Linnégatan 10, 753 20 Uppsala",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "20030428-2999",
+        "type": "ID"
+      },
+      {
+        "text": "741-8484",
+        "type": "CASE"
+      }
+    ]
+  },
+  {
+    "id": "us-university-07",
+    "kind": "us-university",
+    "text": "Example State University\nInternational Student and Scholar Services\n\nNovember 3, 2026\n\nNils Rahimi\n5140 University Blvd, Apt 26\nAustin, TX 78705\n\nSEVIS ID: N2860007896\nStudent ID: 49510228\n\nDear Nils Rahimi,\n\nYour I-20 program end date is December 12, 2026. Please upload your updated financial documents within 10 business days of this notice.\n\nIf you have questions, contact your advisor Pierre Johansson at (475) 555-1151 or pierre.johansson@example.edu.\n\nSincerely,\nInternational Student and Scholar Services",
+    "details": [
+      {
+        "text": "Nils Rahimi",
+        "type": "NAME"
+      },
+      {
+        "text": "Pierre Johansson",
+        "type": "NAME"
+      },
+      {
+        "text": "5140 University Blvd, Apt 26, Austin, TX 78705",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "N2860007896",
+        "type": "ID"
+      },
+      {
+        "text": "49510228",
+        "type": "ID"
+      },
+      {
+        "text": "(475) 555-1151",
+        "type": "PHONE"
+      },
+      {
+        "text": "pierre.johansson@example.edu",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "fr-prefecture-08",
+    "kind": "fr-prefecture",
+    "text": "Préfecture du Rhône\nService des étrangers\n\nTomas Ahmed\n103 rue Victor Hugo\n31000 Toulouse\n\nNuméro de dossier : 564352718\n\nMadame, Monsieur,\n\nVotre demande de titre de séjour est incomplète. Merci de transmettre un justificatif de domicile de moins de trois mois avant le 15 janvier 2027.\n\nSans réponse de votre part, votre demande pourra être classée sans suite.\n\nPour toute question : 03 98 72 69 75.",
+    "details": [
+      {
+        "text": "Tomas Ahmed",
+        "type": "NAME"
+      },
+      {
+        "text": "103 rue Victor Hugo, 31000 Toulouse",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "564352718",
+        "type": "CASE"
+      },
+      {
+        "text": "03 98 72 69 75",
+        "type": "PHONE"
+      }
+    ]
+  },
+  {
+    "id": "se-migration-09",
+    "kind": "se-migration",
+    "text": "Migrationsverket\n\nGöteborg 2026-11-13\n\nNils Silva\nVasagatan 21A\n413 01 Göteborg\n\nÄrendenummer: 2026-77524-43\nPersonnummer: 19890314-8850\n\nBegäran om komplettering\n\nHej Nils Silva,\n\nVi har tagit emot din ansökan om förlängning av uppehållstillstånd för arbete. Vi behöver ett nytt anställningsavtal och dina tre senaste lönebesked.\n\nSkicka in kompletteringen inom 21 dagar från att du har tagit emot detta brev.\n\nHar du frågor? Kontakta din handläggare Pierre Ferreira på 010-764 44 73 eller pierre.ferreira@example.se.\n\nMed vänlig hälsning\nMigrationsverket",
+    "details": [
+      {
+        "text": "Nils Silva",
+        "type": "NAME"
+      },
+      {
+        "text": "Pierre Ferreira",
+        "type": "NAME"
+      },
+      {
+        "text": "Vasagatan 21A, 413 01 Göteborg",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "2026-77524-43",
+        "type": "CASE"
+      },
+      {
+        "text": "19890314-8850",
+        "type": "ID"
+      },
+      {
+        "text": "010-764 44 73",
+        "type": "PHONE"
+      },
+      {
+        "text": "pierre.ferreira@example.se",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "se-tax-10",
+    "kind": "se-tax",
+    "text": "Skatteverket\n\nBeslut om kvarskatt\n\nSara Silva\nKungsgatan 29\n413 01 Göteborg\n\nPersonnummer: 19770115-9955\nDiarienummer: 956-2360\n\nDu har fått ett beslut om slutlig skatt. Du ska betala 12 900 kr senast den 12 mars 2027.\n\nOm du inte betalar i tid kan skulden lämnas till Kronofogden.\n\nDu kan begära omprövning inom fem år efter beskattningsåret.",
+    "details": [
+      {
+        "text": "Sara Silva",
+        "type": "NAME"
+      },
+      {
+        "text": "Kungsgatan 29, 413 01 Göteborg",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "19770115-9955",
+        "type": "ID"
+      },
+      {
+        "text": "956-2360",
+        "type": "CASE"
+      }
+    ]
+  },
+  {
+    "id": "us-university-11",
+    "kind": "us-university",
+    "text": "Example State University\nInternational Student and Scholar Services\n\nNovember 24, 2026\n\nSara Kaya\n9053 Lakeview Road, Apt 22\nMadison, WI 53703\n\nSEVIS ID: N2534379800\nStudent ID: 10688684\n\nDear Sara Kaya,\n\nYour I-20 program end date is December 12, 2026. Please upload your updated financial documents within 10 business days of this notice.\n\nIf you have questions, contact your advisor Omar Ferreira at (520) 555-9060 or omar.ferreira@example.edu.\n\nSincerely,\nInternational Student and Scholar Services",
+    "details": [
+      {
+        "text": "Sara Kaya",
+        "type": "NAME"
+      },
+      {
+        "text": "Omar Ferreira",
+        "type": "NAME"
+      },
+      {
+        "text": "9053 Lakeview Road, Apt 22, Madison, WI 53703",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "N2534379800",
+        "type": "ID"
+      },
+      {
+        "text": "10688684",
+        "type": "ID"
+      },
+      {
+        "text": "(520) 555-9060",
+        "type": "PHONE"
+      },
+      {
+        "text": "omar.ferreira@example.edu",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "fr-prefecture-12",
+    "kind": "fr-prefecture",
+    "text": "Préfecture du Rhône\nService des étrangers\n\nPierre Kaya\n61 rue Victor Hugo\n69002 Lyon\n\nNuméro de dossier : 869467819\n\nMadame, Monsieur,\n\nVotre demande de titre de séjour est incomplète. Merci de transmettre un justificatif de domicile de moins de trois mois avant le 15 janvier 2027.\n\nSans réponse de votre part, votre demande pourra être classée sans suite.\n\nPour toute question : 03 20 63 95 30.",
+    "details": [
+      {
+        "text": "Pierre Kaya",
+        "type": "NAME"
+      },
+      {
+        "text": "61 rue Victor Hugo, 69002 Lyon",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "869467819",
+        "type": "CASE"
+      },
+      {
+        "text": "03 20 63 95 30",
+        "type": "PHONE"
+      }
+    ]
+  },
+  {
+    "id": "se-migration-13",
+    "kind": "se-migration",
+    "text": "Migrationsverket\n\nStockholm 2026-11-25\n\nElin Berg\nLinnégatan 52\n111 22 Stockholm\n\nÄrendenummer: 2026-11852-23\nPersonnummer: 19870202-6685\n\nBegäran om komplettering\n\nHej Elin Berg,\n\nVi har tagit emot din ansökan om förlängning av uppehållstillstånd för arbete. Vi behöver ett nytt anställningsavtal och dina tre senaste lönebesked.\n\nSkicka in kompletteringen inom 30 dagar från att du har tagit emot detta brev.\n\nHar du frågor? Kontakta din handläggare Aisha Silva på 08-888 13 13 eller aisha.silva@example.se.\n\nMed vänlig hälsning\nMigrationsverket",
+    "details": [
+      {
+        "text": "Elin Berg",
+        "type": "NAME"
+      },
+      {
+        "text": "Aisha Silva",
+        "type": "NAME"
+      },
+      {
+        "text": "Linnégatan 52, 111 22 Stockholm",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "2026-11852-23",
+        "type": "CASE"
+      },
+      {
+        "text": "19870202-6685",
+        "type": "ID"
+      },
+      {
+        "text": "08-888 13 13",
+        "type": "PHONE"
+      },
+      {
+        "text": "aisha.silva@example.se",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "se-tax-14",
+    "kind": "se-tax",
+    "text": "Skatteverket\n\nBeslut om kvarskatt\n\nAwa Berg\nLinnégatan 21\n413 01 Göteborg\n\nPersonnummer: 19900819-3797\nDiarienummer: 257-9513\n\nDu har fått ett beslut om slutlig skatt. Du ska betala 1 250 kr senast den 12 mars 2027.\n\nOm du inte betalar i tid kan skulden lämnas till Kronofogden.\n\nDu kan begära omprövning inom fem år efter beskattningsåret.",
+    "details": [
+      {
+        "text": "Awa Berg",
+        "type": "NAME"
+      },
+      {
+        "text": "Linnégatan 21, 413 01 Göteborg",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "19900819-3797",
+        "type": "ID"
+      },
+      {
+        "text": "257-9513",
+        "type": "CASE"
+      }
+    ]
+  },
+  {
+    "id": "us-university-15",
+    "kind": "us-university",
+    "text": "Example State University\nInternational Student and Scholar Services\n\nNovember 16, 2026\n\nDaniel Ndiaye\n1238 University Blvd, Apt 2\nGainesville, FL 32601\n\nSEVIS ID: N1744592332\nStudent ID: 97004064\n\nDear Daniel Ndiaye,\n\nYour I-20 program end date is December 20, 2026. Please upload your updated financial documents within 10 business days of this notice.\n\nIf you have questions, contact your advisor Mariam Kaya at (757) 555-1789 or mariam.kaya@example.edu.\n\nSincerely,\nInternational Student and Scholar Services",
+    "details": [
+      {
+        "text": "Daniel Ndiaye",
+        "type": "NAME"
+      },
+      {
+        "text": "Mariam Kaya",
+        "type": "NAME"
+      },
+      {
+        "text": "1238 University Blvd, Apt 2, Gainesville, FL 32601",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "N1744592332",
+        "type": "ID"
+      },
+      {
+        "text": "97004064",
+        "type": "ID"
+      },
+      {
+        "text": "(757) 555-1789",
+        "type": "PHONE"
+      },
+      {
+        "text": "mariam.kaya@example.edu",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "fr-prefecture-16",
+    "kind": "fr-prefecture",
+    "text": "Préfecture du Rhône\nService des étrangers\n\nSara Dubois\n92 rue Victor Hugo\n69002 Lyon\n\nNuméro de dossier : 269890860\n\nMadame, Monsieur,\n\nVotre demande de titre de séjour est incomplète. Merci de transmettre un justificatif de domicile de moins de trois mois avant le 15 janvier 2027.\n\nSans réponse de votre part, votre demande pourra être classée sans suite.\n\nPour toute question : 02 76 27 30 94.",
+    "details": [
+      {
+        "text": "Sara Dubois",
+        "type": "NAME"
+      },
+      {
+        "text": "92 rue Victor Hugo, 69002 Lyon",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "269890860",
+        "type": "CASE"
+      },
+      {
+        "text": "02 76 27 30 94",
+        "type": "PHONE"
+      }
+    ]
+  },
+  {
+    "id": "se-migration-17",
+    "kind": "se-migration",
+    "text": "Migrationsverket\n\nUppsala 2026-11-26\n\nMateo Johansson\nRingvägen 27\n753 20 Uppsala\n\nÄrendenummer: 2026-34536-54\nPersonnummer: 19800515-9152\n\nBegäran om komplettering\n\nHej Mateo Johansson,\n\nVi har tagit emot din ansökan om förlängning av uppehållstillstånd för arbete. Vi behöver ett nytt anställningsavtal och dina tre senaste lönebesked.\n\nSkicka in kompletteringen inom 21 dagar från att du har tagit emot detta brev.\n\nHar du frågor? Kontakta din handläggare Leila Silva på 070-394 69 32 eller leila.silva@example.se.\n\nMed vänlig hälsning\nMigrationsverket",
+    "details": [
+      {
+        "text": "Mateo Johansson",
+        "type": "NAME"
+      },
+      {
+        "text": "Leila Silva",
+        "type": "NAME"
+      },
+      {
+        "text": "Ringvägen 27, 753 20 Uppsala",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "2026-34536-54",
+        "type": "CASE"
+      },
+      {
+        "text": "19800515-9152",
+        "type": "ID"
+      },
+      {
+        "text": "070-394 69 32",
+        "type": "PHONE"
+      },
+      {
+        "text": "leila.silva@example.se",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "se-tax-18",
+    "kind": "se-tax",
+    "text": "Skatteverket\n\nBeslut om kvarskatt\n\nNils Ahmed\nStorgatan 34\n211 45 Malmö\n\nPersonnummer: 20010228-4511\nDiarienummer: 336-1080\n\nDu har fått ett beslut om slutlig skatt. Du ska betala 1 250 kr senast den 12 mars 2027.\n\nOm du inte betalar i tid kan skulden lämnas till Kronofogden.\n\nDu kan begära omprövning inom fem år efter beskattningsåret.",
+    "details": [
+      {
+        "text": "Nils Ahmed",
+        "type": "NAME"
+      },
+      {
+        "text": "Storgatan 34, 211 45 Malmö",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "20010228-4511",
+        "type": "ID"
+      },
+      {
+        "text": "336-1080",
+        "type": "CASE"
+      }
+    ]
+  },
+  {
+    "id": "us-university-19",
+    "kind": "us-university",
+    "text": "Example State University\nInternational Student and Scholar Services\n\nNovember 19, 2026\n\nMariam Ndiaye\n545 Lakeview Road, Apt 28\nGainesville, FL 32601\n\nSEVIS ID: N1930042724\nStudent ID: 93320274\n\nDear Mariam Ndiaye,\n\nYour I-20 program end date is December 19, 2026. Please upload your updated financial documents within 10 business days of this notice.\n\nIf you have questions, contact your advisor Daniel Garcia at (933) 555-5595 or daniel.garcia@example.edu.\n\nSincerely,\nInternational Student and Scholar Services",
+    "details": [
+      {
+        "text": "Mariam Ndiaye",
+        "type": "NAME"
+      },
+      {
+        "text": "Daniel Garcia",
+        "type": "NAME"
+      },
+      {
+        "text": "545 Lakeview Road, Apt 28, Gainesville, FL 32601",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "N1930042724",
+        "type": "ID"
+      },
+      {
+        "text": "93320274",
+        "type": "ID"
+      },
+      {
+        "text": "(933) 555-5595",
+        "type": "PHONE"
+      },
+      {
+        "text": "daniel.garcia@example.edu",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "fr-prefecture-20",
+    "kind": "fr-prefecture",
+    "text": "Préfecture du Rhône\nService des étrangers\n\nSara Berg\n73 avenue Jean Jaurès\n13001 Marseille\n\nNuméro de dossier : 813224963\n\nMadame, Monsieur,\n\nVotre demande de titre de séjour est incomplète. Merci de transmettre un justificatif de domicile de moins de trois mois avant le 15 janvier 2027.\n\nSans réponse de votre part, votre demande pourra être classée sans suite.\n\nPour toute question : 01 43 22 65 31.",
+    "details": [
+      {
+        "text": "Sara Berg",
+        "type": "NAME"
+      },
+      {
+        "text": "73 avenue Jean Jaurès, 13001 Marseille",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "813224963",
+        "type": "CASE"
+      },
+      {
+        "text": "01 43 22 65 31",
+        "type": "PHONE"
+      }
+    ]
+  },
+  {
+    "id": "se-migration-21",
+    "kind": "se-migration",
+    "text": "Migrationsverket\n\nMalmö 2026-11-23\n\nOmar Ferreira\nSkolgatan 41\n211 45 Malmö\n\nÄrendenummer: 2026-87084-18\nPersonnummer: 19840606-5273\n\nBegäran om komplettering\n\nHej Omar Ferreira,\n\nVi har tagit emot din ansökan om förlängning av uppehållstillstånd för arbete. Vi behöver ett nytt anställningsavtal och dina tre senaste lönebesked.\n\nSkicka in kompletteringen inom 21 dagar från att du har tagit emot detta brev.\n\nHar du frågor? Kontakta din handläggare Karim Garcia på 08-164 11 62 eller karim.garcia@example.se.\n\nMed vänlig hälsning\nMigrationsverket",
+    "details": [
+      {
+        "text": "Omar Ferreira",
+        "type": "NAME"
+      },
+      {
+        "text": "Karim Garcia",
+        "type": "NAME"
+      },
+      {
+        "text": "Skolgatan 41, 211 45 Malmö",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "2026-87084-18",
+        "type": "CASE"
+      },
+      {
+        "text": "19840606-5273",
+        "type": "ID"
+      },
+      {
+        "text": "08-164 11 62",
+        "type": "PHONE"
+      },
+      {
+        "text": "karim.garcia@example.se",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "se-tax-22",
+    "kind": "se-tax",
+    "text": "Skatteverket\n\nBeslut om kvarskatt\n\nAmina Ferreira\nStorgatan 16\n413 01 Göteborg\n\nPersonnummer: 19840204-6739\nDiarienummer: 422-8471\n\nDu har fått ett beslut om slutlig skatt. Du ska betala 12 900 kr senast den 12 mars 2027.\n\nOm du inte betalar i tid kan skulden lämnas till Kronofogden.\n\nDu kan begära omprövning inom fem år efter beskattningsåret.",
+    "details": [
+      {
+        "text": "Amina Ferreira",
+        "type": "NAME"
+      },
+      {
+        "text": "Storgatan 16, 413 01 Göteborg",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "19840204-6739",
+        "type": "ID"
+      },
+      {
+        "text": "422-8471",
+        "type": "CASE"
+      }
+    ]
+  },
+  {
+    "id": "us-university-23",
+    "kind": "us-university",
+    "text": "Example State University\nInternational Student and Scholar Services\n\nNovember 14, 2026\n\nTomas Ferreira\n3632 University Blvd, Apt 14\nMadison, WI 53703\n\nSEVIS ID: N4772713038\nStudent ID: 60217143\n\nDear Tomas Ferreira,\n\nYour I-20 program end date is December 14, 2026. Please upload your updated financial documents within 10 business days of this notice.\n\nIf you have questions, contact your advisor Ingrid Ndiaye at (713) 555-5121 or ingrid.ndiaye@example.edu.\n\nSincerely,\nInternational Student and Scholar Services",
+    "details": [
+      {
+        "text": "Tomas Ferreira",
+        "type": "NAME"
+      },
+      {
+        "text": "Ingrid Ndiaye",
+        "type": "NAME"
+      },
+      {
+        "text": "3632 University Blvd, Apt 14, Madison, WI 53703",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "N4772713038",
+        "type": "ID"
+      },
+      {
+        "text": "60217143",
+        "type": "ID"
+      },
+      {
+        "text": "(713) 555-5121",
+        "type": "PHONE"
+      },
+      {
+        "text": "ingrid.ndiaye@example.edu",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "fr-prefecture-24",
+    "kind": "fr-prefecture",
+    "text": "Préfecture du Rhône\nService des étrangers\n\nKarim Ferreira\n95 rue Victor Hugo\n31000 Toulouse\n\nNuméro de dossier : 135721627\n\nMadame, Monsieur,\n\nVotre demande de titre de séjour est incomplète. Merci de transmettre un justificatif de domicile de moins de trois mois avant le 15 janvier 2027.\n\nSans réponse de votre part, votre demande pourra être classée sans suite.\n\nPour toute question : 06 52 47 25 48.",
+    "details": [
+      {
+        "text": "Karim Ferreira",
+        "type": "NAME"
+      },
+      {
+        "text": "95 rue Victor Hugo, 31000 Toulouse",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "135721627",
+        "type": "CASE"
+      },
+      {
+        "text": "06 52 47 25 48",
+        "type": "PHONE"
+      }
+    ]
+  },
+  {
+    "id": "se-migration-25",
+    "kind": "se-migration",
+    "text": "Migrationsverket\n\nGöteborg 2026-11-19\n\nDaniel Ndiaye\nRingvägen 22\n413 01 Göteborg\n\nÄrendenummer: 2025-31249-89\nPersonnummer: 19780202-3059\n\nBegäran om komplettering\n\nHej Daniel Ndiaye,\n\nVi har tagit emot din ansökan om förlängning av uppehållstillstånd för arbete. Vi behöver ett nytt anställningsavtal och dina tre senaste lönebesked.\n\nSkicka in kompletteringen inom 30 dagar från att du har tagit emot detta brev.\n\nHar du frågor? Kontakta din handläggare Hana Okafor på 073-462 86 92 eller hana.okafor@example.se.\n\nMed vänlig hälsning\nMigrationsverket",
+    "details": [
+      {
+        "text": "Daniel Ndiaye",
+        "type": "NAME"
+      },
+      {
+        "text": "Hana Okafor",
+        "type": "NAME"
+      },
+      {
+        "text": "Ringvägen 22, 413 01 Göteborg",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "2025-31249-89",
+        "type": "CASE"
+      },
+      {
+        "text": "19780202-3059",
+        "type": "ID"
+      },
+      {
+        "text": "073-462 86 92",
+        "type": "PHONE"
+      },
+      {
+        "text": "hana.okafor@example.se",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "se-tax-26",
+    "kind": "se-tax",
+    "text": "Skatteverket\n\nBeslut om kvarskatt\n\nAmina Silva\nRingvägen 9\n211 45 Malmö\n\nPersonnummer: 19880713-4920\nDiarienummer: 895-7897\n\nDu har fått ett beslut om slutlig skatt. Du ska betala 12 900 kr senast den 12 mars 2027.\n\nOm du inte betalar i tid kan skulden lämnas till Kronofogden.\n\nDu kan begära omprövning inom fem år efter beskattningsåret.",
+    "details": [
+      {
+        "text": "Amina Silva",
+        "type": "NAME"
+      },
+      {
+        "text": "Ringvägen 9, 211 45 Malmö",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "19880713-4920",
+        "type": "ID"
+      },
+      {
+        "text": "895-7897",
+        "type": "CASE"
+      }
+    ]
+  },
+  {
+    "id": "us-university-27",
+    "kind": "us-university",
+    "text": "Example State University\nInternational Student and Scholar Services\n\nNovember 10, 2026\n\nYusuf Lindqvist\n8969 University Blvd, Apt 29\nAustin, TX 78705\n\nSEVIS ID: N4378442704\nStudent ID: 40635974\n\nDear Yusuf Lindqvist,\n\nYour I-20 program end date is December 18, 2026. Please upload your updated financial documents within 10 business days of this notice.\n\nIf you have questions, contact your advisor Mateo Okafor at (223) 555-1271 or mateo.okafor@example.edu.\n\nSincerely,\nInternational Student and Scholar Services",
+    "details": [
+      {
+        "text": "Yusuf Lindqvist",
+        "type": "NAME"
+      },
+      {
+        "text": "Mateo Okafor",
+        "type": "NAME"
+      },
+      {
+        "text": "8969 University Blvd, Apt 29, Austin, TX 78705",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "N4378442704",
+        "type": "ID"
+      },
+      {
+        "text": "40635974",
+        "type": "ID"
+      },
+      {
+        "text": "(223) 555-1271",
+        "type": "PHONE"
+      },
+      {
+        "text": "mateo.okafor@example.edu",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "fr-prefecture-28",
+    "kind": "fr-prefecture",
+    "text": "Préfecture du Rhône\nService des étrangers\n\nNils Silva\n34 avenue Jean Jaurès\n69002 Lyon\n\nNuméro de dossier : 902500668\n\nMadame, Monsieur,\n\nVotre demande de titre de séjour est incomplète. Merci de transmettre un justificatif de domicile de moins de trois mois avant le 15 janvier 2027.\n\nSans réponse de votre part, votre demande pourra être classée sans suite.\n\nPour toute question : 07 32 80 14 93.",
+    "details": [
+      {
+        "text": "Nils Silva",
+        "type": "NAME"
+      },
+      {
+        "text": "34 avenue Jean Jaurès, 69002 Lyon",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "902500668",
+        "type": "CASE"
+      },
+      {
+        "text": "07 32 80 14 93",
+        "type": "PHONE"
+      }
+    ]
+  },
+  {
+    "id": "se-migration-29",
+    "kind": "se-migration",
+    "text": "Migrationsverket\n\nGöteborg 2026-11-18\n\nAisha Rahimi\nSkolgatan 21\n413 01 Göteborg\n\nÄrendenummer: 2025-71675-17\nPersonnummer: 19821117-3471\n\nBegäran om komplettering\n\nHej Aisha Rahimi,\n\nVi har tagit emot din ansökan om förlängning av uppehållstillstånd för arbete. Vi behöver ett nytt anställningsavtal och dina tre senaste lönebesked.\n\nSkicka in kompletteringen inom 30 dagar från att du har tagit emot detta brev.\n\nHar du frågor? Kontakta din handläggare Awa Sato på 070-824 56 39 eller awa.sato@example.se.\n\nMed vänlig hälsning\nMigrationsverket",
+    "details": [
+      {
+        "text": "Aisha Rahimi",
+        "type": "NAME"
+      },
+      {
+        "text": "Awa Sato",
+        "type": "NAME"
+      },
+      {
+        "text": "Skolgatan 21, 413 01 Göteborg",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "2025-71675-17",
+        "type": "CASE"
+      },
+      {
+        "text": "19821117-3471",
+        "type": "ID"
+      },
+      {
+        "text": "070-824 56 39",
+        "type": "PHONE"
+      },
+      {
+        "text": "awa.sato@example.se",
+        "type": "EMAIL"
+      }
+    ]
+  },
+  {
+    "id": "se-tax-30",
+    "kind": "se-tax",
+    "text": "Skatteverket\n\nBeslut om kvarskatt\n\nAwa Nilsson\nVasagatan 23\n753 20 Uppsala\n\nPersonnummer: 19950818-8767\nDiarienummer: 907-6114\n\nDu har fått ett beslut om slutlig skatt. Du ska betala 1 250 kr senast den 12 mars 2027.\n\nOm du inte betalar i tid kan skulden lämnas till Kronofogden.\n\nDu kan begära omprövning inom fem år efter beskattningsåret.",
+    "details": [
+      {
+        "text": "Awa Nilsson",
+        "type": "NAME"
+      },
+      {
+        "text": "Vasagatan 23, 753 20 Uppsala",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "19950818-8767",
+        "type": "ID"
+      },
+      {
+        "text": "907-6114",
+        "type": "CASE"
+      }
+    ]
+  }
+]
