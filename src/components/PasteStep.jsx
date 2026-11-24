@@ -1,6 +1,8 @@
 // Step 1: paste a notice (or pick an example) and look for personal details.
+import { useState } from 'react'
 import { EXAMPLES } from '../examples'
 import { MAX_NOTICE_LENGTH } from '../privacy'
+import { isPhone, readClipboard } from '../device'
 
 const NANO_TEXT = {
   checking: 'Checking for private on-device AI...',
@@ -11,8 +13,25 @@ const NANO_TEXT = {
   unsupported: 'This browser has no on-device AI. You can still hide details yourself.',
 }
 
+const PHONE_TEXT =
+  'On phones, private AI cannot run yet, so Kamarat uses its pattern check and you choose what else to hide. On a computer with Chrome, Gemini Nano finds your details for you.'
+
 export default function PasteStep({ text, setText, nanoStatus, busy, progress, onFind }) {
+  const [pasteError, setPasteError] = useState('')
   const tooLong = text.length > MAX_NOTICE_LENGTH
+  const noLocalAI = ['unsupported', 'unavailable'].includes(nanoStatus)
+  const phone = isPhone()
+
+  async function pasteFromClipboard() {
+    setPasteError('')
+    try {
+      const copied = await readClipboard()
+      if (copied.trim()) setText(copied)
+      else setPasteError('The clipboard is empty. Copy the text of your notice first.')
+    } catch (err) {
+      setPasteError(err.message)
+    }
+  }
 
   return (
     <section className="card">
@@ -22,8 +41,13 @@ export default function PasteStep({ text, setText, nanoStatus, busy, progress, o
         It stays on this device until you approve what to share.
       </p>
 
+      {phone && noLocalAI && <p className="notice notice-warn small">{PHONE_TEXT}</p>}
+
       <div className="examples">
-        <span className="muted small">Try an example:</span>
+        <button className="chip-button chip-strong" onClick={pasteFromClipboard} disabled={busy}>
+          Paste from clipboard
+        </button>
+        <span className="muted small">or try an example:</span>
         {EXAMPLES.map((example) => (
           <button
             key={example.id}
@@ -35,12 +59,13 @@ export default function PasteStep({ text, setText, nanoStatus, busy, progress, o
           </button>
         ))}
       </div>
+      {pasteError && <p className="small warning-text">{pasteError}</p>}
 
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Paste the text of your notice here..."
-        rows={14}
+        rows={phone ? 9 : 14}
         disabled={busy}
       />
 
@@ -50,16 +75,24 @@ export default function PasteStep({ text, setText, nanoStatus, busy, progress, o
             ? `Too long for on-device AI. Paste the main part (under ${MAX_NOTICE_LENGTH.toLocaleString()} characters).`
             : `${text.length.toLocaleString()} characters`}
         </span>
-        <span className="small muted">{NANO_TEXT[nanoStatus] ?? nanoStatus}</span>
+        {!(phone && noLocalAI) && (
+          <span className="small muted">{NANO_TEXT[nanoStatus] ?? nanoStatus}</span>
+        )}
       </div>
 
-      <button
-        className="primary"
-        onClick={onFind}
-        disabled={busy || !text.trim() || tooLong}
-      >
-        {busy ? progress || 'Looking on your device...' : 'Find my personal details'}
-      </button>
+      <div className="action-bar">
+        <button
+          className="primary wide"
+          onClick={onFind}
+          disabled={busy || !text.trim() || tooLong}
+        >
+          {busy
+            ? progress || 'Looking on your device...'
+            : noLocalAI
+              ? 'Check for personal details'
+              : 'Find my personal details'}
+        </button>
+      </div>
     </section>
   )
 }

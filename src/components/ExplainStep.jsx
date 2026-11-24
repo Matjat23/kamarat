@@ -77,7 +77,7 @@ export default function ExplainStep({ shared, onBack, onRestart }) {
           details stay on this device.
         </p>
         <pre className="shared-text">{shared}</pre>
-        <div className="row-between">
+        <div className="action-bar row-between">
           <label className="language">
             Explain in{' '}
             <select value={language} onChange={(e) => setLanguage(e.target.value)}>

@@ -1,6 +1,6 @@
 // Step 2: the person sees their notice next to what would be shared,
 // can show or hide each detail, hide more text, and then approve.
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildRedaction, TYPE_LABELS } from '../privacy'
 
 const FOUND_BY_TEXT = {
@@ -20,16 +20,26 @@ export default function ReviewStep({
 }) {
   const [selection, setSelection] = useState('')
   const [extra, setExtra] = useState('')
+  // On phones only one of the two texts is shown at a time.
+  const [view, setView] = useState('notice')
+  const noticeRef = useRef(null)
   const { segments, shared, labels } = useMemo(
     () => buildRedaction(text, details),
     [text, details],
   )
   const hiddenCount = details.filter((d) => d.hidden).length
 
-  function rememberSelection() {
-    const picked = window.getSelection()?.toString().trim() ?? ''
-    setSelection(picked.length > 1 ? picked : '')
-  }
+  // Works with a mouse and with a long press on a touch screen.
+  useEffect(() => {
+    function onSelectionChange() {
+      const sel = window.getSelection()
+      if (!sel || !noticeRef.current?.contains(sel.anchorNode)) return
+      const picked = sel.toString().trim()
+      setSelection(picked.length > 1 ? picked : '')
+    }
+    document.addEventListener('selectionchange', onSelectionChange)
+    return () => document.removeEventListener('selectionchange', onSelectionChange)
+  }, [])
 
   function hide(value) {
     const clean = value.trim()
@@ -91,20 +101,40 @@ export default function ReviewStep({
         <button onClick={() => hide(extra)} disabled={extra.trim().length < 2}>
           Hide
         </button>
-        {selection && (
-          <button className="primary" onClick={() => hide(selection)}>
-            Hide "{selection.length > 30 ? `${selection.slice(0, 30)}...` : selection}"
-          </button>
-        )}
       </div>
 
-      <div className="compare">
-        <div className="pane">
+      <div className="view-toggle" role="tablist">
+        <button
+          role="tab"
+          aria-selected={view === 'notice'}
+          className={view === 'notice' ? 'active' : ''}
+          onClick={() => setView('notice')}
+        >
+          Your notice
+        </button>
+        <button
+          role="tab"
+          aria-selected={view === 'shared'}
+          className={view === 'shared' ? 'active' : ''}
+          onClick={() => setView('shared')}
+        >
+          What would be shared
+        </button>
+      </div>
+
+      <div className={`compare show-${view}`}>
+        <div className="pane pane-notice">
           <div className="pane-head">
             <span>Your notice</span>
-            <span className="small muted">stays on this device</span>
+            {selection ? (
+              <button className="primary hide-selection" onClick={() => hide(selection)}>
+                Hide "{selection.length > 24 ? `${selection.slice(0, 24)}...` : selection}"
+              </button>
+            ) : (
+              <span className="small muted">stays on this device</span>
+            )}
           </div>
-          <div className="pane-body" onMouseUp={rememberSelection}>
+          <div className="pane-body" ref={noticeRef}>
             {segments.map((seg, i) =>
               seg.detail ? (
                 <mark key={i} className={`hl hl-${seg.detail.type}`} title={seg.label}>
@@ -115,10 +145,10 @@ export default function ReviewStep({
               ),
             )}
           </div>
-          <p className="small muted">Tip: select any text here to hide it.</p>
+          <p className="small muted">Tip: select any text here (long-press on a phone) to hide it.</p>
         </div>
 
-        <div className="pane">
+        <div className="pane pane-shared">
           <div className="pane-head">
             <span>What would be shared</span>
             <span className="small muted">{hiddenCount} detail(s) hidden</span>
@@ -137,7 +167,7 @@ export default function ReviewStep({
         </div>
       </div>
 
-      <div className="row-between">
+      <div className="action-bar row-between">
         <button onClick={onBack}>Back</button>
         <button className="primary" onClick={() => onApprove(shared)}>
           Approve what is shared
