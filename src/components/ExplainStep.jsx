@@ -3,7 +3,7 @@
 // doing. Then the letter screen takes over.
 import { useEffect, useRef, useState } from 'react'
 import { explainNotice } from '../explain'
-import { savePaper, updatePaper } from '../papers'
+import { savePaper, updatePaper, listPapers, PAPERS_CHANGED } from '../papers'
 import { stopSpeaking } from '../speak'
 import LetterView from './LetterView'
 import { CheckIcon, Dots } from './Icons'
@@ -35,7 +35,7 @@ function Progress({ stage, status }) {
   )
 }
 
-export default function ExplainStep({ shared, labelMap, details, language, onBack, onHome }) {
+export default function ExplainStep({ shared, labelMap, details, language, onSavedChange, onBack, onHome }) {
   const [state, setState] = useState({ phase: 'loading', status: '' })
   const [stage, setStage] = useState(0)
   const [receivedDate, setReceivedDate] = useState('')
@@ -43,6 +43,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
   const [savedId, setSavedId] = useState(null)
   const [saveError, setSaveError] = useState('')
   const started = useRef(false)
+  const rootRef = useRef(null)
 
   async function send() {
     // A new explanation can have different steps, so old ticks are cleared.
@@ -72,12 +73,37 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
 
   useEffect(() => () => stopSpeaking(), [])
 
-  // Moves focus to the answer when it arrives.
+  // Moves focus to the answer when it arrives, but only if this screen is the
+  // one being looked at.
   useEffect(() => {
-    if (state.phase === 'done') {
-      requestAnimationFrame(() => document.querySelector('.answer-title')?.focus({ preventScroll: true }))
-    }
+    if (state.phase !== 'done') return
+    requestAnimationFrame(() => {
+      if (rootRef.current?.offsetParent) {
+        rootRef.current.querySelector('.answer-title')?.focus({ preventScroll: true })
+      }
+    })
   }, [state.phase])
+
+  useEffect(() => {
+    onSavedChange?.(savedId)
+  }, [savedId])
+
+  // Once kept, My papers holds the one true copy. If it is changed or deleted
+  // there, this screen follows instead of saving an old version over it.
+  useEffect(() => {
+    if (!savedId) return
+    function sync() {
+      const paper = listPapers().find((p) => p.id === savedId)
+      if (!paper) {
+        setSavedId(null)
+        return
+      }
+      setDone(paper.done)
+      setReceivedDate(paper.receivedDate)
+    }
+    window.addEventListener(PAPERS_CHANGED, sync)
+    return () => window.removeEventListener(PAPERS_CHANGED, sync)
+  }, [savedId])
 
   function save(id = savedId ?? crypto.randomUUID()) {
     const { result } = state
@@ -124,11 +150,11 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
     }
   }
 
-  if (state.phase === 'loading') return <Progress stage={stage} status={state.status} />
+  if (state.phase === 'loading') return <div ref={rootRef}><Progress stage={stage} status={state.status} /></div>
 
   if (state.phase === 'error') {
     return (
-      <section className="card">
+      <section className="card" ref={rootRef}>
         <h1 className="flow-title" tabIndex={-1} data-step-heading>That didn't work this time</h1>
         <p className="notice notice-warn" role="alert">{state.message}.</p>
         <div className="buttons">
@@ -140,8 +166,11 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
   }
 
   return (
+    <div ref={rootRef}>
     <LetterView
       letter={{ ...state.result, shared }}
+      currentLanguage={language}
+      onExplainAgain={send}
       receivedDate={receivedDate}
       onReceivedDate={setReceivedDate}
       done={done}
@@ -156,5 +185,6 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
         { label: 'Change what was hidden', onClick: onBack },
       ]}
     />
+    </div>
   )
 }

@@ -100,6 +100,13 @@ export default function CheckLetter({
         <LockIcon width={16} height={16} /> {hiddenCount} detail{hiddenCount === 1 ? '' : 's'} hidden
         {sentCount > 0 && <span className="count-sent"> · {sentCount} will be sent</span>}
       </span>
+      {detection.lost?.length > 0 && (
+        <p className="notice notice-warn small" role="alert">
+          You hid {detection.lost.map((t) => `"${t}"`).join(', ')} before, but{' '}
+          {detection.lost.length === 1 ? 'it is' : 'they are'} not in the text any more. If you changed how it is
+          written, hide it again below.
+        </p>
+      )}
 
       <div className="details-list" role="list">
         {details.length === 0 && (

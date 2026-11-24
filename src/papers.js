@@ -10,6 +10,13 @@
 import { resolveDeadline, quoteIsInText, parseDay } from './explain'
 
 const KEY = 'kamarat.papers.v1'
+
+// Sent on window whenever My papers changes, so every open screen stays in step.
+export const PAPERS_CHANGED = 'kamarat-papers-changed'
+
+function announce() {
+  window.dispatchEvent(new Event(PAPERS_CHANGED))
+}
 const KINDS = ['MUST', 'CAN', 'UNCLEAR']
 const DEADLINE_KINDS = ['NONE', 'FIXED_DATE', 'AFTER_RECEIVING', 'AFTER_NOTICE_DATE', 'AFTER_OTHER_EVENT']
 
@@ -91,6 +98,7 @@ export function listPapers() {
 function store(list) {
   try {
     localStorage.setItem(KEY, JSON.stringify(list))
+    announce()
     return true
   } catch {
     return false
@@ -121,6 +129,7 @@ export function deletePaper(id) {
 export function deleteAllPapers() {
   try {
     localStorage.removeItem(KEY)
+    announce()
     return true
   } catch {
     return false

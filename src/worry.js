@@ -80,6 +80,12 @@ export function assessWorry(worry, actions) {
     }
   }
 
+  // Points Kamarat could not match to the letter: never call it "just information".
+  if (level === 'INFO' && actions.some((a) => a.group === 'CHECK')) {
+    level = 'UNSURE'
+    raised = 'Kamarat could not check some points in this letter, so it is being careful.'
+  }
+
   return {
     level,
     raised,

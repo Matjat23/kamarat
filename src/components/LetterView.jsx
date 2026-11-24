@@ -157,6 +157,9 @@ export default function LetterView({
   onBack,
   backLabel,
   menu = [],
+  currentLanguage,
+  onExplainAgain,
+  explaining = false,
 }) {
   const [tab, setTab] = useState('steps')
   const [openStep, setOpenStep] = useState(null)
@@ -271,11 +274,40 @@ export default function LetterView({
         {worry.help && <p className="small worry-help">{worry.help}</p>}
         {letter.note && <p className="small muted">{letter.note}</p>}
 
+        {currentLanguage && currentLanguage !== letter.language && onExplainAgain && (
+          <div className="language-change" role="status">
+            <span className="small">This explanation is in {letter.language}. Your answers are now set to {currentLanguage}.</span>
+            <button className="secondary small-btn" onClick={onExplainAgain} disabled={explaining}>
+              {explaining ? 'Explaining...' : `Explain it again in ${currentLanguage}`}
+            </button>
+          </div>
+        )}
+
+        {/* A deadline that counts from the day you got the letter may come
+            first, so that question comes before the next known date. */}
+        {needsReceived && (
+          <div className="received received-first">
+            <label htmlFor={`${uid}-received`}>
+              First, when did you get this letter? A deadline counts from that day, and it could be the
+              first one.
+            </label>
+            <input
+              id={`${uid}-received`}
+              ref={receivedRef}
+              type="date"
+              value={receivedDate}
+              onChange={(e) => onReceivedDate(e.target.value)}
+            />
+          </div>
+        )}
+
         {next && (
           <div className="answer-next">
             <DateTile date={next.info.date} />
             <div className="answer-next-body">
-              <span className="eyebrow">Next · {whenText(next.info.date)}</span>
+              <span className="eyebrow">
+                {unknownDates > 0 ? 'Earliest known date' : 'Next'} · {whenText(next.info.date)}
+              </span>
               <strong {...langProps}>{next.title}</strong>
               <span className="small muted">By {longDate(next.info.date)}</span>
               {next.info.unchecked && <span className="small warning-text">Check this date in your letter.</span>}
@@ -289,19 +321,6 @@ export default function LetterView({
             <button className="secondary small-btn" onClick={() => addToCalendar(next, letter.sender)}>
               <CalendarIcon width={16} height={16} /> Add to calendar
             </button>
-          </div>
-        )}
-
-        {needsReceived && (
-          <div className="received">
-            <label htmlFor={`${uid}-received`}>A deadline counts from the day you got this letter. When was that?</label>
-            <input
-              id={`${uid}-received`}
-              ref={receivedRef}
-              type="date"
-              value={receivedDate}
-              onChange={(e) => onReceivedDate(e.target.value)}
-            />
           </div>
         )}
 
@@ -355,7 +374,15 @@ export default function LetterView({
             <span className="small muted">{doneCount} of {todo.length} done</span>
           </div>
         )}
-        {todo.length === 0 && <p className="muted">There is nothing you need to do for this letter.</p>}
+        {todo.length === 0 && toCheck.length === 0 && (
+          <p className="muted">Kamarat found nothing you need to do for this letter.</p>
+        )}
+        {todo.length === 0 && toCheck.length > 0 && (
+          <p className="notice notice-warn" role="status">
+            Kamarat could not check what this letter asks of you. The points below could not be matched to your
+            letter, so read it before you act. The Letter tab shows the full text.
+          </p>
+        )}
         {GROUPS.map((group) => {
           const items = todo.filter((a) => a.group === group.kind)
           if (items.length === 0) return null
@@ -383,9 +410,10 @@ export default function LetterView({
         })}
 
         {toCheck.length > 0 && (
-          <details className="check-group">
+          <details className="check-group" open={todo.length === 0}>
             <summary>
-              {toCheck.length} more {toCheck.length === 1 ? 'point needs' : 'points need'} checking
+              {toCheck.length} {todo.length > 0 ? 'more ' : ''}
+              {toCheck.length === 1 ? 'point needs' : 'points need'} checking
             </summary>
             <p className="small muted">
               Kamarat could not find the sentence in your letter that these are based on. Read your letter before

@@ -148,6 +148,9 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
         <p className="small muted home-promise">
           <LockIcon width={16} height={16} /> No account needed. Kamarat explains letters; it is not legal advice.
         </p>
+        <p className="small muted">
+          Answers come in the language you pick at the top. Kamarat's own buttons are in English for now.
+        </p>
       </section>
     </div>
   )

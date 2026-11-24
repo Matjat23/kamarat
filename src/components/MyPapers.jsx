@@ -2,7 +2,7 @@
 // The list shows what is coming up and every letter; a letter opens in the same
 // letter screen as a new one. Deadlines and the worry level are worked out
 // again each time, with the same rules.
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   listPapers,
   updatePaper,
@@ -10,8 +10,9 @@ import {
   deleteAllPapers,
   upcomingDeadlines,
   paperActions,
+  PAPERS_CHANGED,
 } from '../papers'
-import { languageProps } from '../explain'
+import { languageProps, explainNotice } from '../explain'
 import { SOURCES } from '../sources'
 import { WORRY, assessWorry, daysUntil } from '../worry'
 import LetterView from './LetterView'
@@ -29,9 +30,17 @@ function whenText(date) {
   return `In ${days} days`
 }
 
-export function SavedLetter({ id, onBack }) {
+export function SavedLetter({ id, language, onBack }) {
   const [paper, setPaper] = useState(() => listPapers().find((p) => p.id === id) ?? null)
   const [error, setError] = useState('')
+  const [explaining, setExplaining] = useState(false)
+
+  // Follow changes made elsewhere, for example on the open letter.
+  useEffect(() => {
+    const sync = () => setPaper(listPapers().find((p) => p.id === id) ?? null)
+    window.addEventListener(PAPERS_CHANGED, sync)
+    return () => window.removeEventListener(PAPERS_CHANGED, sync)
+  }, [id])
 
   if (!paper) {
     return (
@@ -46,6 +55,36 @@ export function SavedLetter({ id, onBack }) {
   function update(patch) {
     if (!updatePaper(paper.id, patch)) setError('Kamarat could not update My papers on this device.')
     setPaper(listPapers().find((p) => p.id === id) ?? null)
+  }
+
+  // Explains the kept text again, for example in another language. The steps
+  // can change, so the ticks start over.
+  async function explainAgain() {
+    setExplaining(true)
+    setError('')
+    try {
+      const result = await explainNotice(paper.shared, language)
+      update({
+        sender: result.sender,
+        summary: result.summary,
+        worry: result.worry,
+        language: result.note?.includes('this is in English') ? 'English' : language,
+        noticeDate: result.noticeDate,
+        done: [],
+        actions: result.actions.map((a) => ({
+          title: a.title,
+          explanation: a.explanation,
+          kind: a.kind,
+          quote: a.quote,
+          quoteFound: a.quoteFound,
+          deadline: a.deadline,
+        })),
+        pages: result.pages.map(({ page }) => page.id),
+      })
+    } catch (err) {
+      setError(`Kamarat could not explain it again: ${err.message}.`)
+    }
+    setExplaining(false)
   }
 
   function remove() {
@@ -78,7 +117,13 @@ export function SavedLetter({ id, onBack }) {
       save={error ? { saved: true, error } : null}
       onBack={onBack}
       backLabel="My papers"
-      menu={[{ label: 'Delete this letter', onClick: remove }]}
+      currentLanguage={language}
+      onExplainAgain={explainAgain}
+      explaining={explaining}
+      menu={[
+        { label: `Explain again in ${language}`, onClick: explainAgain },
+        { label: 'Delete this letter', onClick: remove },
+      ]}
     />
   )
 }
