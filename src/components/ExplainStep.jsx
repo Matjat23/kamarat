@@ -2,6 +2,7 @@
 // then show what the notice asks: Must do, Can do and Unclear.
 import { useState } from 'react'
 import { explainNotice, resolveDeadline, formatDay, LANGUAGES } from '../explain'
+import { downloadDeadline } from '../calendar'
 
 const GROUPS = [
   { kind: 'MUST', title: 'You must', hint: 'The notice requires this.' },
@@ -9,12 +10,23 @@ const GROUPS = [
   { kind: 'UNCLEAR', title: 'Unclear', hint: 'Depends on something the notice does not say. Ask the sender if unsure.' },
 ]
 
-function Deadline({ info, onNeedReceived }) {
+function Deadline({ info, action, sender, onNeedReceived }) {
   if (!info) return null
   if (info.date) {
+    const addToCalendar = () =>
+      downloadDeadline({
+        title: action.title,
+        date: info.date,
+        details: `${action.explanation}\n\nFrom ${sender}: "${action.quote}"\n\n${info.basis}\nMade with Kamarat. Always check the original notice.`,
+      })
     return (
       <div className="deadline">
-        <strong>By {formatDay(info.date)}</strong>
+        <div className="row-between">
+          <strong>By {formatDay(info.date)}</strong>
+          <button className="chip-button" onClick={addToCalendar}>
+            Add to calendar
+          </button>
+        </div>
         <span className="small muted">
           {info.basis}
           {info.businessNote && ' Weekends are skipped. Public holidays are not, so check if one falls in between.'}
@@ -41,9 +53,11 @@ export default function ExplainStep({ shared, onBack, onRestart }) {
   const [showPayload, setShowPayload] = useState(false)
 
   async function send() {
-    setState({ phase: 'loading' })
+    setState({ phase: 'loading', status: 'Gemini is reading...' })
     try {
-      const result = await explainNotice(shared, language)
+      const result = await explainNotice(shared, language, (status) =>
+        setState({ phase: 'loading', status }),
+      )
       setState({ phase: 'done', result })
     } catch (err) {
       setState({ phase: 'error', message: err.message })
@@ -77,10 +91,11 @@ export default function ExplainStep({ shared, onBack, onRestart }) {
               Back
             </button>
             <button className="primary" onClick={send} disabled={state.phase === 'loading'}>
-              {state.phase === 'loading' ? 'Gemini is reading...' : 'Send and explain'}
+              {state.phase === 'loading' ? 'Working...' : 'Send and explain'}
             </button>
           </div>
         </div>
+        {state.phase === 'loading' && <p className="small muted">{state.status}</p>}
         {state.phase === 'error' && (
           <p className="notice notice-warn">Something went wrong: {state.message}. Nothing else was sent. Try again.</p>
         )}
@@ -98,9 +113,11 @@ export default function ExplainStep({ shared, onBack, onRestart }) {
       <div className="row-between">
         <h2>What this notice asks of you</h2>
         <span className={`badge badge-${result.source}`}>
-          {result.source === 'in_cloud' ? 'In the cloud' : result.source}
+          {result.source === 'in_cloud' ? 'In the cloud' : 'On your device'}
         </span>
       </div>
+
+      {result.note && <p className="notice notice-ok">{result.note}</p>}
 
       <div className="summary">
         <span className="small muted">From {result.sender}</span>
@@ -139,6 +156,8 @@ export default function ExplainStep({ shared, onBack, onRestart }) {
                     noticeDate: result.noticeDate,
                     receivedDate,
                   })}
+                  action={action}
+                  sender={result.sender}
                   onNeedReceived={focusReceived}
                 />
                 <blockquote className={action.quoteFound ? '' : 'quote-missing'}>
@@ -154,6 +173,29 @@ export default function ExplainStep({ shared, onBack, onRestart }) {
           </div>
         )
       })}
+
+      {result.pages.length > 0 && (
+        <div className="group">
+          <div className="group-head">
+            <h3>Official pages for this notice</h3>
+            <span className="small muted">Only from Kamarat's checked list of government sources.</span>
+          </div>
+          {result.pages.map(({ page, why }) => (
+            <a
+              key={page.id}
+              className="source"
+              href={page.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="small muted">{page.agency}</span>
+              <strong>{page.title}</strong>
+              <span className="small">{why}</span>
+              <span className="small source-url">{new URL(page.url).hostname}</span>
+            </a>
+          ))}
+        </div>
+      )}
 
       <button className="link-button" onClick={() => setShowPayload(!showPayload)}>
         {showPayload ? 'Hide' : 'Show'} exactly what was sent to Gemini

@@ -99,17 +99,47 @@ export const cloudModel = getGenerativeModel(ai, {
 
 // Explainer model: cloud Gemini that must answer in a fixed JSON shape,
 // so the code can check every quote and work out deadlines itself.
-export function getExplainModel(responseJsonSchema, systemInstruction) {
-  return getGenerativeModel(ai, {
-    mode: InferenceMode.ONLY_IN_CLOUD,
-    inCloudParams: {
-      model: 'gemini-3.5-flash-lite',
-      systemInstruction,
-      generationConfig: {
-        temperature: 0.2,
-        responseMimeType: 'application/json',
-        responseJsonSchema,
+// The first model is fast and cheap; the second is a backup for when the
+// first one is busy ("high demand").
+export const EXPLAIN_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
+
+export function getExplainModel(responseJsonSchema, systemInstruction, modelName) {
+  return getGenerativeModel(
+    ai,
+    {
+      mode: InferenceMode.ONLY_IN_CLOUD,
+      inCloudParams: {
+        model: modelName,
+        systemInstruction,
+        generationConfig: {
+          temperature: 0.2,
+          responseMimeType: 'application/json',
+          responseJsonSchema,
+        },
       },
+    },
+    { timeout: 25000 },
+  )
+}
+
+// On-device explainer: used when cloud Gemini is busy or the person is offline.
+// Gemini Nano can write English, German, Spanish, French and Japanese.
+export const ON_DEVICE_LANGUAGES = {
+  English: 'en',
+  German: 'de',
+  Spanish: 'es',
+  French: 'fr',
+}
+
+export function getOnDeviceExplainModel(responseConstraint, languageCode) {
+  return getGenerativeModel(ai, {
+    mode: InferenceMode.ONLY_ON_DEVICE,
+    onDeviceParams: {
+      createOptions: {
+        expectedInputs: englishText,
+        expectedOutputs: [{ type: 'text', languages: [languageCode] }],
+      },
+      promptOptions: { responseConstraint },
     },
   })
 }
