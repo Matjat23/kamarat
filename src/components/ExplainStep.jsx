@@ -8,6 +8,7 @@ import { occurrences } from '../privacy'
 import { downloadDeadline } from '../calendar'
 import DraftReply from './DraftReply'
 import WordHelp from './WordHelp'
+import AskKamarat from './AskKamarat'
 import { savePaper, updatePaper } from '../papers'
 import { speak, stopSpeaking, canSpeak, spokenPhrases, spokenDate } from '../speak'
 import { LANGUAGES } from '../explain'
@@ -51,7 +52,7 @@ export function SharedText({ text, className = 'shared-text', highlight }) {
 }
 
 // A short piece of the notice around the quote, with the quote marked.
-function QuoteInNotice({ shared, quote }) {
+export function QuoteInNotice({ shared, quote }) {
   const match = occurrences(shared, quote.replace(/[“”"«»]/g, '').replace(/[.…]+$/, ''))[0]
   if (!match) return <p className="small muted">Kamarat could not find this sentence in your notice.</p>
   const start = Math.max(0, shared.lastIndexOf('\n\n', match.start - 1) + 1)
@@ -162,6 +163,8 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
   const [speaking, setSpeaking] = useState(false)
   const [voiceMissing, setVoiceMissing] = useState(false)
   const [saveError, setSaveError] = useState('')
+  // Filled when the person taps "Ask the sender" in the chat.
+  const [replyPrefill, setReplyPrefill] = useState(null)
   const replyRef = useRef(null)
   const started = useRef(false)
 
@@ -525,6 +528,17 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
         )
       })}
 
+      <AskKamarat
+        shared={shared}
+        labelMap={labelMap}
+        details={details}
+        language={result.language}
+        onAskSender={(text) => {
+          setReplyPrefill({ intent: 'question', note: text, id: Date.now() })
+          replyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }}
+      />
+
       <WordHelp shared={shared} language={result.language} />
 
       {result.pages.length > 0 && (
@@ -552,7 +566,7 @@ export default function ExplainStep({ shared, labelMap, details, language, onBac
       )}
 
       <div ref={replyRef} className="reply-anchor">
-        <DraftReply shared={shared} labelMap={labelMap} details={details} language={language} />
+        <DraftReply shared={shared} labelMap={labelMap} details={details} language={language} prefill={replyPrefill} />
       </div>
 
       <div className="end-row">

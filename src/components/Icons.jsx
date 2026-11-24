@@ -157,6 +157,15 @@ export function PenIcon(props) {
   )
 }
 
+export function ChatIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 5.5h14a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-7l-4.5 3.5v-3.5H5A1.5 1.5 0 0 1 3.5 15V7A1.5 1.5 0 0 1 5 5.5z" />
+      <path d="M8 10h8M8 13h5" />
+    </svg>
+  )
+}
+
 // Small flags drawn in SVG, because Windows does not show flag emoji.
 export function Flag({ country }) {
   const common = { width: 32, height: 22, viewBox: '0 0 32 22', 'aria-hidden': true, className: 'flag' }

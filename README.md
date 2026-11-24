@@ -12,6 +12,8 @@ I have lived in Senegal, France, Sweden and the US, and every move came with let
 4. Only the approved text goes to cloud Gemini, which explains what the notice asks of you: what you must do, what you can do and what is unclear. Every point quotes the sentence it comes from, and my code checks that the quote is really in the notice.
 5. Deadlines are calculated by the code, not the AI. If a deadline counts from the day you received the letter, Kamarat asks you for that date.
 
+You can also ask follow-up questions about the notice. Your question is checked on the device first: names and numbers from the notice get the same labels, and new ones are hidden too, so you see what will be sent. Answers come only from the notice. Each answer either quotes the sentence it is based on (checked by the code) or says that the notice does not answer it and offers to start a question to the sender. It does not answer from general knowledge.
+
 Word help explains a word from the approved text, on the device when Gemini Nano can write your language, otherwise in the cloud, and the screen says which. Listen reads the explanation with a voice that runs on your device. My papers keeps saved explanations in your browser only and works the deadlines out again each time you open them.
 
 If the on-device model is not available, nothing is sent anywhere. Kamarat falls back to the pattern check and lets you hide details yourself.

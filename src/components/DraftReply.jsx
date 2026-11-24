@@ -6,7 +6,7 @@
 // - Your own message is checked on the device, and you see exactly what Gemini
 //   will get before it is sent.
 // - If you edit the reply afterwards, the translation is marked as out of date.
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { REPLY_INTENTS, draftReply, maskNote, fillIn, openItems } from '../reply'
 import { detectWithAI } from '../privacy'
 import { languageProps } from '../explain'
@@ -23,7 +23,7 @@ function labelsOfType(labelMap, types, shared) {
     .sort((a, b) => shared.indexOf(a) - shared.indexOf(b))
 }
 
-export default function DraftReply({ shared, labelMap, details, language }) {
+export default function DraftReply({ shared, labelMap, details, language, prefill }) {
   // Names hidden by hand get the HIDDEN type, so offer those too.
   const nameLabels = labelsOfType(labelMap, ['NAME', 'HIDDEN'], shared)
   const caseLabels = labelsOfType(labelMap, ['CASE'], shared)
@@ -38,6 +38,16 @@ export default function DraftReply({ shared, labelMap, details, language }) {
   const [subject, setSubject] = useState('')
   const [showLabels, setShowLabels] = useState(false)
   const [copied, setCopied] = useState(false)
+
+  // "Ask the sender" in the chat starts a question reply with the suggested text.
+  // It is checked on the device again like any other message.
+  useEffect(() => {
+    if (!prefill) return
+    setIntent(prefill.intent)
+    setNote(prefill.note)
+    setState({ phase: 'idle' })
+    document.getElementById('reply-note')?.focus({ preventScroll: true })
+  }, [prefill])
 
   const selfLabel = selfChoice === WRITE_MYSELF ? '' : selfChoice
   const preview = useMemo(() => maskNote(note, details, labelMap), [note, details, labelMap])
