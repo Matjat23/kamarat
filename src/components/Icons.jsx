@@ -14,14 +14,13 @@ const base = {
 
 export function Logo({ size = 40 }) {
   return (
+    // Two friends side by side: "kamrat" means friend.
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
-      <rect width="64" height="64" rx="15" fill="#2f5d50" />
-      <path d="M20 12h17l9 9v31H20z" fill="#faf6ee" />
-      <path d="M37 12v9h9z" fill="#beb4a5" />
-      <rect x="25" y="25" width="13" height="2.6" rx="1.3" fill="#beb4a5" />
-      <rect x="25" y="31" width="16" height="4.4" rx="1" fill="#1f1b16" />
-      <rect x="25" y="39" width="14" height="2.6" rx="1.3" fill="#beb4a5" />
-      <circle cx="39.5" cy="46" r="3" fill="#c2603f" />
+      <rect width="64" height="64" rx="16" fill="#2f5d50" />
+      <circle cx="25" cy="23" r="7" fill="#faf6ee" />
+      <path d="M13 51c0-9 5.4-15 12-15s12 6 12 15z" fill="#faf6ee" />
+      <circle cx="40" cy="25" r="6.5" fill="#e08a68" />
+      <path d="M29 51c0-8.4 5-14 11-14s11 5.6 11 14z" fill="#e08a68" />
     </svg>
   )
 }
@@ -153,6 +152,15 @@ export function PenIcon(props) {
   return (
     <svg {...base} {...props}>
       <path d="M15.5 4.5 19.5 8.5 9 19H5v-4z" />
+    </svg>
+  )
+}
+
+export function GlobeIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M3.5 12h17M12 3.5c2.5 2.6 3.6 5.4 3.6 8.5s-1.1 5.9-3.6 8.5c-2.5-2.6-3.6-5.4-3.6-8.5s1.1-5.9 3.6-8.5z" />
     </svg>
   )
 }

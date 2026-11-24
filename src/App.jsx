@@ -19,7 +19,7 @@ import {
   makeUserDetail,
   occurrences,
 } from './privacy'
-import { LANGUAGES, languageLabel } from './explain'
+import { LANGUAGES } from './explain'
 import { readFile } from './scan'
 import { readClipboard } from './device'
 import { stopSpeaking } from './speak'
@@ -33,9 +33,12 @@ import MyPapers, { SavedLetter } from './components/MyPapers'
 import EvalPage from './components/EvalPage'
 import TranslationsPage from './components/TranslationsPage'
 import { listPapers, PAPERS_CHANGED } from './papers'
-import { Logo, FolderIcon, HomeIcon, PlusIcon } from './components/Icons'
+import { Logo, FolderIcon, HomeIcon, PlusIcon, CameraIcon, GlobeIcon } from './components/Icons'
+import Onboarding, { Settings } from './components/Setup'
+import { isPhone } from './device'
 import './App.css'
 import './layout.css'
+import './redesign.css'
 
 const METHOD_TEXT = {
   pdf: msg('Text taken from your PDF on this device.'),
@@ -49,6 +52,15 @@ function readRoute() {
 }
 
 const LANGUAGE_KEY = 'kamarat.language'
+const SETUP_KEY = 'kamarat.setup.v1'
+
+function setupWasDone() {
+  try {
+    return localStorage.getItem(SETUP_KEY) === 'done'
+  } catch {
+    return false
+  }
+}
 
 // The language saved last time, or the browser's own language if Kamarat has it.
 function startLanguage() {
@@ -91,6 +103,10 @@ export default function App() {
   // Whether Kamarat's own texts are being translated, or could not be.
   const [uiStatus, setUiStatus] = useState({ code: 'en', state: 'ready' })
   const [uiRetry, setUiRetry] = useState(0)
+  const [toastClosed, setToastClosed] = useState(false)
+  // The first visit asks for the language and the country, once.
+  const [setupDone, setSetupDone] = useState(setupWasDone)
+  const scanInput = useRef(null)
   // Where the person lives: their own choice, or a guess from the browser.
   const [country, setCountryState] = useState(() => savedCountry() || guessCountry())
   const [nanoStatus, setNanoStatus] = useState('checking')
@@ -155,6 +171,22 @@ export default function App() {
       cancelled = true
     }
   }, [language, uiRetry])
+
+  function finishSetup() {
+    try {
+      localStorage.setItem(SETUP_KEY, 'done')
+    } catch {
+      // private mode: asked again next time
+    }
+    setSetupDone(true)
+    if (!country) saveCountry('')
+  }
+
+  // The round Scan button on phones opens the camera straight away.
+  function scanNow() {
+    if (isPhone()) scanInput.current?.click()
+    else newLetter()
+  }
 
   function setCountry(code) {
     setCountryState(code)
@@ -353,58 +385,86 @@ export default function App() {
 
   const navItems = [
     { id: 'home', label: t('Home'), icon: HomeIcon, onClick: () => go('') },
-    { id: 'new', label: t('New letter'), icon: PlusIcon, onClick: newLetter },
+    { id: 'new', label: t('New letter'), phoneLabel: t('Scan'), icon: PlusIcon, phoneIcon: CameraIcon, onClick: scanNow },
     { id: 'papers', label: t('My papers'), icon: FolderIcon, onClick: () => go('papers'), count: papers.length },
   ]
+  const langInfo = LANGUAGES.find((l) => l.name === language) ?? LANGUAGES[0]
+  const localeText = `${langInfo.code.slice(0, 2).toUpperCase()}${country ? ` · ${country}` : ''}`
+
+  if (!setupDone && !new URLSearchParams(window.location.search).has('eval')) {
+    return (
+      <div className="app app-setup">
+        <Onboarding
+          language={language}
+          country={country}
+          onLanguage={setLanguage}
+          onCountry={setCountry}
+          onDone={finishSetup}
+        />
+      </div>
+    )
+  }
   const activeNav = inFlow || view === 'letter' ? 'new' : view
 
   return (
     <div className={`app ${inFlow ? 'in-flow' : ''}`}>
       <header className="top">
-        <button className="brand" onClick={() => go('')} aria-label="Kamarat home">
+        <button className="brand" onClick={() => go('')} aria-label={t('Kamarat home')}>
           <Logo size={38} />
           <span className="wordmark">Kamarat</span>
         </button>
 
         <nav className="nav" aria-label={t('Main')}>
-          {navItems.map(({ id, label, icon: Icon, onClick, count }) => (
+          {navItems.map(({ id, label, phoneLabel, icon: Icon, phoneIcon: PhoneIcon, onClick, count }) => (
             <button
               key={id}
-              className={`nav-item ${activeNav === id ? 'active' : ''}`}
+              className={`nav-item nav-${id} ${activeNav === id ? 'active' : ''}`}
               aria-current={activeNav === id ? 'page' : undefined}
               onClick={onClick}
             >
-              <Icon width={20} height={20} />
-              <span>{label}</span>
+              <span className="nav-icon"><Icon width={20} height={20} /></span>
+              {PhoneIcon && <span className="nav-icon-phone"><PhoneIcon width={24} height={24} /></span>}
+              <span className={phoneLabel ? 'label-desktop' : ''}>{label}</span>
+              {phoneLabel && <span className="label-phone">{phoneLabel}</span>}
               {count > 0 && <span className="papers-count">{count}</span>}
             </button>
           ))}
         </nav>
+        <input
+          ref={scanInput}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden
+          onChange={(event) => {
+            const file = event.target.files?.[0]
+            event.target.value = ''
+            if (file) readLetterFile(file, { fresh: true })
+          }}
+        />
 
-        <label className="language-pick">
-          <span className="language-label">{t('Language')}</span>
-          <select value={language} onChange={(e) => setLanguage(e.target.value)}>
-            {LANGUAGES.map((l) => (
-              <option key={l.name} value={l.name}>
-                {languageLabel(l)}
-              </option>
-            ))}
-          </select>
-        </label>
+        <button
+          className="locale-chip"
+          onClick={() => go('settings')}
+          aria-label={t('Language and country: {language}, {country}', { language, country: country || '-' })}
+        >
+          <GlobeIcon width={18} height={18} /> {localeText}
+        </button>
       </header>
 
       <main className="main">
         {new URLSearchParams(window.location.search).has('eval') && <EvalPage />}
         {import.meta.env.DEV && new URLSearchParams(window.location.search).has('translations') && <TranslationsPage />}
 
+        {/* Translating the screens: a small message at the bottom, never a banner. */}
         {uiStatus.state === 'loading' && (
-          <p className="notice notice-ok small" role="status">Translating Kamarat into {language}...</p>
+          <p className="toast" role="status">Translating Kamarat into {language}...</p>
         )}
-        {uiStatus.state === 'failed' && (
-          <p className="notice notice-warn small" role="status">
-            Kamarat could not translate its screens into {language} right now, so they are in English. Answers still
-            come in {language}.{' '}
-            <button className="link-button" onClick={() => setUiRetry((n) => n + 1)}>Try again</button>
+        {uiStatus.state === 'failed' && !toastClosed && (
+          <p className="toast toast-warn" role="status">
+            <span>Screens stay in English for now. Answers still come in {language}.</span>
+            <button className="link-button" onClick={() => { setToastClosed(false); setUiRetry((n) => n + 1) }}>Try again</button>
+            <button className="toast-close" onClick={() => setToastClosed(true)} aria-label="Close">×</button>
           </p>
         )}
 
@@ -413,8 +473,6 @@ export default function App() {
         {view === 'home' && (
           <Home
             papers={papers}
-            country={country}
-            onCountry={setCountry}
             onResume={shared ? () => go('letter') : null}
             onFile={(file) => readLetterFile(file, { fresh: true })}
             onPaste={startPaste}
@@ -453,6 +511,16 @@ export default function App() {
             onHideText={hideText}
             onBack={() => goBack('new')}
             onSend={sendReviewed}
+          />
+        )}
+
+        {view === 'settings' && (
+          <Settings
+            language={language}
+            country={country}
+            onLanguage={setLanguage}
+            onCountry={setCountry}
+            onBack={() => goBack('')}
           />
         )}
 
