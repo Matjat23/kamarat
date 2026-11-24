@@ -16,6 +16,7 @@ import { languageProps, LANGUAGES } from '../explain'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { speak, stopSpeaking, canSpeak } from '../speak'
 import { SharedText, QuoteInNotice } from './Text'
+import { t } from '../i18n'
 import { CloudIcon, DeviceIcon, LandmarkIcon, ArrowIcon, PenIcon, SpeakerIcon, Dots } from './Icons'
 
 function Answer({ turn, shared, language, speakingId, onListen, onAskSender }) {
@@ -28,30 +29,29 @@ function Answer({ turn, shared, language, speakingId, onListen, onAskSender }) {
 
       {turn.basis === 'NOTICE' && turn.quoteFound && (
         <blockquote className="bubble-quote">
-          <span className="quote-head">From your letter</span>
+          <span className="quote-head">{t('From your letter')}</span>
           <span dir="auto">{turn.quote}</span>
           <button className="link-button" aria-expanded={showQuote} onClick={() => setShowQuote(!showQuote)}>
-            {showQuote ? 'Hide' : 'Show in my letter'}
+            {showQuote ? t('Hide') : t('Show in my letter')}
           </button>
           {showQuote && <QuoteInNotice shared={shared} quote={turn.quote} />}
         </blockquote>
       )}
       {turn.basis === 'NOTICE' && !turn.quoteFound && (
         <p className="small warning-text">
-          Kamarat could not find the sentence this answer is based on in your letter. Check your letter before
-          you rely on it.
+          {t('Kamarat could not find the sentence this answer is based on in your letter. Check your letter before you rely on it.')}
         </p>
       )}
       {turn.basis === 'NOT_IN_NOTICE' && (
         <div className="bubble-open">
-          <span className="quote-head">Your letter does not say</span>
+          <span className="quote-head">{t('Your letter does not say')}</span>
           {turn.askSender && (
             <span className="small" {...langProps}>
-              You could ask them: "{turn.askSender}"
+              {t('You could ask them:')} "{turn.askSender}"
             </span>
           )}
           <button className="secondary small-btn" onClick={() => onAskSender(turn.askSender || turn.question)}>
-            <PenIcon width={14} height={14} /> Ask the sender
+            <PenIcon width={14} height={14} /> {t('Ask the sender')}
           </button>
         </div>
       )}
@@ -59,7 +59,7 @@ function Answer({ turn, shared, language, speakingId, onListen, onAskSender }) {
         <a className="bubble-page" href={turn.page.url} target="_blank" rel="noopener noreferrer">
           <LandmarkIcon width={16} height={16} />
           <span>
-            <span className="small muted">Official page about this · {turn.page.agency}</span>
+            <span className="small muted">{t('Official page about this')} · {turn.page.agency}</span>
             <strong className="small">{turn.page.title}</strong>
           </span>
           <ArrowIcon width={16} height={16} />
@@ -68,13 +68,13 @@ function Answer({ turn, shared, language, speakingId, onListen, onAskSender }) {
 
       <div className="bubble-meta">
         {turn.source === 'on_device' ? (
-          <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> Answered on your device</span>
+          <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> {t('Answered on your device')}</span>
         ) : (
-          <span className="badge badge-in_cloud"><CloudIcon width={14} height={14} /> Answered in the cloud</span>
+          <span className="badge badge-in_cloud"><CloudIcon width={14} height={14} /> {t('Answered in the cloud')}</span>
         )}
         {canSpeak() && (
           <button className="ghost small-btn" onClick={() => onListen(turn)} aria-pressed={speakingId === turn.id}>
-            <SpeakerIcon width={14} height={14} /> {speakingId === turn.id ? 'Stop' : 'Listen'}
+            <SpeakerIcon width={14} height={14} /> {speakingId === turn.id ? t('Stop') : t('Listen')}
           </button>
         )}
       </div>
@@ -126,7 +126,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
     if (fromInput) setQuestion('')
     const id = nextId.current++
     const history = turns.filter((t) => t.status === 'done').map((t) => ({ question: t.question, answer: t.answer }))
-    setTurns((list) => [...list, { id, question: masked, status: 'loading', statusText: 'Reading your letter again...' }])
+    setTurns((list) => [...list, { id, question: masked, status: 'loading', statusText: t('Reading your letter again...') }])
     const update = (patch) => setTurns((list) => list.map((t) => (t.id === id ? { ...t, ...patch } : t)))
     try {
       const answer = await askAboutNotice({
@@ -165,14 +165,14 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
 
   return (
     <div className="ask">
-      <p className="tab-intro">Ask anything about this letter. Answers come only from your letter, and Kamarat tells you when it does not say.</p>
+      <p className="tab-intro">{t('Ask anything about this letter. Answers come only from your letter, and Kamarat tells you when it does not say.')}</p>
 
       {turns.length > 0 && (
         <ol className="chat" role="log" aria-live="polite">
           {turns.map((turn) => (
             <li key={turn.id} className="chat-turn">
               <div className="bubble bubble-you">
-                <span className="quote-head">You asked · sent like this</span>
+                <span className="quote-head">{t('You asked · sent like this')}</span>
                 <SharedText text={turn.question} className="bubble-text" />
               </div>
               <div className="bubble bubble-kamarat">
@@ -198,14 +198,14 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
         </ol>
       )}
       {voiceMissing && (
-        <p className="small muted">Your device has no offline voice for this language.</p>
+        <p className="small muted">{t('Your device has no offline voice for this language.')}</p>
       )}
 
       {left > 0 && !confirm && (
-        <div className="chips" aria-label="Suggested questions">
+        <div className="chips" aria-label={t('Suggested questions')}>
           {SUGGESTED_QUESTIONS.map((q) => (
-            <button key={q} className="chip-button secondary" disabled={busy} onClick={() => send(q, false)}>
-              {q}
+            <button key={q} className="chip-button secondary" disabled={busy} onClick={() => send(t(q), false)}>
+              {t(q)}
             </button>
           ))}
         </div>
@@ -213,11 +213,11 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
 
       {confirm ? (
         <div className="review-note review-final" role="status">
-          <span className="quote-head">Kamarat found more personal details and hid them. This is exactly what will be sent:</span>
+          <span className="quote-head">{t('Kamarat found more personal details and hid them. This is exactly what will be sent:')}</span>
           <SharedText text={confirm.masked} className="review-note-text" />
           <div className="buttons">
-            <button className="secondary" onClick={() => setConfirm(null)}>Edit question</button>
-            <button className="primary" onClick={() => submit(confirm.masked)}>Send it</button>
+            <button className="secondary" onClick={() => setConfirm(null)}>{t('Edit question')}</button>
+            <button className="primary" onClick={() => submit(confirm.masked)}>{t('Send it')}</button>
           </div>
         </div>
       ) : left > 0 ? (
@@ -228,7 +228,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
             send(question)
           }}
         >
-          <label htmlFor={`${uid}-question`} className="small muted">Your question, in any language</label>
+          <label htmlFor={`${uid}-question`} className="small muted">{t('Your question, in any language')}</label>
           <textarea
             id={`${uid}-question`}
             rows={2}
@@ -236,26 +236,26 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={onKeyDown}
             aria-describedby={`${uid}-help`}
-            placeholder="For example: Do I need to send the originals?"
+            placeholder={t('For example: Do I need to send the originals?')}
             dir="auto"
           />
           <p id={`${uid}-help`} className="small muted">
-            Kamarat hides names and numbers on your device before sending. Leave out anything else you would
-            rather not share. {left} of {MAX_QUESTIONS} questions left for this letter.
+            {t('Kamarat hides names and numbers on your device before sending. Leave out anything else you would rather not share.')}{' '}
+            {t('{left} of {max} questions left for this letter.', { left, max: MAX_QUESTIONS })}
           </p>
           {preview && preview !== question.trim() && (
             <div className="review-note">
-              <span className="quote-head">Will be sent like this</span>
+              <span className="quote-head">{t('Will be sent like this')}</span>
               <SharedText text={preview} className="review-note-text" />
             </div>
           )}
           <button className="primary" type="submit" disabled={busy || !question.trim()}>
-            {checking ? <span role="status"><Dots /> Checking your question on your device...</span> : 'Ask'}
+            {checking ? <span role="status"><Dots /> {t('Checking your question on your device...')}</span> : t('Ask')}
           </button>
         </form>
       ) : (
         <p className="small muted">
-          That's {MAX_QUESTIONS} questions for this letter. If something is still unclear, ask the sender.
+          {t("That's {max} questions for this letter. If something is still unclear, ask the sender.", { max: MAX_QUESTIONS })}
         </p>
       )}
     </div>

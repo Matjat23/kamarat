@@ -13,6 +13,7 @@ import { languageProps } from '../explain'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { ClipboardIcon, MailIcon, DeviceIcon, Dots } from './Icons'
 import { SharedText } from './Text'
+import { t } from '../i18n'
 
 const WRITE_MYSELF = '__self'
 
@@ -63,7 +64,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
     if (!note.trim()) return write({ masked: '', extraMap: {} })
     let aiItems = []
     if ((await checkOnDeviceModel()) === 'available') {
-      setState({ phase: 'loading', status: 'Checking your message on your device...' })
+      setState({ phase: 'loading', status: t('Checking your message on your device...') })
       try {
         aiItems = (await detectWithAI(detectorModel, note)).items
       } catch (err) {
@@ -75,7 +76,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
 
   // Step 2: send the checked message and the notice to Gemini, then fill in.
   async function write({ masked, extraMap }) {
-    setState({ phase: 'loading', status: 'Gemini is writing your reply...' })
+    setState({ phase: 'loading', status: t('Gemini is writing your reply...') })
     try {
       const draft = await draftReply({
         shared,
@@ -124,10 +125,10 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
 
   return (
     <div className="reply">
-      <p className="tab-intro">Kamarat writes the reply with labels, and your real name and case number are filled in on this device.</p>
+      <p className="tab-intro">{t('Kamarat writes the reply with labels, and your real name and case number are filled in on this device.')}</p>
 
       <fieldset className="intents">
-        <legend className="visually-hidden">What do you want to say?</legend>
+        <legend className="visually-hidden">{t('What do you want to say?')}</legend>
         {REPLY_INTENTS.map((o) => (
           <label key={o.id} className={`chip-button chip-radio ${intent === o.id ? 'chip-selected' : ''}`}>
             <input
@@ -138,41 +139,41 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
               onChange={() => setIntent(o.id)}
               className="visually-hidden"
             />
-            {o.label}
+            {t(o.label)}
           </label>
         ))}
       </fieldset>
 
       <div className="roles">
         <label>
-          <span className="small muted">Sign with your name</span>
+          <span className="small muted">{t('Sign with your name')}</span>
           <select value={selfChoice} onChange={(e) => setSelfChoice(e.target.value)}>
             <option value="" disabled>
-              Choose your name...
+              {t('Choose your name...')}
             </option>
             {nameLabels.map((label) => (
               <option key={label} value={label}>
                 {labelMap[label]}
               </option>
             ))}
-            <option value={WRITE_MYSELF}>I will write my name myself</option>
+            <option value={WRITE_MYSELF}>{t('I will write my name myself')}</option>
           </select>
         </label>
         <label>
-          <span className="small muted">Case number to mention</span>
+          <span className="small muted">{t('Case number to mention')}</span>
           <select value={caseLabel} onChange={(e) => setCaseLabel(e.target.value)}>
             {caseLabels.map((label) => (
               <option key={label} value={label}>
                 {labelMap[label]}
               </option>
             ))}
-            <option value="">None</option>
+            <option value="">{t('None')}</option>
           </select>
         </label>
       </div>
 
       <label htmlFor={`${uid}-note`} className="small muted">
-        {intent === 'question' ? 'Your question' : 'Your message (optional)'}
+        {intent === 'question' ? t('Your question') : t('Your message (optional)')}
       </label>
       <textarea
         id={`${uid}-note`}
@@ -185,33 +186,33 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
         aria-describedby={`${uid}-note-help`}
         placeholder={
           intent === 'question'
-            ? 'Your question, in your own words.'
-            : 'For example which documents you attach, or why you need more time.'
+            ? t('Your question, in your own words.')
+            : t('For example which documents you attach, or why you need more time.')
         }
       />
       <p id={`${uid}-note-help`} className="small muted">
-        Avoid names and health details. Kamarat adds your name and case number for you, on this device.
+        {t('Avoid names and health details. Kamarat adds your name and case number for you, on this device.')}
       </p>
       {note.trim() && state.phase !== 'confirm' && (
         <div className="review-note">
-          <span className="quote-head">Preview · numbers and emails hidden</span>
+          <span className="quote-head">{t('Preview · numbers and emails hidden')}</span>
           <SharedText text={preview.masked} className="review-note-text" />
         </div>
       )}
 
       {state.phase === 'confirm' ? (
         <div className="review-note review-final" role="status">
-          <span className="quote-head">Final check · this is exactly what Gemini gets from your message</span>
+          <span className="quote-head">{t('Final check · this is exactly what Gemini gets from your message')}</span>
           <SharedText text={state.masked} className="review-note-text" />
           <span className="small muted">
-            If you see a name or anything private, edit your message. Otherwise send it.
+            {t('If you see a name or anything private, edit your message. Otherwise send it.')}
           </span>
           <div className="buttons">
             <button className="secondary" onClick={() => setState({ phase: 'idle' })}>
-              Edit message
+              {t('Edit message')}
             </button>
             <button className="primary" onClick={() => write(state)}>
-              Send to Gemini and write the reply
+              {t('Send to Gemini and write the reply')}
             </button>
           </div>
         </div>
@@ -224,35 +225,30 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
           {state.phase === 'loading'
             ? <span role="status"><Dots /> {state.status}</span>
             : needsName
-              ? 'Choose your name first'
+              ? t('Choose your name first')
               : needsNote
-                ? 'Write your question first'
+                ? t('Write your question first')
                 : state.phase === 'done'
-                  ? 'Write it again'
-                  : 'Write my reply'}
+                  ? t('Write it again')
+                  : t('Write my reply')}
         </button>
       )}
 
       {state.phase === 'error' && (
-        <p className="notice notice-warn" role="alert">Could not write the reply: {state.message}. Try again in a minute.</p>
+        <p className="notice notice-warn" role="alert">{t('Could not write the reply:')} {state.message}. {t('Try again in a minute.')}</p>
       )}
 
       {state.phase === 'done' && (
         <div className="reply-result">
-          <h4>Draft ready. Check it before you send it.</h4>
+          <h4>{t('Draft ready. Check it before you send it.')}</h4>
           <p className="notice notice-ok small">
-            <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> Filled in on your device</span>
+            <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> {t('Filled in on your device')}</span>
             {state.filled.length > 0
-              ? `Your ${state.filled
-                  .map((l) =>
-                    l === selfLabel ? 'name' : l === caseLabel ? 'case number' : 'details from your message',
-                  )
-                  .filter((v, i, all) => all.indexOf(v) === i)
-                  .join(' and ')} were added on this device. Gemini never saw them.`
-              : 'Nothing personal needed to be added.'}
+              ? t('Your personal details were added on this device. Gemini never saw them.')
+              : t('Nothing personal needed to be added.')}
           </p>
 
-          <label className="small muted" htmlFor={`${uid}-subject`}>Subject</label>
+          <label className="small muted" htmlFor={`${uid}-subject`}>{t('Subject')}</label>
           <input
             id={`${uid}-subject`}
             className="reply-subject"
@@ -260,7 +256,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
             onChange={(e) => setSubject(e.target.value)}
             dir="auto"
           />
-          <label className="small muted" htmlFor={`${uid}-letter`}>Your reply (you can edit it)</label>
+          <label className="small muted" htmlFor={`${uid}-letter`}>{t('Your reply (you can edit it)')}</label>
           <textarea
             id={`${uid}-letter`}
             value={letter}
@@ -272,43 +268,45 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
           {!ready && (
             <p className="notice notice-warn small" role="status">
               {open.fillIns.length > 0 &&
-                `Replace ${open.fillIns.length} [FILL IN: ...] part(s) with your own words. `}
+                `${t('Replace the [FILL IN: ...] parts with your own words.')} `}
               {open.unknownLabels.length > 0 &&
-                `Check ${[...new Set(open.unknownLabels)].join(', ')}: Kamarat did not fill these in on purpose. Replace or remove them.`}
+                t('Check {labels}: Kamarat did not fill these in on purpose. Replace or remove them.', {
+                  labels: [...new Set(open.unknownLabels)].join(', '),
+                })}
             </p>
           )}
 
           <div className="buttons">
             <button className="primary" onClick={copy}>
-              <ClipboardIcon width={18} height={18} /> {copied ? 'Copied' : 'Copy reply'}
+              <ClipboardIcon width={18} height={18} /> {copied ? t('Copied') : t('Copy reply')}
             </button>
             {ready ? (
               <a className="button-link" href={mailLink}>
-                <MailIcon width={18} height={18} /> Open in email
+                <MailIcon width={18} height={18} /> {t('Open in email')}
               </a>
             ) : (
               <span className="button-link disabled" aria-disabled="true">
-                <MailIcon width={18} height={18} /> Open in email (finish the gaps first)
+                <MailIcon width={18} height={18} /> {t('Open in email (finish the gaps first)')}
               </span>
             )}
           </div>
 
           <details className="translation">
-            <summary>What it says in {language}</summary>
+            <summary>{t('What it says in {language}', { language })}</summary>
             {edited && (
               <p className="small warning-text">
-                You changed the reply after it was written, so this translation shows the first version.
+                {t('You changed the reply after it was written, so this translation shows the first version.')}
               </p>
             )}
             <p {...langProps}>{fillIn(state.draft.translation, state.allLabels, state.allowed)}</p>
           </details>
 
           <button className="link-button" onClick={() => setShowLabels(!showLabels)}>
-            {showLabels ? 'Hide' : 'Show'} what Gemini got and wrote (before filling in)
+            {showLabels ? t('Hide what Gemini got and wrote') : t('Show what Gemini got and wrote (before filling in)')}
           </button>
           {showLabels && (
             <>
-              {state.masked && <SharedText text={`Your message as sent: ${state.masked}`} />}
+              {state.masked && <SharedText text={`${t('Your message as sent:')} ${state.masked}`} />}
               <SharedText text={state.draft.reply} />
             </>
           )}

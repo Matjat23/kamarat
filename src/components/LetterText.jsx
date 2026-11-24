@@ -6,6 +6,7 @@ import { explainWord, sentenceAround, findWord } from '../words'
 import { languageProps, LANGUAGES } from '../explain'
 import { wordHelpRunsOnDevice } from '../firebase'
 import { findQuote } from './Text'
+import { t } from '../i18n'
 import { CloudIcon, DeviceIcon, Dots } from './Icons'
 
 const LABEL = /(\[[A-Z]+_\d+\])/g
@@ -42,7 +43,7 @@ export default function LetterText({ shared, language, highlight }) {
 
   const code = LANGUAGES.find((l) => l.name === language)?.code ?? 'en'
   const onDevice = wordHelpRunsOnDevice(code)
-  const what = wordOnly ? 'only the word' : 'the word and its sentence'
+  const what = wordOnly ? t('only the word') : t('the word and its sentence')
   const range = highlight ? findQuote(shared, highlight.quote) : null
 
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function LetterText({ shared, language, highlight }) {
       if (request !== latest.current) return
       setHelp({
         word,
-        error: err.quota ? `${err.message}.` : 'Kamarat could not explain this word right now. Try again in a minute.',
+        error: err.quota ? `${err.message}.` : t('Kamarat could not explain this word right now. Try again in a minute.'),
       })
     }
   }
@@ -113,11 +114,10 @@ export default function LetterText({ shared, language, highlight }) {
   return (
     <div className="letter-tab">
       <p className="small muted">
-        This is exactly what Kamarat sent. Black bars are details that stayed on your device. Tap any word to
-        have it explained in {language}.
+        {t('This is exactly what Kamarat sent. Black bars are details that stayed on your device. Tap any word to have it explained in {language}.', { language })}
       </p>
       {highlight && !range && (
-        <p className="small warning-text">Kamarat could not find this sentence in your letter.</p>
+        <p className="small warning-text">{t('Kamarat could not find this sentence in your letter.')}</p>
       )}
 
       <div className="word-text" dir="auto">
@@ -128,13 +128,13 @@ export default function LetterText({ shared, language, highlight }) {
         <div className="word-sheet" role="status" aria-live="polite">
           <div className="row-between">
             <strong className="word-title">{help.word}</strong>
-            <button className="ghost small-btn" onClick={() => setHelp(null)} aria-label="Close word help">
-              Close
+            <button className="ghost small-btn" onClick={() => setHelp(null)} aria-label={t('Close word help')}>
+              {t('Close')}
             </button>
           </div>
           {help.loading && (
             <p className="small muted">
-              <Dots /> Looking it up...
+              <Dots /> {t('Looking it up...')}
             </p>
           )}
           {help.error && <p className="small warning-text">{help.error}</p>}
@@ -142,9 +142,9 @@ export default function LetterText({ shared, language, highlight }) {
             <>
               <p {...languageProps(language)}>{help.text}</p>
               {help.source === 'on_device' ? (
-                <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> Explained on your device</span>
+                <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> {t('Explained on your device')}</span>
               ) : (
-                <span className="badge badge-in_cloud"><CloudIcon width={14} height={14} /> Explained in the cloud</span>
+                <span className="badge badge-in_cloud"><CloudIcon width={14} height={14} /> {t('Explained in the cloud')}</span>
               )}
             </>
           )}
@@ -152,7 +152,7 @@ export default function LetterText({ shared, language, highlight }) {
       )}
 
       <form className="word-form" onSubmit={askTyped}>
-        <label htmlFor={`${uid}-word`} className="small">Look up a word</label>
+        <label htmlFor={`${uid}-word`} className="small">{t('Look up a word')}</label>
         <input
           id={`${uid}-word`}
           value={typed}
@@ -160,19 +160,19 @@ export default function LetterText({ shared, language, highlight }) {
           autoComplete="off"
           spellCheck={false}
         />
-        <button className="secondary small-btn" type="submit" disabled={!typed.trim()}>Explain</button>
+        <button className="secondary small-btn" type="submit" disabled={!typed.trim()}>{t('Explain')}</button>
       </form>
       <details className="word-privacy">
-        <summary className="small">What is sent when you look up a word</summary>
+        <summary className="small">{t('What is sent when you look up a word')}</summary>
         <p className="small muted">
           {onDevice
-            ? `Kamarat gives ${what} to Gemini Nano on your device. If Nano is not ready, cloud Gemini answers instead.`
-            : `For ${language}, word help uses cloud Gemini. Kamarat sends ${what}.`}{' '}
-          It always comes from the text you approved.
+            ? t('Kamarat gives {what} to Gemini Nano on your device. If Nano is not ready, cloud Gemini answers instead.', { what })
+            : t('For {language}, word help uses cloud Gemini. Kamarat sends {what}.', { language, what })}{' '}
+          {t('It always comes from the text you approved.')}
         </p>
         <label className="check-line small">
           <input type="checkbox" checked={wordOnly} onChange={(e) => setWordOnly(e.target.checked)} />
-          Send only the word, not its sentence
+          {t('Send only the word, not its sentence')}
         </label>
       </details>
     </div>

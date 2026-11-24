@@ -1008,3 +1008,40 @@ button.step-main:hover:not(:disabled) {
     font-size: 0.9rem;
   }
 }
+
+/* Right-to-left languages (Arabic, Persian, Urdu, Hebrew and others) */
+[dir='rtl'] .flip {
+  transform: none;
+}
+
+[dir='rtl'] .arrow-forward,
+[dir='rtl'] .source-arrow,
+[dir='rtl'] .coming-item > svg {
+  transform: scaleX(-1);
+}
+
+[dir='rtl'] .step-detail {
+  padding: 0 52px 14px 16px;
+}
+
+[dir='rtl'] .more-list {
+  right: auto;
+  left: 0;
+}
+
+[dir='rtl'] .answer-card {
+  border-left-width: 1px;
+  border-right-width: 6px;
+}
+
+[dir='rtl'] .worry-INFO { border-right-color: var(--green); }
+[dir='rtl'] .worry-ACTION { border-right-color: #5f8b7e; }
+[dir='rtl'] .worry-UNSURE { border-right-color: #7a6f5f; }
+[dir='rtl'] .worry-URGENT { border-right-color: var(--amber); }
+[dir='rtl'] .worry-HELP { border-right-color: #a8371a; }
+
+@media (max-width: 760px) {
+  [dir='rtl'] .step-detail {
+    padding-right: 16px;
+  }
+}

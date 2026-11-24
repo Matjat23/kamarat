@@ -14,20 +14,13 @@ import {
 } from '../papers'
 import { languageProps, explainNotice } from '../explain'
 import { SOURCES } from '../sources'
-import { WORRY, assessWorry, daysUntil } from '../worry'
+import { WORRY, assessWorry, daysUntil, whenText } from '../worry'
+import { t, dateLocale } from '../i18n'
 import LetterView from './LetterView'
 import { ArrowIcon, LockIcon } from './Icons'
 
 function shortDate(date) {
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-}
-
-function whenText(date) {
-  const days = daysUntil(date)
-  if (days < 0) return `${-days} day${days === -1 ? '' : 's'} ago`
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Tomorrow'
-  return `In ${days} days`
+  return date.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 export function SavedLetter({ id, language, country, onBack }) {
@@ -45,15 +38,15 @@ export function SavedLetter({ id, language, country, onBack }) {
   if (!paper) {
     return (
       <section className="card">
-        <h1 className="flow-title" tabIndex={-1} data-step-heading>This letter is not here any more</h1>
-        <p className="muted">It may have been deleted, or it was kept in another browser.</p>
-        <button className="secondary" onClick={onBack}>Back to My papers</button>
+        <h1 className="flow-title" tabIndex={-1} data-step-heading>{t('This letter is not here any more')}</h1>
+        <p className="muted">{t('It may have been deleted, or it was kept in another browser.')}</p>
+        <button className="secondary" onClick={onBack}>{t('Back to My papers')}</button>
       </section>
     )
   }
 
   function update(patch) {
-    if (!updatePaper(paper.id, patch)) setError('Kamarat could not update My papers on this device.')
+    if (!updatePaper(paper.id, patch)) setError(t('Kamarat could not update My papers on this device.'))
     setPaper(listPapers().find((p) => p.id === id) ?? null)
   }
 
@@ -83,13 +76,13 @@ export function SavedLetter({ id, language, country, onBack }) {
         sites: result.sites,
       })
     } catch (err) {
-      setError(`Kamarat could not explain it again: ${err.message}.`)
+      setError(`${t('Kamarat could not explain it again:')} ${err.message}.`)
     }
     setExplaining(false)
   }
 
   function remove() {
-    if (!window.confirm(`Delete the letter from ${paper.sender} from this device?`)) return
+    if (!window.confirm(t('Delete the letter from {sender} from this device?', { sender: paper.sender }))) return
     deletePaper(paper.id)
     onBack()
   }
@@ -119,13 +112,13 @@ export function SavedLetter({ id, language, country, onBack }) {
       }
       save={error ? { saved: true, error } : null}
       onBack={onBack}
-      backLabel="My papers"
+      backLabel={t('My papers')}
       currentLanguage={language}
       onExplainAgain={explainAgain}
       explaining={explaining}
       menu={[
-        { label: `Explain again in ${language}`, onClick: explainAgain },
-        { label: 'Delete this letter', onClick: remove },
+        { label: t('Explain it again in {language}', { language }), onClick: explainAgain },
+        { label: t('Delete this letter'), onClick: remove },
       ]}
     />
   )
@@ -136,7 +129,7 @@ export default function MyPapers({ onOpen, onNew }) {
   const { dated, unknown } = upcomingDeadlines(papers)
 
   function removeAll() {
-    if (!window.confirm('Delete all your kept letters from this device? This cannot be undone.')) return
+    if (!window.confirm(t('Delete all your kept letters from this device? This cannot be undone.'))) return
     deleteAllPapers()
     setPapers(listPapers())
   }
@@ -145,27 +138,27 @@ export default function MyPapers({ onOpen, onNew }) {
     <div className="papers">
       <div className="papers-head">
         <div>
-          <h1 className="flow-title" tabIndex={-1} data-step-heading>My papers</h1>
+          <h1 className="flow-title" tabIndex={-1} data-step-heading>{t('My papers')}</h1>
           <p className="small muted">
-            <LockIcon width={14} height={14} /> Kept only in this browser, never your hidden details.
+            <LockIcon width={14} height={14} /> {t('Kept only in this browser, never your hidden details.')}
           </p>
         </div>
-        <button className="primary" onClick={onNew}>New letter</button>
+        <button className="primary" onClick={onNew}>{t('New letter')}</button>
       </div>
 
       {papers.length === 0 ? (
         <section className="home-card empty">
-          <p><strong>No letters kept yet.</strong></p>
+          <p><strong>{t('No letters kept yet.')}</strong></p>
           <p className="muted small">
-            When Kamarat has explained a letter, tap "Keep in My papers" and it will be here with its deadlines.
+            {t('When Kamarat has explained a letter, tap "Keep in My papers" and it will be here with its deadlines.')}
           </p>
-          <button className="secondary" onClick={onNew}>Explain a letter</button>
+          <button className="secondary" onClick={onNew}>{t('Explain a letter')}</button>
         </section>
       ) : (
         <>
           {(dated.length > 0 || unknown.length > 0) && (
             <section className="home-card">
-              <h2 className="home-card-title">Coming up</h2>
+              <h2 className="home-card-title">{t('Coming up')}</h2>
               <ul className="coming-list">
                 {dated.map(({ paper, action, date }) => (
                   <li key={`${paper.id}-${action.index}`}>
@@ -177,7 +170,7 @@ export default function MyPapers({ onOpen, onNew }) {
                       <span className="coming-body">
                         <strong {...languageProps(paper.language)}>{action.title}</strong>
                         <span className="small muted">{paper.sender}</span>
-                        {action.info.unchecked && <span className="small warning-text">Check this date in your letter</span>}
+                        {action.info.unchecked && <span className="small warning-text">{t('Check this date in your letter.')}</span>}
                       </span>
                       <ArrowIcon width={18} height={18} />
                     </button>
@@ -186,7 +179,7 @@ export default function MyPapers({ onOpen, onNew }) {
                 {unknown.map(({ paper, action }) => (
                   <li key={`${paper.id}-${action.index}`}>
                     <button className="coming-item" onClick={() => onOpen(paper.id)}>
-                      <span className="coming-when">Date not known</span>
+                      <span className="coming-when">{t('Date not known')}</span>
                       <span className="coming-body">
                         <strong {...languageProps(paper.language)}>{action.title}</strong>
                         <span className="small muted">{paper.sender} · {action.info.text}</span>
@@ -200,7 +193,7 @@ export default function MyPapers({ onOpen, onNew }) {
           )}
 
           <section className="home-card">
-            <h2 className="home-card-title">Your letters</h2>
+            <h2 className="home-card-title">{t('Your letters')}</h2>
             <ul className="paper-list">
               {papers.map((paper) => {
                 const actions = paperActions(paper)
@@ -216,8 +209,8 @@ export default function MyPapers({ onOpen, onNew }) {
                       </span>
                       <span className="small paper-summary" {...languageProps(paper.language)}>{paper.summary}</span>
                       <span className="small muted">
-                        Kept {shortDate(new Date(paper.savedAt))}
-                        {todo.length > 0 && ` · ${doneCount} of ${todo.length} steps done`}
+                        {t('Kept {date}', { date: shortDate(new Date(paper.savedAt)) })}
+                        {todo.length > 0 && ` · ${t('{done} of {total} done', { done: doneCount, total: todo.length })}`}
                       </span>
                     </button>
                   </li>
@@ -226,7 +219,7 @@ export default function MyPapers({ onOpen, onNew }) {
             </ul>
           </section>
 
-          <button className="link-button" onClick={removeAll}>Delete everything on this device</button>
+          <button className="link-button" onClick={removeAll}>{t('Delete everything on this device')}</button>
         </>
       )}
     </div>

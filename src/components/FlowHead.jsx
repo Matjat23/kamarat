@@ -1,17 +1,17 @@
 // Header for the new-letter flow: a back button, the step title and where you
 // are in the three steps.
+import { t } from '../i18n'
 import { ArrowIcon, CheckIcon } from './Icons'
 
-const STEPS = ['Add', 'Check', 'Understand']
-
 export default function FlowHead({ step, title, backLabel, onBack }) {
+  const steps = [t('Add'), t('Check'), t('Understand')]
   return (
     <div className="flow-head">
       <button className="ghost back-button" onClick={onBack}>
         <ArrowIcon className="flip" width={18} height={18} /> {backLabel}
       </button>
-      <ol className="flow-steps" aria-label={`Step ${step} of 3`}>
-        {STEPS.map((label, i) => {
+      <ol className="flow-steps" aria-label={t('Step {step} of 3', { step })}>
+        {steps.map((label, i) => {
           const state = i + 1 < step ? 'done' : i + 1 === step ? 'current' : ''
           return (
             <li key={label} className={state} aria-current={state === 'current' ? 'step' : undefined}>

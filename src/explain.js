@@ -13,8 +13,9 @@ import {
 } from './firebase'
 import { SOURCES } from './sources'
 import { QuotaError, isDailyLimit, markUsedUp, usableModels } from './quota'
-import { countryName, weekendDays, weekendText } from './countries'
+import { countryNameEnglish, weekendDays, weekendText } from './countries'
 import { hostOf, isOfficialDomain } from './officialDomains'
+import { t, dateLocale } from './i18n'
 
 // Languages Kamarat can answer in. Each one is shown in its own script, so
 // people can find theirs. English first, then by English name.
@@ -237,7 +238,7 @@ export async function explainNotice(sharedText, language, onStatus = () => {}, c
 
 function buildPrompt(sharedText, language, includeRules = false, country = '') {
   const where = country
-    ? `The person lives in ${countryName(country)}. The letter may come from there or from another country. Read dates written with numbers in the usual order of the country the letter comes from.\n\n`
+    ? `The person lives in ${countryNameEnglish(country)}. The letter may come from there or from another country. Read dates written with numbers in the usual order of the country the letter comes from.\n\n`
     : ''
   return `${includeRules ? `${SYSTEM_INSTRUCTION}\n\n` : ''}${where}Explain this notice. Write the sender, summary, titles, explanations and reasons in ${language}. Keep every quote in the original language of the notice.
 
@@ -413,7 +414,7 @@ export function dateInQuote(day, quote) {
 }
 
 export function formatDay(day) {
-  return day.toLocaleDateString('en-GB', {
+  return day.toLocaleDateString(dateLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'long',
@@ -445,11 +446,11 @@ function addTime(start, amount, unit, weekend = [6, 0]) {
   return day
 }
 
-const UNIT_WORDS = {
-  DAYS: 'days',
-  BUSINESS_DAYS: 'business days',
-  WEEKS: 'weeks',
-  MONTHS: 'months',
+function spanText(amount, unit) {
+  if (unit === 'BUSINESS_DAYS') return t('{amount} business days', { amount })
+  if (unit === 'WEEKS') return t('{amount} weeks', { amount })
+  if (unit === 'MONTHS') return t('{amount} months', { amount })
+  return t('{amount} days', { amount })
 }
 
 // Returns what Kamarat can honestly say about a deadline.
@@ -460,40 +461,43 @@ export function resolveDeadline(deadline, { noticeDate, receivedDate, quote, cou
 
   if (deadline.kind === 'FIXED_DATE') {
     const day = parseDay(deadline.date)
-    if (!day) return { text: 'The letter gives a date. Check it in your letter.' }
+    if (!day) return { text: t('The letter gives a date. Check it in your letter.') }
     return {
       date: day,
-      basis: 'The date written in your letter.',
+      basis: t('The date written in your letter.'),
       unchecked: !dateInQuote(day, quote),
     }
   }
 
   const amount = Number(deadline.amount)
   const unit = deadline.unit ?? 'DAYS'
-  if (!amount) return { text: 'There is a time limit, but it is not clear. Check the quote below.' }
-  const span = `${amount} ${UNIT_WORDS[unit] ?? 'days'}`
+  if (!amount) return { text: t('There is a time limit, but it is not clear. Check your letter.') }
+  const span = spanText(amount, unit)
 
   if (deadline.kind === 'AFTER_RECEIVING') {
     const start = parseDay(receivedDate)
-    if (!start) return { needs: 'received', text: `${span} from the day you got the letter.` }
+    if (!start) return { needs: 'received', text: t('{span} from the day you got the letter.', { span }) }
     return {
       date: addTime(start, amount, unit, weekend),
-      basis: `${span} from ${formatDay(start)}, the day you received it.`,
+      basis: t('{span} from {date}, the day you got it.', { span, date: formatDay(start) }),
       businessNote: unit === 'BUSINESS_DAYS' ? weekendText(country) : '',
     }
   }
 
   if (deadline.kind === 'AFTER_NOTICE_DATE') {
     const start = parseDay(noticeDate)
-    if (!start) return { text: `${span} from the date on the letter.` }
+    if (!start) return { text: t('{span} from the date on the letter.', { span }) }
     return {
       date: addTime(start, amount, unit, weekend),
-      basis: `${span} from ${formatDay(start)}, the date on the letter.`,
+      basis: t('{span} from {date}, the date on the letter.', { span, date: formatDay(start) }),
       businessNote: unit === 'BUSINESS_DAYS' ? weekendText(country) : '',
     }
   }
 
   return {
-    text: `${span} after: ${deadline.event || 'something the letter describes'}. Kamarat cannot work out this date for you.`,
+    text: t('{span} after: {event}. Kamarat cannot work out this date for you.', {
+      span,
+      event: deadline.event || t('something the letter describes'),
+    }),
   }
 }

@@ -6,34 +6,43 @@
 // - A deadline that has passed or is less than a week away is always URGENT.
 // - Something still to do, or a deadline Kamarat cannot work out yet, means
 //   it is not "just information".
+import { t, msg } from './i18n'
 
-export const WORRY = {
+const WORRY_TEXT = {
   INFO: {
-    short: 'Just information',
-    title: 'Good news: this is just information.',
+    short: msg('Just information'),
+    title: msg('Good news: this is just information.'),
     help: '',
   },
   ACTION: {
-    short: 'Action needed',
-    title: 'This needs something from you, but it is routine.',
+    short: msg('Action needed'),
+    title: msg('This needs something from you, but it is routine.'),
     help: '',
   },
   UNSURE: {
-    short: 'Read carefully',
-    title: "Kamarat isn't sure how serious this is.",
-    help: 'Read the letter carefully. If you are unsure, ask the sender or someone you trust.',
+    short: msg('Read carefully'),
+    title: msg("Kamarat isn't sure how serious this is."),
+    help: msg('Read the letter carefully. If you are unsure, ask the sender or someone you trust.'),
   },
   URGENT: {
-    short: 'Time-sensitive',
-    title: "This one is time-sensitive. Let's not wait.",
+    short: msg('Time-sensitive'),
+    title: msg("This one is time-sensitive. Let's not wait."),
     help: '',
   },
   HELP: {
-    short: 'Get help',
-    title: "This is serious. You don't have to handle it alone.",
-    help: "Consider talking to a person before the deadline: the sender's customer service, a free legal aid service, or your school's or employer's support. You can show them this page.",
+    short: msg('Get help'),
+    title: msg("This is serious. You don't have to handle it alone."),
+    help: msg("Consider talking to a person before the deadline: the sender's customer service, a free legal aid service, or your school's or employer's support. You can show them this page."),
   },
 }
+
+// WORRY.ACTION.title and so on, translated into the person's language when read.
+export const WORRY = new Proxy(WORRY_TEXT, {
+  get(target, level) {
+    const text = target[level]
+    return text && { short: t(text.short), title: t(text.title), help: text.help ? t(text.help) : '' }
+  },
+})
 
 const RANK = { INFO: 0, ACTION: 1, UNSURE: 2, URGENT: 3, HELP: 4 }
 
@@ -43,6 +52,16 @@ export function daysUntil(date) {
   const day = new Date(date)
   day.setHours(0, 0, 0, 0)
   return Math.round((day - today) / 86400000)
+}
+
+// "In 3 days", "Tomorrow", "2 days ago", in the language on screen.
+export function whenText(date) {
+  const days = daysUntil(date)
+  if (days < -1) return t('{days} days ago', { days: -days })
+  if (days === -1) return t('Yesterday')
+  if (days === 0) return t('Today')
+  if (days === 1) return t('Tomorrow')
+  return t('In {days} days', { days })
 }
 
 // worry: what the AI said ({ level, reason, quote, quoteFound }).
@@ -56,7 +75,7 @@ export function assessWorry(worry, actions) {
 
   if (aiLevel && !trusted && RANK[aiLevel] < RANK.UNSURE) {
     level = 'UNSURE'
-    raised = 'Kamarat could not find the sentence this was based on, so it is being careful.'
+    raised = t('Kamarat could not find the sentence this was based on, so it is being careful.')
   }
 
   const open = actions.filter((a) => a.group !== 'CHECK' && !a.done)
@@ -65,25 +84,25 @@ export function assessWorry(worry, actions) {
 
   if (soonest !== null && soonest < 0 && RANK[level] < RANK.URGENT) {
     level = 'URGENT'
-    raised = 'Kamarat raised this because a deadline has already passed.'
+    raised = t('Kamarat raised this because a deadline has already passed.')
   } else if (soonest !== null && soonest <= 7 && RANK[level] < RANK.URGENT) {
     level = 'URGENT'
-    raised = 'Kamarat raised this because a deadline is less than a week away.'
+    raised = t('Kamarat raised this because a deadline is less than a week away.')
   } else if (level === 'INFO') {
     const unknownDate = open.some((a) => a.info && !a.info.date)
     const mustDo = open.some((a) => a.group === 'MUST')
     if (unknownDate || mustDo) {
       level = 'ACTION'
       raised = unknownDate
-        ? 'Kamarat raised this because there is a deadline it cannot work out yet.'
-        : 'Kamarat raised this because the letter asks you to do something.'
+        ? t('Kamarat raised this because there is a deadline it cannot work out yet.')
+        : t('Kamarat raised this because the letter asks you to do something.')
     }
   }
 
   // Points Kamarat could not match to the letter: never call it "just information".
   if (level === 'INFO' && actions.some((a) => a.group === 'CHECK')) {
     level = 'UNSURE'
-    raised = 'Kamarat could not check some points in this letter, so it is being careful.'
+    raised = t('Kamarat could not check some points in this letter, so it is being careful.')
   }
 
   return {

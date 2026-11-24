@@ -3,6 +3,8 @@
 // The country is used for official pages, for which days are the weekend when
 // counting business days, and as context when a letter is explained.
 
+import { t, dateLocale } from './i18n'
+
 const CODES = `AD AE AF AG AI AL AM AO AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BW BY
 BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO
 FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GT GU GW GY HK HN HR HT HU ID IE IL IM IN IQ IR IS IT JE JM JO JP KE
@@ -11,20 +13,34 @@ MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM
 RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA
 UG US UY UZ VA VC VE VG VI VN VU WF WS XK YE YT ZA ZM ZW`.split(/\s+/)
 
-const names = new Intl.DisplayNames(['en'], { type: 'region' })
+// Country names in the language on screen (English if the browser has none).
+const namesByLocale = {}
+function displayNames(locale) {
+  if (!namesByLocale[locale]) {
+    try {
+      namesByLocale[locale] = new Intl.DisplayNames([locale, 'en'], { type: 'region' })
+    } catch {
+      namesByLocale[locale] = new Intl.DisplayNames(['en'], { type: 'region' })
+    }
+  }
+  return namesByLocale[locale]
+}
 
-export function countryName(code) {
+export function countryName(code, locale = dateLocale()) {
   if (!code) return ''
   try {
-    return code === 'XK' ? 'Kosovo' : names.of(code) ?? code
+    return displayNames(locale).of(code) ?? code
   } catch {
     return code
   }
 }
 
-export const COUNTRIES = CODES.map((code) => ({ code, name: countryName(code) })).sort((a, b) =>
-  a.name.localeCompare(b.name),
-)
+// For the AI, the country is always named in English.
+export const countryNameEnglish = (code) => countryName(code, 'en')
+
+export function countryList() {
+  return CODES.map((code) => ({ code, name: countryName(code) })).sort((a, b) => a.name.localeCompare(b.name))
+}
 
 // Time zones of the most common places people move to and from.
 const ZONES = `Europe/Stockholm:SE Europe/Oslo:NO Europe/Copenhagen:DK Europe/Helsinki:FI Atlantic/Reykjavik:IS
@@ -112,6 +128,6 @@ export function weekendDays(code) {
 
 export function weekendText(code) {
   const days = weekendDays(code)
-  const label = (d) => new Date(2026, 0, 4 + d).toLocaleDateString('en-GB', { weekday: 'long' })
-  return days.map(label).join(' and ')
+  const label = (d) => new Date(2026, 0, 4 + d).toLocaleDateString(dateLocale(), { weekday: 'long' })
+  return days.map(label).join(t(' and '))
 }

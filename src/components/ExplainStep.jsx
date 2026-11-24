@@ -6,27 +6,28 @@ import { explainNotice } from '../explain'
 import { savePaper, updatePaper, listPapers, PAPERS_CHANGED } from '../papers'
 import { stopSpeaking } from '../speak'
 import LetterView from './LetterView'
+import { t, msg } from '../i18n'
 import { CheckIcon, Dots } from './Icons'
 
 const STAGES = [
-  'Reading your letter',
-  'Finding what you need to do',
-  'Checking every answer against your letter',
-  'Working out your dates',
+  msg('Reading your letter'),
+  msg('Finding what you need to do'),
+  msg('Checking every answer against your letter'),
+  msg('Working out your dates'),
 ]
 
 function Progress({ stage, status }) {
   return (
     <section className="card reading-card">
-      <span className="eyebrow">Step 3 of 3</span>
-      <h1 className="flow-title" tabIndex={-1} data-step-heading>Okay, let's see what this is about</h1>
+      <span className="eyebrow">{t('Step {step} of 3', { step: 3 })}</span>
+      <h1 className="flow-title" tabIndex={-1} data-step-heading>{t("Okay, let's see what this is about")}</h1>
       <ol className="stages">
         {STAGES.map((label, i) => (
           <li key={label} className={i < stage ? 'is-done' : i === stage ? 'is-now' : ''}>
             <span className="stage-dot" aria-hidden="true">
               {i < stage ? <CheckIcon width={14} height={14} /> : i === stage ? <Dots /> : null}
             </span>
-            {label}
+            {t(label)}
           </li>
         ))}
       </ol>
@@ -134,7 +135,7 @@ export default function ExplainStep({ shared, labelMap, details, language, count
       setSavedId(id)
       setSaveError('')
     } else {
-      setSaveError('Kamarat could not save on this device. The browser may be in private mode or out of space.')
+      setSaveError(t('Kamarat could not save on this device. The browser may be in private mode or out of space.'))
     }
   }
 
@@ -148,7 +149,7 @@ export default function ExplainStep({ shared, labelMap, details, language, count
     const next = done.includes(index) ? done.filter((i) => i !== index) : [...done, index]
     setDone(next)
     if (savedId && !updatePaper(savedId, { done: next })) {
-      setSaveError('Kamarat could not update My papers on this device.')
+      setSaveError(t('Kamarat could not update My papers on this device.'))
     }
   }
 
@@ -157,11 +158,11 @@ export default function ExplainStep({ shared, labelMap, details, language, count
   if (state.phase === 'error') {
     return (
       <section className="card" ref={rootRef}>
-        <h1 className="flow-title" tabIndex={-1} data-step-heading>That didn't work this time</h1>
+        <h1 className="flow-title" tabIndex={-1} data-step-heading>{t("That didn't work this time")}</h1>
         <p className="notice notice-warn" role="alert">{state.message}.</p>
         <div className="buttons">
-          <button className="secondary" onClick={onBack}>Back</button>
-          <button className="primary" onClick={send}>Try again</button>
+          <button className="secondary" onClick={onBack}>{t('Back')}</button>
+          <button className="primary" onClick={send}>{t('Try again')}</button>
         </div>
       </section>
     )
@@ -181,10 +182,10 @@ export default function ExplainStep({ shared, labelMap, details, language, count
       details={details}
       save={{ saved: !!savedId, onSave: () => save(), error: saveError }}
       onBack={onHome}
-      backLabel="Home"
+      backLabel={t('Home')}
       menu={[
-        { label: `Explain again in ${language}`, onClick: send },
-        { label: 'Change what was hidden', onClick: onBack },
+        { label: t('Explain it again in {language}', { language }), onClick: send },
+        { label: t('Change what was hidden'), onClick: onBack },
       ]}
     />
     </div>

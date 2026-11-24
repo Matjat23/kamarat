@@ -12,14 +12,15 @@
 import { askCloudJSON, isTemporary, quoteIsInText } from './explain'
 import { getOnDeviceExplainModel, ON_DEVICE_LANGUAGES } from './firebase'
 import { SOURCES } from './sources'
+import { msg } from './i18n'
 
 export const MAX_QUESTIONS = 10
 
 export const SUGGESTED_QUESTIONS = [
-  'What happens if I miss the deadline?',
-  'What exactly do I need to send?',
-  'Can I ask for more time?',
-  'How do I contact them?',
+  msg('What happens if I miss the deadline?'),
+  msg('What exactly do I need to send?'),
+  msg('Can I ask for more time?'),
+  msg('How do I contact them?'),
 ]
 
 const BASES = ['NOTICE', 'NOT_IN_NOTICE', 'NOT_ABOUT_NOTICE']

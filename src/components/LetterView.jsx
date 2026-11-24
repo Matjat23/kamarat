@@ -7,7 +7,8 @@
 import { useId, useMemo, useRef, useState } from 'react'
 import { languageProps, LANGUAGES } from '../explain'
 import { prepareActions } from '../papers'
-import { WORRY, assessWorry, daysUntil } from '../worry'
+import { WORRY, assessWorry, daysUntil, whenText } from '../worry'
+import { t, msg, dateLocale, uiLanguageCode } from '../i18n'
 import { downloadDeadline } from '../calendar'
 import { speak, stopSpeaking, canSpeak, spokenPhrases, spokenDate } from '../speak'
 import AskKamarat from './AskKamarat'
@@ -27,32 +28,24 @@ import {
 } from './Icons'
 
 const TABS = [
-  { id: 'steps', label: 'Steps' },
-  { id: 'ask', label: 'Ask' },
-  { id: 'reply', label: 'Reply' },
-  { id: 'letter', label: 'Letter' },
+  { id: 'steps', label: msg('Steps') },
+  { id: 'ask', label: msg('Ask') },
+  { id: 'reply', label: msg('Reply') },
+  { id: 'letter', label: msg('Letter') },
 ]
 
 const GROUPS = [
-  { kind: 'MUST', title: 'You must' },
-  { kind: 'CAN', title: 'You can' },
-  { kind: 'UNCLEAR', title: 'Not clear yet' },
+  { kind: 'MUST', title: msg('You must') },
+  { kind: 'CAN', title: msg('You can') },
+  { kind: 'UNCLEAR', title: msg('Not clear yet') },
 ]
 
 function shortDate(date) {
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+  return date.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short' })
 }
 
 function longDate(date) {
-  return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-}
-
-function whenText(date) {
-  const days = daysUntil(date)
-  if (days < 0) return `${-days} day${days === -1 ? '' : 's'} ago`
-  if (days === 0) return 'today'
-  if (days === 1) return 'tomorrow'
-  return `in ${days} days`
+  return date.toLocaleDateString(dateLocale(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function initials(name) {
@@ -68,23 +61,23 @@ function addToCalendar(action, sender) {
   downloadDeadline({
     title: action.title,
     date: action.info.date,
-    details: `${action.explanation}\n\nFrom ${sender}: "${action.quote}"\n\n${action.info.basis}\nMade with Kamarat. Always check the original letter.`,
+    details: `${action.explanation}\n\n${t('From {sender}', { sender })}: "${action.quote}"\n\n${action.info.basis}\n${t('Made with Kamarat. Always check the original letter.')}`,
   })
 }
 
 function DateTile({ date }) {
   return (
     <div className="date-tile" aria-hidden="true">
-      <span className="date-month">{date.toLocaleDateString('en-GB', { month: 'short' })}</span>
+      <span className="date-month">{date.toLocaleDateString(dateLocale(), { month: 'short' })}</span>
       <span className="date-day">{date.getDate()}</span>
-      <span className="date-weekday">{date.toLocaleDateString('en-GB', { weekday: 'short' })}</span>
+      <span className="date-weekday">{date.toLocaleDateString(dateLocale(), { weekday: 'short' })}</span>
     </div>
   )
 }
 
 function DateChip({ info, done }) {
   if (!info) return null
-  if (!info.date) return <span className="date-chip chip-unknown">Date not known</span>
+  if (!info.date) return <span className="date-chip chip-unknown">{t('Date not known')}</span>
   const days = daysUntil(info.date)
   const tone = done ? '' : days < 0 ? 'chip-late' : days <= 7 ? 'chip-soon' : ''
   return <span className={`date-chip ${tone}`}>{shortDate(info.date)}</span>
@@ -99,7 +92,7 @@ function StepRow({ action, sender, langProps, open, onOpen, onToggleDone, onShow
           className={`done-toggle ${action.done ? 'is-done' : ''}`}
           onClick={() => onToggleDone(action.index)}
           aria-pressed={action.done}
-          aria-label={action.done ? `Mark "${action.title}" as not done` : `Mark "${action.title}" as done`}
+          aria-label={action.done ? t('Mark "{title}" as not done', { title: action.title }) : t('Mark "{title}" as done', { title: action.title })}
         >
           {action.done && <CheckIcon width={16} height={16} />}
         </button>
@@ -114,31 +107,31 @@ function StepRow({ action, sender, langProps, open, onOpen, onToggleDone, onShow
           <p {...langProps}>{action.explanation}</p>
           {info?.date && (
             <p className="small">
-              <strong>By {longDate(info.date)}</strong> ({whenText(info.date)}). <span className="muted">{info.basis}</span>
+              <strong>{t('By {date}', { date: longDate(info.date) })}</strong> ({whenText(info.date)}). <span className="muted">{info.basis}</span>
               {info.businessNote && (
                 <span className="muted">
-                  {' '}Weekends ({info.businessNote}) are skipped. Public holidays are not, so check if one falls in between.
+                  {' '}{t('Weekends ({days}) are skipped. Public holidays are not, so check if one falls in between.', { days: info.businessNote })}
                 </span>
               )}
             </p>
           )}
           {info?.unchecked && (
-            <p className="small warning-text">Kamarat could not match this date to your letter. Check it before you rely on it.</p>
+            <p className="small warning-text">{t('Kamarat could not match this date to your letter. Check it before you rely on it.')}</p>
           )}
           {info && !info.date && <p className="small muted">{info.text}</p>}
           <div className="step-links">
-            <button className="link-button" onClick={() => onShowInLetter(action.quote)}>From your letter</button>
+            <button className="link-button" onClick={() => onShowInLetter(action.quote)}>{t('From your letter')}</button>
             {info?.needs === 'received' && (
-              <button className="link-button" onClick={onAskDate}>Add the day you got it</button>
+              <button className="link-button" onClick={onAskDate}>{t('Add the day you got it')}</button>
             )}
             {info?.date && (
               <button className="link-button" onClick={() => addToCalendar(action, sender)}>
-                <CalendarIcon width={14} height={14} /> Add to calendar
+                <CalendarIcon width={14} height={14} /> {t('Add to calendar')}
               </button>
             )}
             {action.group === 'MUST' && (
               <button className="link-button" onClick={onReply}>
-                <PenIcon width={14} height={14} /> Draft a reply
+                <PenIcon width={14} height={14} /> {t('Draft a reply')}
               </button>
             )}
           </div>
@@ -179,7 +172,8 @@ export default function LetterView({
   const langProps = languageProps(letter.language)
   const actions = useMemo(
     () => prepareActions(letter.actions, { noticeDate: letter.noticeDate, receivedDate, done, country: letter.country }),
-    [letter, receivedDate, done],
+    // The language on screen is a dependency too: the deadline sentences are translated.
+    [letter, receivedDate, done, uiLanguageCode()],
   )
   const assessed = assessWorry(letter.worry, actions)
   const worry = WORRY[assessed.level]
@@ -208,7 +202,7 @@ export default function LetterView({
   }
 
   function onTabKey(event) {
-    const index = TABS.findIndex((t) => t.id === tab)
+    const index = TABS.findIndex((item) => item.id === tab)
     if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
       const nextTab = TABS[(index + (event.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length]
       setTab(nextTab.id)
@@ -254,12 +248,12 @@ export default function LetterView({
         <span className="letter-from">
           <span className="sender-avatar" aria-hidden="true">{initials(letter.sender)}</span>
           <span>
-            <span className="small muted">From</span> <strong>{letter.sender}</strong>
+            <span className="small muted">{t('From')}</span> <strong>{letter.sender}</strong>
           </span>
         </span>
         {menu.length > 0 && (
           <details className="more-menu">
-            <summary aria-label="More options">More</summary>
+            <summary aria-label={t('More options')}>{t('More')}</summary>
             <div className="more-list">
               {menu.map((item) => (
                 <button key={item.label} className="ghost" onClick={item.onClick}>{item.label}</button>
@@ -280,9 +274,11 @@ export default function LetterView({
 
         {currentLanguage && currentLanguage !== letter.language && onExplainAgain && (
           <div className="language-change" role="status">
-            <span className="small">This explanation is in {letter.language}. Your answers are now set to {currentLanguage}.</span>
+            <span className="small">
+              {t('This explanation is in {from}. Your language is now {to}.', { from: letter.language, to: currentLanguage })}
+            </span>
             <button className="secondary small-btn" onClick={onExplainAgain} disabled={explaining}>
-              {explaining ? 'Explaining...' : `Explain it again in ${currentLanguage}`}
+              {explaining ? t('Explaining...') : t('Explain it again in {language}', { language: currentLanguage })}
             </button>
           </div>
         )}
@@ -292,8 +288,7 @@ export default function LetterView({
         {needsReceived && (
           <div className="received received-first">
             <label htmlFor={`${uid}-received`}>
-              First, when did you get this letter? A deadline counts from that day, and it could be the
-              first one.
+              {t('First, when did you get this letter? A deadline counts from that day, and it could be the first one.')}
             </label>
             <input
               id={`${uid}-received`}
@@ -310,20 +305,21 @@ export default function LetterView({
             <DateTile date={next.info.date} />
             <div className="answer-next-body">
               <span className="eyebrow">
-                {unknownDates > 0 ? 'Earliest known date' : 'Next'} · {whenText(next.info.date)}
+                {unknownDates > 0 ? t('Earliest known date') : t('Next')} · {whenText(next.info.date)}
               </span>
               <strong {...langProps}>{next.title}</strong>
-              <span className="small muted">By {longDate(next.info.date)}</span>
-              {next.info.unchecked && <span className="small warning-text">Check this date in your letter.</span>}
+              <span className="small muted">{t('By {date}', { date: longDate(next.info.date) })}</span>
+              {next.info.unchecked && <span className="small warning-text">{t('Check this date in your letter.')}</span>}
               {unknownDates > 0 && (
                 <span className="small warning-text">
-                  {unknownDates === 1 ? 'One more deadline is' : `${unknownDates} more deadlines are`} not known yet and
-                  could come first.
+                  {unknownDates === 1
+                    ? t('One more deadline is not known yet and could come first.')
+                    : t('{count} more deadlines are not known yet and could come first.', { count: unknownDates })}
                 </span>
               )}
             </div>
             <button className="secondary small-btn" onClick={() => addToCalendar(next, letter.sender)}>
-              <CalendarIcon width={16} height={16} /> Add to calendar
+              <CalendarIcon width={16} height={16} /> {t('Add to calendar')}
             </button>
           </div>
         )}
@@ -331,42 +327,42 @@ export default function LetterView({
         <div className="answer-actions">
           {save && (
             <button className="secondary small-btn" onClick={save.onSave} disabled={save.saved}>
-              {save.saved ? <><CheckIcon width={16} height={16} /> In My papers</> : <><LockIcon width={16} height={16} /> Keep in My papers</>}
+              {save.saved ? <><CheckIcon width={16} height={16} /> {t('In My papers')}</> : <><LockIcon width={16} height={16} /> {t('Keep in My papers')}</>}
             </button>
           )}
           {canSpeak() && (
             <button className="secondary small-btn" onClick={listen} aria-pressed={speaking}>
-              <SpeakerIcon width={16} height={16} /> {speaking ? 'Stop' : 'Listen'}
+              <SpeakerIcon width={16} height={16} /> {speaking ? t('Stop') : t('Listen')}
             </button>
           )}
           {letter.source === 'in_cloud' && (
-            <span className="badge badge-in_cloud"><CloudIcon width={14} height={14} /> Explained in the cloud</span>
+            <span className="badge badge-in_cloud"><CloudIcon width={14} height={14} /> {t('Explained in the cloud')}</span>
           )}
           {letter.source === 'on_device' && (
-            <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> Explained on your device</span>
+            <span className="badge badge-on_device"><DeviceIcon width={14} height={14} /> {t('Explained on your device')}</span>
           )}
         </div>
-        {save?.saved && <p className="small muted">Kept only on this device, never your hidden details.</p>}
+        {save?.saved && <p className="small muted">{t('Kept only on this device, never your hidden details.')}</p>}
         {save?.error && <p className="small warning-text" role="alert">{save.error}</p>}
         {voiceMissing && (
-          <p className="small muted">Your device has no offline voice for {letter.language}.</p>
+          <p className="small muted">{t('Your device has no offline voice for {language}.', { language: letter.language })}</p>
         )}
       </section>
 
-      <div className="tabs" role="tablist" aria-label="This letter" ref={tabsRef} onKeyDown={onTabKey}>
-        {TABS.map((t) => (
+      <div className="tabs" role="tablist" aria-label={t('This letter')} ref={tabsRef} onKeyDown={onTabKey}>
+        {TABS.map((item) => (
           <button
-            key={t.id}
-            id={`${uid}-tab-${t.id}`}
+            key={item.id}
+            id={`${uid}-tab-${item.id}`}
             role="tab"
-            aria-selected={tab === t.id}
-            aria-controls={`${uid}-panel-${t.id}`}
-            tabIndex={tab === t.id ? 0 : -1}
-            className={tab === t.id ? 'active' : ''}
-            onClick={() => setTab(t.id)}
+            aria-selected={tab === item.id}
+            aria-controls={`${uid}-panel-${item.id}`}
+            tabIndex={tab === item.id ? 0 : -1}
+            className={tab === item.id ? 'active' : ''}
+            onClick={() => setTab(item.id)}
           >
-            {t.label}
-            {t.id === 'steps' && todo.length > 0 && <span className="tab-count">{todo.length - doneCount}</span>}
+            {t(item.label)}
+            {item.id === 'steps' && todo.length > 0 && <span className="tab-count">{todo.length - doneCount}</span>}
           </button>
         ))}
       </div>
@@ -375,16 +371,15 @@ export default function LetterView({
         {todo.length > 0 && (
           <div className="progress-line">
             <div className="progress-track"><span style={{ width: `${(doneCount / todo.length) * 100}%` }} /></div>
-            <span className="small muted">{doneCount} of {todo.length} done</span>
+            <span className="small muted">{t('{done} of {total} done', { done: doneCount, total: todo.length })}</span>
           </div>
         )}
         {todo.length === 0 && toCheck.length === 0 && (
-          <p className="muted">Kamarat found nothing you need to do for this letter.</p>
+          <p className="muted">{t('Kamarat found nothing you need to do for this letter.')}</p>
         )}
         {todo.length === 0 && toCheck.length > 0 && (
           <p className="notice notice-warn" role="status">
-            Kamarat could not check what this letter asks of you. The points below could not be matched to your
-            letter, so read it before you act. The Letter tab shows the full text.
+            {t('Kamarat could not check what this letter asks of you. The points below could not be matched to your letter, so read it before you act. The Letter tab shows the full text.')}
           </p>
         )}
         {GROUPS.map((group) => {
@@ -392,7 +387,7 @@ export default function LetterView({
           if (items.length === 0) return null
           return (
             <section key={group.kind} className={`step-group group-${group.kind}`}>
-              <h2 className="step-group-title">{group.title}</h2>
+              <h2 className="step-group-title">{t(group.title)}</h2>
               <ul className="step-list">
                 {items.map((action) => (
                   <StepRow
@@ -416,12 +411,10 @@ export default function LetterView({
         {toCheck.length > 0 && (
           <details className="check-group" open={todo.length === 0}>
             <summary>
-              {toCheck.length} {todo.length > 0 ? 'more ' : ''}
-              {toCheck.length === 1 ? 'point needs' : 'points need'} checking
+              {t('Points to check: {count}', { count: toCheck.length })}
             </summary>
             <p className="small muted">
-              Kamarat could not find the sentence in your letter that these are based on. Read your letter before
-              acting on them.
+              {t('Kamarat could not find the sentence in your letter that these are based on. Read your letter before acting on them.')}
             </p>
             <ul>
               {toCheck.map((a) => (
@@ -432,7 +425,7 @@ export default function LetterView({
         )}
 
         <section className="read-more">
-          <h2 className="step-group-title">Read more on official sites</h2>
+          <h2 className="step-group-title">{t('Read more on official sites')}</h2>
           {letter.pages.length > 0 && (
             <div className="sources">
               {letter.pages.map(({ page, why }) => (
@@ -455,10 +448,10 @@ export default function LetterView({
                 <a key={site.domain} className="source" href={`https://${site.domain}`} target="_blank" rel="noopener noreferrer">
                   <span className="source-icon" aria-hidden="true"><LandmarkIcon /></span>
                   <span className="source-body">
-                    <span className="eyebrow">Official website</span>
+                    <span className="eyebrow">{t('Official website')}</span>
                     <strong>{site.name || site.domain}</strong>
                     {site.why && <span className="small" {...langProps}>{site.why}</span>}
-                    <span className="small source-url">{site.domain} · government address checked</span>
+                    <span className="small source-url">{site.domain} · {t('government address checked')}</span>
                   </span>
                   <ArrowIcon className="source-arrow" />
                 </a>
@@ -466,7 +459,7 @@ export default function LetterView({
             </div>
           )}
           {letter.pages.length === 0 && !(letter.sites ?? []).length && (
-            <p className="small muted">Kamarat found no official pages it could check for this letter.</p>
+            <p className="small muted">{t('Kamarat found no official pages it could check for this letter.')}</p>
           )}
           {/* Searching the web needs the paid Gemini plan, so it is switched on
               with VITE_WEB_SEARCH=on once that plan is in place. */}

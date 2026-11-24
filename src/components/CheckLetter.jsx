@@ -2,16 +2,27 @@
 // The person sees the details Kamarat found, can show or hide each one, hide
 // more text, see exactly what will be sent, pick the language, and send.
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { buildRedaction, TYPE_LABELS } from '../privacy'
+import { buildRedaction } from '../privacy'
+import { t, msg } from '../i18n'
 import { LANGUAGES, languageLabel } from '../explain'
 import { LockIcon, ArrowIcon } from './Icons'
 import { SharedText } from './Text'
 import FlowHead from './FlowHead'
 
+const TYPE_TEXT = {
+  NAME: msg('Name'),
+  ID: msg('ID number'),
+  ADDRESS: msg('Address'),
+  CASE: msg('Case number'),
+  PHONE: msg('Phone'),
+  EMAIL: msg('Email'),
+  HIDDEN: msg('Hidden by you'),
+}
+
 const FOUND_BY_TEXT = {
-  ai: 'Found by on-device AI',
-  pattern: 'Found by pattern check',
-  you: 'Added by you',
+  ai: msg('Found by on-device AI'),
+  pattern: msg('Found by pattern check'),
+  you: msg('Added by you'),
 }
 
 export default function CheckLetter({
@@ -58,11 +69,16 @@ export default function CheckLetter({
     if (places === 0) {
       setHideResult({
         ok: false,
-        text: `No matching text found for "${clean}". Check the spelling, or select the text in your letter instead.`,
+        text: t('No matching text found for "{text}". Check the spelling, or select the text in your letter instead.', {
+          text: clean,
+        }),
       })
       return
     }
-    setHideResult({ ok: true, text: `"${clean}" hidden in ${places} place${places === 1 ? '' : 's'}.` })
+    setHideResult({
+      ok: true,
+      text: places === 1 ? t('"{text}" hidden.', { text: clean }) : t('"{text}" hidden in {count} places.', { text: clean, count: places }),
+    })
     setSelection('')
     setExtra('')
     window.getSelection()?.removeAllRanges()
@@ -89,47 +105,47 @@ export default function CheckLetter({
 
   return (
     <section className="card flow-card">
-      <FlowHead step={2} title="Check what is private" backLabel="Back" onBack={onBack} />
+      <FlowHead step={2} title={t('Check what is private')} backLabel={t('Back')} onBack={onBack} />
 
       <p className="lead-small">
         {detection.mode === 'ai'
-          ? 'Gemini Nano found these personal details on your device. They stay here. Hide anything it missed.'
-          : 'Kamarat found these numbers and emails on your device. They stay here. Names and addresses are not found here, so hide them yourself below.'}
+          ? t('Gemini Nano found these personal details on your device. They stay here. Hide anything it missed.')
+          : t('Kamarat found these numbers and emails on your device. They stay here. Names and addresses are not found here, so hide them yourself below.')}
       </p>
       <span className="count-pill" role="status">
-        <LockIcon width={16} height={16} /> {hiddenCount} detail{hiddenCount === 1 ? '' : 's'} hidden
-        {sentCount > 0 && <span className="count-sent"> · {sentCount} will be sent</span>}
+        <LockIcon width={16} height={16} /> {t('{count} hidden', { count: hiddenCount })}
+        {sentCount > 0 && <span className="count-sent"> · {t('{count} will be sent', { count: sentCount })}</span>}
       </span>
       {detection.lost?.length > 0 && (
         <p className="notice notice-warn small" role="alert">
-          You hid {detection.lost.map((t) => `"${t}"`).join(', ')} before, but{' '}
-          {detection.lost.length === 1 ? 'it is' : 'they are'} not in the text any more. If you changed how it is
-          written, hide it again below.
+          {t('You hid {text} before, but it is not in the text any more. If you changed how it is written, hide it again below.', {
+            text: detection.lost.map((lost) => `"${lost}"`).join(', '),
+          })}
         </p>
       )}
 
       <div className="details-list" role="list">
         {details.length === 0 && (
-          <p className="muted small">No personal details found yet. Hide anything you want below.</p>
+          <p className="muted small">{t('No personal details found yet. Hide anything you want below.')}</p>
         )}
         {details.map((detail) => (
           <label
             key={detail.id}
             role="listitem"
             className={`detail ${detail.hidden ? 'detail-hidden' : 'detail-sent'}`}
-            title={FOUND_BY_TEXT[detail.foundBy[0]]}
+            title={t(FOUND_BY_TEXT[detail.foundBy[0]])}
           >
             <span className={`type-dot type-${detail.type}`} aria-hidden="true" />
-            <span className="detail-type">{TYPE_LABELS[detail.type]}</span>
+            <span className="detail-type">{t(TYPE_TEXT[detail.type])}</span>
             <span className="detail-text">{detail.text}</span>
             <span className={`state-label ${detail.hidden ? 'state-hidden' : 'state-sent'}`}>
-              {detail.hidden ? 'Hidden' : 'Will be sent'}
+              {detail.hidden ? t('Hidden') : t('Will be sent')}
             </span>
             <input
               className="switch"
               type="checkbox"
               role="switch"
-              aria-label={`Hide ${TYPE_LABELS[detail.type]} ${detail.text}`}
+              aria-label={`${t('Hide')} ${t(TYPE_TEXT[detail.type])} ${detail.text}`}
               checked={detail.hidden}
               onChange={() => onToggle(detail.id)}
             />
@@ -139,17 +155,17 @@ export default function CheckLetter({
 
       <div className="hide-more">
         <label htmlFor="hide-more-input" className="visually-hidden">
-          Hide something else
+          {t('Hide something else')}
         </label>
         <input
           id="hide-more-input"
           value={extra}
           onChange={(e) => setExtra(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && hide(extra)}
-          placeholder="Hide something else, for example your name or employer"
+          placeholder={t('Hide something else, for example your name or employer')}
         />
         <button className="secondary" onClick={() => hide(extra)} disabled={extra.trim().length < 2}>
-          Hide
+          {t('Hide')}
         </button>
       </div>
       {hideResult && (
@@ -161,7 +177,7 @@ export default function CheckLetter({
         </p>
       )}
 
-      <div className="view-toggle" role="tablist" aria-label="Which text to show" onKeyDown={onTabKey}>
+      <div className="view-toggle" role="tablist" aria-label={t('Which text to show')} onKeyDown={onTabKey}>
         <button
           id="tab-shared"
           role="tab"
@@ -170,7 +186,7 @@ export default function CheckLetter({
           className={view === 'shared' ? 'active' : ''}
           onClick={() => setView('shared')}
         >
-          What will be sent
+          {t('What will be sent')}
         </button>
         <button
           id="tab-notice"
@@ -180,20 +196,20 @@ export default function CheckLetter({
           className={view === 'notice' ? 'active' : ''}
           onClick={() => setView('notice')}
         >
-          Your letter
+          {t('Your letter')}
         </button>
       </div>
 
       <div className={`compare show-${view}`}>
         <div className="pane pane-notice">
           <div className="pane-head">
-            <span>Your letter</span>
+            <span>{t('Your letter')}</span>
             {selection ? (
               <button className="primary hide-selection" onClick={() => hide(selection)}>
-                Hide "{selection.length > 24 ? `${selection.slice(0, 24)}...` : selection}"
+                {t('Hide')} "{selection.length > 24 ? `${selection.slice(0, 24)}...` : selection}"
               </button>
             ) : (
-              <span className="small muted">stays on this device</span>
+              <span className="small muted">{t('stays on this device')}</span>
             )}
           </div>
           <div className="pane-body" ref={noticeRef}>
@@ -207,13 +223,13 @@ export default function CheckLetter({
               ),
             )}
           </div>
-          <p className="small muted">Select any text here (press and hold on a phone) to hide it.</p>
+          <p className="small muted">{t('Select any text here (press and hold on a phone) to hide it.')}</p>
         </div>
 
         <div className="pane pane-shared">
           <div className="pane-head">
-            <span>What will be sent</span>
-            <span className="small muted">black bars stay on this device</span>
+            <span>{t('What will be sent')}</span>
+            <span className="small muted">{t('black bars stay on this device')}</span>
           </div>
           <SharedText text={shared} className="pane-body" />
         </div>
@@ -221,12 +237,11 @@ export default function CheckLetter({
 
       <div className="send-box">
         <p className="small muted">
-          When you continue, the text under "What will be sent" goes to Google Gemini to be explained. The black
-          bars stay on this device.
+          {t('When you continue, the text under "What will be sent" goes to Google Gemini to be explained. The black bars stay on this device.')}
         </p>
         <div className="action-bar is-sticky row-between">
           <label className="language">
-            <span className="small muted">Explain in</span>
+            <span className="small muted">{t('Language')}</span>
             <select value={language} onChange={(e) => setLanguage(e.target.value)}>
               {LANGUAGES.map((l) => (
                 <option key={l.name} value={l.name}>
@@ -236,7 +251,7 @@ export default function CheckLetter({
             </select>
           </label>
           <button className="primary big" onClick={send}>
-            Explain my letter <ArrowIcon />
+            {t('Explain my letter')} <ArrowIcon className="arrow-forward" />
           </button>
         </div>
       </div>

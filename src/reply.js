@@ -5,12 +5,13 @@
 // finished letter has your real name and case number, but the cloud never saw them.
 import { askCloudJSON } from './explain'
 import { detectWithPatterns, occurrences } from './privacy'
+import { msg } from './i18n'
 
 export const REPLY_INTENTS = [
-  { id: 'send', label: "I'm sending what you asked for", needsNote: false },
-  { id: 'time', label: 'I need more time', needsNote: false },
-  { id: 'question', label: 'I have a question', needsNote: true },
-  { id: 'other', label: 'Something else', needsNote: true },
+  { id: 'send', label: msg("I'm sending what you asked for"), needsNote: false },
+  { id: 'time', label: msg('I need more time'), needsNote: false },
+  { id: 'question', label: msg('I have a question'), needsNote: true },
+  { id: 'other', label: msg('Something else'), needsNote: true },
 ]
 
 const INTENT_TEXT = {

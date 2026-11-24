@@ -10,7 +10,7 @@
 import { getGenerativeModel, InferenceMode } from 'firebase/ai'
 import { ai, EXPLAIN_MODELS } from './firebase'
 import { QuotaError, isDailyLimit, markUsedUp, usableModels } from './quota'
-import { countryName } from './countries'
+import { countryNameEnglish } from './countries'
 import { hostOf, isOfficialDomain } from './officialDomains'
 
 function searchModel(modelName) {
@@ -31,7 +31,7 @@ function searchModel(modelName) {
 function buildPrompt({ sender, summary, steps, country, language }) {
   return `Find official government web pages that help a person act on an official letter they received.
 
-The person lives in ${country ? countryName(country) : 'an unknown country'}.
+The person lives in ${country ? countryNameEnglish(country) : 'an unknown country'}.
 The letter is from: ${sender}
 What it is about: ${summary}
 What the person needs to do: ${steps.join('; ') || 'not clear'}

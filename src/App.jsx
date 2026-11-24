@@ -24,6 +24,7 @@ import { readFile } from './scan'
 import { readClipboard } from './device'
 import { stopSpeaking } from './speak'
 import { guessCountry, savedCountry, saveCountry } from './countries'
+import { t, msg, setUiTranslation, loadUiTranslation } from './i18n'
 import Home from './components/Home'
 import AddLetter from './components/AddLetter'
 import CheckLetter from './components/CheckLetter'
@@ -36,14 +37,32 @@ import './App.css'
 import './layout.css'
 
 const METHOD_TEXT = {
-  pdf: 'Text taken from your PDF on this device.',
-  nano: 'Gemini Nano read your photo on this device. The photo was not uploaded.',
-  tesseract: 'Your photo was read on this device. The photo was not uploaded.',
+  pdf: msg('Text taken from your PDF on this device.'),
+  nano: msg('Gemini Nano read your photo on this device. The photo was not uploaded.'),
+  tesseract: msg('Your photo was read on this device. The photo was not uploaded.'),
 }
 
 function readRoute() {
   const [view = '', id] = window.location.hash.replace(/^#\/?/, '').split('/')
   return { view: view || 'home', id }
+}
+
+const LANGUAGE_KEY = 'kamarat.language'
+
+// The language saved last time, or the browser's own language if Kamarat has it.
+function startLanguage() {
+  try {
+    const saved = localStorage.getItem(LANGUAGE_KEY)
+    if (saved && LANGUAGES.some((l) => l.name === saved)) return saved
+  } catch {
+    // no saved language
+  }
+  for (const tag of navigator.languages ?? []) {
+    const base = tag.toLowerCase().split('-')[0]
+    const found = LANGUAGES.find((l) => l.code.toLowerCase() === tag.toLowerCase() || l.code === base)
+    if (found) return found.name
+  }
+  return 'English'
 }
 
 // How many screens back inside Kamarat the browser can go.
@@ -52,14 +71,13 @@ const historyIndex = () => window.history.state?.kamarat ?? 0
 function Expired({ onAdd, onHome }) {
   return (
     <section className="card">
-      <h1 className="flow-title" tabIndex={-1} data-step-heading>Your letter is not here any more</h1>
+      <h1 className="flow-title" tabIndex={-1} data-step-heading>{t('Your letter is not here any more')}</h1>
       <p>
-        For your privacy, Kamarat does not keep the text of your letter or your hidden details when the page is
-        reloaded or closed. Letters you kept are still in My papers.
+        {t('For your privacy, Kamarat does not keep the text of your letter or your hidden details when the page is reloaded or closed. Letters you kept are still in My papers.')}
       </p>
       <div className="buttons">
-        <button className="primary" onClick={onAdd}>Add a letter</button>
-        <button className="secondary" onClick={onHome}>Home</button>
+        <button className="primary" onClick={onAdd}>{t('Add a letter')}</button>
+        <button className="secondary" onClick={onHome}>{t('Home')}</button>
       </div>
     </section>
   )
@@ -68,7 +86,10 @@ function Expired({ onAdd, onHome }) {
 export default function App() {
   const [route, setRoute] = useState(readRoute)
   const [text, setText] = useState('')
-  const [language, setLanguage] = useState('English')
+  const [language, setLanguageState] = useState(startLanguage)
+  // Whether Kamarat's own texts are being translated, or could not be.
+  const [uiStatus, setUiStatus] = useState({ code: 'en', state: 'ready' })
+  const [uiRetry, setUiRetry] = useState(0)
   // Where the person lives: their own choice, or a guess from the browser.
   const [country, setCountryState] = useState(() => savedCountry() || guessCountry())
   const [nanoStatus, setNanoStatus] = useState('checking')
@@ -91,6 +112,48 @@ export default function App() {
   const [liveSavedId, setLiveSavedId] = useState(null)
   const [papers, setPapers] = useState(listPapers)
   const detectRun = useRef(0)
+
+  function setLanguage(name) {
+    setLanguageState(name)
+    try {
+      localStorage.setItem(LANGUAGE_KEY, name)
+    } catch {
+      // private mode: the choice lasts until the page is closed
+    }
+  }
+
+  // Kamarat's own texts follow the chosen language. Arabic, Persian, Urdu and
+  // the other right-to-left languages also turn the layout around.
+  useEffect(() => {
+    const lang = LANGUAGES.find((l) => l.name === language) ?? LANGUAGES[0]
+    let cancelled = false
+    const apply = (code, map, rtl) => {
+      setUiTranslation(code, map)
+      document.documentElement.lang = code
+      document.documentElement.dir = rtl ? 'rtl' : 'ltr'
+    }
+    if (lang.code === 'en') {
+      apply('en', null, false)
+      setUiStatus({ code: 'en', state: 'ready' })
+      return undefined
+    }
+    setUiStatus({ code: lang.code, state: 'loading' })
+    loadUiTranslation(lang.name, lang.code)
+      .then((map) => {
+        if (cancelled) return
+        apply(lang.code, map, lang.rtl)
+        setUiStatus({ code: lang.code, state: 'ready' })
+      })
+      .catch((err) => {
+        if (cancelled) return
+        console.warn('Could not translate the app:', err.message)
+        apply('en', null, false)
+        setUiStatus({ code: lang.code, state: 'failed' })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [language, uiRetry])
 
   function setCountry(code) {
     setCountryState(code)
@@ -144,7 +207,7 @@ export default function App() {
   function beginNewLetter() {
     if (shared && !liveSavedId) {
       const ok = window.confirm(
-        'Start a new letter? The letter you have open is not kept in My papers, so its explanation will close.',
+        t('Start a new letter? The letter you have open is not kept in My papers, so its explanation will close.'),
       )
       if (!ok) return false
     }
@@ -166,13 +229,13 @@ export default function App() {
     if (fresh && !beginNewLetter()) return
     go('new')
     setMessage(null)
-    setReading('Opening the file on your device...')
+    setReading(t('Opening the file on your device...'))
     try {
       const { text: found, method, note } = await readFile(file, setReading)
       setText(found)
       setMessage({
         kind: note.includes('were not read') ? 'warn' : 'check',
-        text: `${METHOD_TEXT[method] ?? METHOD_TEXT.pdf} ${note} Check that the text matches your letter, especially numbers and dates.`.replace(/\s+/g, ' '),
+        text: `${t(METHOD_TEXT[method] ?? METHOD_TEXT.pdf)} ${note} ${t('Check that the text matches your letter, especially numbers and dates.')}`.replace(/\s+/g, ' '),
       })
     } catch (err) {
       setMessage({ kind: 'warn', text: err.message })
@@ -186,7 +249,7 @@ export default function App() {
     try {
       const copied = await readClipboard()
       if (copied.trim()) setText(copied)
-      else setMessage({ kind: 'warn', text: 'The clipboard is empty. Copy the text of your letter first.' })
+      else setMessage({ kind: 'warn', text: t('The clipboard is empty. Copy the text of your letter first.') })
     } catch (err) {
       setMessage({ kind: 'warn', text: err.message })
     }
@@ -225,11 +288,11 @@ export default function App() {
     // ONLY_ON_DEVICE means a failure here can never turn into a cloud call.
     if (!['unsupported', 'unavailable'].includes(nanoStatus)) {
       try {
-        setProgress('Starting private on-device AI...')
+        setProgress(t('Starting private on-device AI...'))
         await detectorModel.initializeDeviceModel((value) =>
-          setProgress(`Downloading on-device AI: ${Math.round(value * 100)}%`),
+          setProgress(t('Downloading on-device AI: {percent}%', { percent: Math.round(value * 100) })),
         )
-        setProgress('Looking for personal details on your device...')
+        setProgress(t('Looking for personal details on your device...'))
         const result = await detectWithAI(detectorModel, text)
         aiItems = result.items
         mode = 'ai'
@@ -288,9 +351,9 @@ export default function App() {
   const inFlow = view === 'new' || view === 'check'
 
   const navItems = [
-    { id: 'home', label: 'Home', icon: HomeIcon, onClick: () => go('') },
-    { id: 'new', label: 'New letter', icon: PlusIcon, onClick: newLetter },
-    { id: 'papers', label: 'My papers', icon: FolderIcon, onClick: () => go('papers'), count: papers.length },
+    { id: 'home', label: t('Home'), icon: HomeIcon, onClick: () => go('') },
+    { id: 'new', label: t('New letter'), icon: PlusIcon, onClick: newLetter },
+    { id: 'papers', label: t('My papers'), icon: FolderIcon, onClick: () => go('papers'), count: papers.length },
   ]
   const activeNav = inFlow || view === 'letter' ? 'new' : view
 
@@ -302,7 +365,7 @@ export default function App() {
           <span className="wordmark">Kamarat</span>
         </button>
 
-        <nav className="nav" aria-label="Main">
+        <nav className="nav" aria-label={t('Main')}>
           {navItems.map(({ id, label, icon: Icon, onClick, count }) => (
             <button
               key={id}
@@ -318,7 +381,7 @@ export default function App() {
         </nav>
 
         <label className="language-pick">
-          <span className="language-label">Answers in</span>
+          <span className="language-label">{t('Language')}</span>
           <select value={language} onChange={(e) => setLanguage(e.target.value)}>
             {LANGUAGES.map((l) => (
               <option key={l.name} value={l.name}>
@@ -331,6 +394,17 @@ export default function App() {
 
       <main className="main">
         {new URLSearchParams(window.location.search).has('eval') && <EvalPage />}
+
+        {uiStatus.state === 'loading' && (
+          <p className="notice notice-ok small" role="status">Translating Kamarat into {language}...</p>
+        )}
+        {uiStatus.state === 'failed' && (
+          <p className="notice notice-warn small" role="status">
+            Kamarat could not translate its screens into {language} right now, so they are in English. Answers still
+            come in {language}.{' '}
+            <button className="link-button" onClick={() => setUiRetry((n) => n + 1)}>Try again</button>
+          </p>
+        )}
 
         {expired && <Expired onAdd={newLetter} onHome={() => go('')} />}
 
@@ -405,8 +479,7 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        Kamarat explains letters. It is not legal advice. Built with Gemini Nano on your device and Gemini in the
-        cloud, through Firebase AI Logic.
+        {t('Kamarat explains letters. It is not legal advice. Built with Gemini Nano on your device and Gemini in the cloud, through Firebase AI Logic.')}
       </footer>
     </div>
   )
