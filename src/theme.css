@@ -1678,3 +1678,97 @@ button.chat-panel-close:hover:not(:disabled) {
   border-radius: 50%;
   background: var(--green);
 }
+
+/* ---------- Wide screens: use the width ---------- */
+/* The page is up to 1200 px wide. Screens that are mostly reading or a form
+   keep a comfortable line length inside it; Home, My move and the letter
+   check use the whole width. */
+:root {
+  --page-max: 1200px;
+  --read-max: 800px;
+}
+
+.top {
+  padding-inline: max(20px, calc((100% - var(--page-max)) / 2 + 24px));
+}
+
+.main {
+  max-width: var(--page-max);
+  padding-inline: 24px;
+}
+
+.site-footer {
+  padding-inline: max(24px, calc((100% - var(--page-max)) / 2 + 24px));
+}
+
+.main > .card,
+.main > .guide,
+.main > .more-page,
+.main .reading-card {
+  width: 100%;
+  max-width: var(--read-max);
+  margin-inline: auto;
+}
+
+/* The letter check shows the letter and what will be sent side by side. */
+.main > .flow-card:has(.pane-body) {
+  max-width: 1100px;
+}
+
+@media (max-width: 760px) {
+  .main {
+    padding-inline: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-hero {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 64px;
+    padding: 48px 0 64px;
+  }
+
+  .home-art {
+    max-width: 460px;
+  }
+
+  /* My move and Ask Katty side by side. */
+  .home-sheet > .row-group:first-child {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .home-sheet > .row-group:first-child > li + li {
+    border-top: none;
+    border-inline-start: 1px solid var(--hairline);
+  }
+
+  .home-sheet > .row-group:first-child .row {
+    height: 100%;
+    min-height: 88px;
+    padding-inline: 24px;
+  }
+
+  /* How it works: three steps next to each other. */
+  .home-how {
+    padding: 32px;
+  }
+
+  .home-how ol {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+
+  /* My move: the phases in two columns, everything else full width. */
+  .move .move-sheet {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 48px;
+    align-items: start;
+  }
+
+  .move .move-sheet > :not(.move-phase) {
+    grid-column: 1 / -1;
+  }
+}
