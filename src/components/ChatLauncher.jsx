@@ -5,7 +5,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import AskGuide from './AskGuide'
 import { t } from '../i18n'
-import { Logo, CloseIcon, ChatFaceIcon } from './Icons'
+import { CloseIcon, WavingKatty } from './Icons'
 
 export default function ChatLauncher({ country, language, onAddLetter, hidden }) {
   const [open, setOpen] = useState(false)
@@ -45,7 +45,7 @@ export default function ChatLauncher({ country, language, onAddLetter, hidden })
         <section className="chat-panel" role="dialog" aria-modal="false" aria-labelledby={`${uid}-title`} hidden={!open}>
           <header className="chat-panel-head">
             <span className="chat-panel-title">
-              <Logo size={28} />
+              <span className="chat-avatar"><WavingKatty size={24} /></span>
               <h2 id={`${uid}-title`} ref={title} tabIndex={-1}>{t('Ask Katty')}</h2>
             </span>
             <button className="chat-panel-close" onClick={close} aria-label={t('Close')}>
@@ -66,7 +66,7 @@ export default function ChatLauncher({ country, language, onAddLetter, hidden })
         </section>
       )}
       <button ref={button} className="chat-bubble" aria-expanded={open} aria-label={t('Ask Katty')} onClick={toggle}>
-        {open ? <CloseIcon width={24} height={24} /> : <ChatFaceIcon />}
+        {open ? <CloseIcon width={24} height={24} /> : <WavingKatty size={36} />}
       </button>
     </div>
   )

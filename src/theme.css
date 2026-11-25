@@ -1552,7 +1552,8 @@ button.chat-bubble {
   border-radius: 50%;
   background: var(--green);
   color: #fff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  /* The white ring keeps it visible over the dark green footer too. */
+  box-shadow: 0 0 0 3px #fff, 0 8px 24px rgba(0, 0, 0, 0.16);
   transition: background-color 150ms var(--ease), transform 150ms var(--ease);
 }
 
@@ -1665,4 +1666,15 @@ button.chat-panel-close:hover:not(:disabled) {
   .chat-panel {
     animation: none;
   }
+}
+
+/* Katty waving, next to the chat title */
+.chat-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--green);
 }

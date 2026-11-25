@@ -33,7 +33,7 @@ import MyPapers, { SavedLetter } from './components/MyPapers'
 import EvalPage from './components/EvalPage'
 import TranslationsPage from './components/TranslationsPage'
 import { listPapers, PAPERS_CHANGED } from './papers'
-import { Logo, GlobeIcon, MenuIcon, HomeIcon, ListIcon, ChatIcon, MoreIcon } from './components/Icons'
+import { Wordmark, GlobeIcon, MenuIcon, HomeIcon, ListIcon, ChatIcon, MoreIcon } from './components/Icons'
 import SiteMenu from './components/SiteMenu'
 import More from './components/More'
 import ChatLauncher from './components/ChatLauncher'
@@ -494,8 +494,7 @@ export default function App() {
     <div className={`app ${inFlow ? 'in-flow' : ''}`}>
       <header className="top" inert={menuOpen}>
         <button className="brand" onClick={() => go('')} aria-label={t('Katty home')}>
-          <Logo size={38} />
-          <span className="wordmark">Katty</span>
+          <Wordmark height={38} />
         </button>
         <button
           ref={menuButton}
@@ -688,8 +687,7 @@ export default function App() {
         </div>
         <div className="footer-bottom">
           <span className="footer-brand">
-            <Logo size={34} />
-            <span className="wordmark">Katty</span>
+            <Wordmark height={36} color="#ffffff" />
           </span>
           <p className="footer-note">
             {t('Katty explains letters. It is not legal advice. Built with Gemini Nano on your device and Gemini in the cloud, through Firebase AI Logic.')}

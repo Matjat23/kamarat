@@ -12,16 +12,43 @@ const base = {
   'aria-hidden': true,
 }
 
+// Katty's name, drawn as letters so it looks the same everywhere. The two t's
+// share one crossbar. color: green on light backgrounds, white on green.
+export function Wordmark({ height = 32, color = '#173d33', title }) {
+  return (
+    <svg
+      height={height}
+      width={(height * 124) / 58}
+      viewBox="4 6 124 58"
+      role={title ? 'img' : undefined}
+      aria-label={title}
+      aria-hidden={title ? undefined : true}
+    >
+      <g fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="7">
+        <path d="M12 12V46M28 26L13 37M18 34L29 46" />
+        <circle cx="46" cy="36" r="10" />
+        <path d="M56 26V46" />
+        <path d="M68 14V40q0 6 6 6M86 14V40q0 6 6 6" />
+        <path d="M62 26H92" />
+        <path d="M100 26L110 46M120 26L104 58" />
+      </g>
+    </svg>
+  )
+}
+
+// The icon: the k from the name, white on green.
 export function Logo({ size = 40 }) {
   return (
-    // A letter that smiles: Katty is the friend who reads your letters with you.
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
       <rect width="64" height="64" rx="16" fill="#173d33" />
-      <rect x="11" y="16" width="42" height="33" rx="5" fill="#ffffff" />
-      <circle cx="25" cy="25" r="2.6" fill="#173d33" />
-      <circle cx="39" cy="25" r="2.6" fill="#173d33" />
-      <path d="M13 31q19 15 38 0" stroke="#173d33" strokeWidth="3" fill="none" strokeLinecap="round" />
-      <circle cx="48" cy="44" r="5" fill="#f2c27b" />
+      <path
+        d="M22 13V51M41 26L23 39M29 36L42 51"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth="8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
@@ -202,14 +229,20 @@ export function ListIcon(props) {
   )
 }
 
-// Katty's smile in a speech bubble, for the chat button.
-export function ChatFaceIcon(props) {
+// Katty as a character: the k from the name, waving hello, with a gold head.
+// Used where Katty talks to you (the chat button and the chat panel).
+export function WavingKatty({ size = 32, ...props }) {
   return (
-    <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" {...props}>
-      <path d="M8 6h16a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H15l-6 5v-5H8a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4z" fill="#ffffff" />
-      <circle cx="12.5" cy="13.5" r="1.6" fill="#173d33" />
-      <circle cx="19.5" cy="13.5" r="1.6" fill="#173d33" />
-      <path d="M11.5 17q4.5 3.8 9 0" stroke="#173d33" strokeWidth="2" fill="none" strokeLinecap="round" />
+    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" {...props}>
+      <circle cx="24" cy="14" r="6" fill="#f2c27b" />
+      <path
+        d="M24 26V50M25 37L41 21M29 38L42 50"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth="6.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }

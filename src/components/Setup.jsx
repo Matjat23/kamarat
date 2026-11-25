@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { LANGUAGES } from '../explain'
 import { countryList, countryName, guessCountry } from '../countries'
 import { t } from '../i18n'
-import { Logo, CheckIcon, ArrowIcon, LockIcon } from './Icons'
+import { Wordmark, CheckIcon, ArrowIcon, LockIcon } from './Icons'
 
 // Lower case without accents, so "francais" finds "Français".
 const plain = (text) =>
@@ -161,7 +161,7 @@ export default function Onboarding({ language, country, onLanguage, onCountry, o
   return (
     <section className="card setup-card">
       <div className="setup-top">
-        <Logo size={44} />
+        <Wordmark height={32} title="Katty" />
         <span className="small muted">{t('Step {step} of 2', { step })}</span>
       </div>
       {step === 1 ? (
