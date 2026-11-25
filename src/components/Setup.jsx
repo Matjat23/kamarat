@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { LANGUAGES } from '../explain'
 import { countryList, countryName, guessCountry } from '../countries'
 import { t } from '../i18n'
-import { Wordmark, CheckIcon, ArrowIcon, LockIcon } from './Icons'
+import { Wordmark, CheckIcon, ArrowIcon, LockIcon, Dots } from './Icons'
 
 // Lower case without accents, so "francais" finds "Français".
 const plain = (text) =>
@@ -135,8 +135,16 @@ export function CountryPicker({ value, onChange, locale = 'en' }) {
 }
 
 // While Katty's own texts are being translated, or if that failed.
-function TranslationNote({ status, onRetry }) {
-  if (status === 'loading') return <p className="small muted setup-note" role="status">…</p>
+// The note is in English on purpose: the translation is not there yet.
+function TranslationNote({ status, onRetry, language }) {
+  const native = LANGUAGES.find((l) => l.name === language)?.native ?? language
+  if (status === 'loading') {
+    return (
+      <p className="small muted setup-note" role="status">
+        <Dots /> Translating Katty into <bdi>{native}</bdi>. You can go on meanwhile.
+      </p>
+    )
+  }
   if (status === 'failed') {
     return (
       <p className="small muted setup-note" role="status">
@@ -169,7 +177,7 @@ export default function Onboarding({ language, country, onLanguage, onCountry, o
           <h1 className="flow-title" tabIndex={-1} ref={headingRef} data-step-heading>{t('Which language do you speak?')}</h1>
           <p className="muted">{t('Katty helps you in this language: your move, your questions and your letters.')}</p>
           <LanguagePicker value={language} onChange={onLanguage} />
-          <TranslationNote status={uiStatus} onRetry={onRetry} />
+          <TranslationNote status={uiStatus} onRetry={onRetry} language={language} />
           <button className="primary big wide" onClick={() => setStep(2)}>
             {t('Next')} <ArrowIcon className="arrow-forward" />
           </button>

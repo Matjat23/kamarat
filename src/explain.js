@@ -306,32 +306,53 @@ export function isTemporary(err) {
   )
 }
 
+// Stops waiting after `ms`, even when a step inside has no timeout of its own
+// (for example getting the App Check token). A late answer is ignored, and
+// state.expired tells the work behind it not to start anything new.
+export function withDeadline(work, ms) {
+  const state = { expired: false }
+  let timer
+  const deadline = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      state.expired = true
+      reject(new Error('Gemini timed out'))
+    }, ms)
+  })
+  return Promise.race([work(state), deadline]).finally(() => clearTimeout(timer))
+}
+
 // One try on the main model, then one on the backup model. A model whose daily
 // free limit is used up is skipped until the limit resets. timeout is the time
 // one model gets; budget is the time for everything, so a busy Gemini fails in
-// seconds, not minutes.
-export async function askCloudJSON(schema, systemInstruction, prompt, onStatus = () => {}, { timeout = 25000, budget = Infinity } = {}) {
+// seconds, not minutes. Every call has a firm limit, also without a budget.
+// outer: the deadline state of a caller that wraps this call in its own.
+export function askCloudJSON(schema, systemInstruction, prompt, onStatus = () => {}, { timeout = 25000, budget = Infinity, outer } = {}) {
   const models = usableModels(EXPLAIN_MODELS)
-  if (models.length === 0) throw new QuotaError()
-  const start = Date.now()
-  let lastError
-  for (const [index, modelName] of models.entries()) {
-    const left = budget - (Date.now() - start)
-    if (index > 0 && left < 5000) break
-    if (index > 0) onStatus('Gemini is busy. Trying a backup model...')
-    try {
-      return await getExplainModel(schema, systemInstruction, modelName, Math.min(timeout, left)).generateContent(prompt)
-    } catch (err) {
-      lastError = err
-      if (isDailyLimit(err)) {
-        markUsedUp(modelName)
-        continue
+  if (models.length === 0) return Promise.reject(new QuotaError())
+  const limit = (Number.isFinite(budget) ? budget : timeout * models.length) + 2000
+  return withDeadline(async (state) => {
+    const stopped = () => state.expired || outer?.expired
+    const start = Date.now()
+    let lastError
+    for (const [index, modelName] of models.entries()) {
+      if (stopped()) throw new Error('Gemini timed out')
+      const left = budget - (Date.now() - start)
+      if (index > 0 && left < 5000) break
+      if (index > 0) onStatus('Gemini is busy. Trying a backup model...')
+      try {
+        return await getExplainModel(schema, systemInstruction, modelName, Math.min(timeout, left)).generateContent(prompt)
+      } catch (err) {
+        lastError = err
+        if (isDailyLimit(err)) {
+          markUsedUp(modelName)
+          continue
+        }
+        if (!isTemporary(err)) throw err
       }
-      if (!isTemporary(err)) throw err
     }
-  }
-  if (usableModels(EXPLAIN_MODELS).length === 0) throw new QuotaError()
-  throw lastError
+    if (usableModels(EXPLAIN_MODELS).length === 0) throw new QuotaError()
+    throw lastError
+  }, limit)
 }
 
 function askCloud(prompt, onStatus) {

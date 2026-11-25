@@ -63,7 +63,7 @@ function GuideAnswer({ turn, language, place, onAsk, onAddLetter }) {
 
       <p className="bubble-text" {...langProps}>{turn.answer}</p>
 
-      {turn.hasNumbers && !turn.legal && (
+      {turn.hasNumbers && (
         <p className="small muted">{t('Numbers like fees, dates and time limits can change. Check them on the official website.')}</p>
       )}
 

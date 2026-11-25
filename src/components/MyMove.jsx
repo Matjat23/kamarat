@@ -267,7 +267,7 @@ export default function MyMove({ country, language, onAsk }) {
         <form className="move-own" onSubmit={addOwn}>
           <label htmlFor={`${uid}-own`} className="small muted">{t('Add your own step')}</label>
           <div className="move-own-row">
-            <input id={`${uid}-own`} value={own} onChange={(e) => setOwn(e.target.value)} dir="auto" />
+            <input id={`${uid}-own`} value={own} onChange={(e) => setOwn(e.target.value)} dir="auto" maxLength={200} />
             <button className="secondary" type="submit" disabled={!own.trim()}>{t('Add')}</button>
           </div>
         </form>

@@ -8,7 +8,7 @@
 // - No phone numbers, street addresses, fees or waiting times: those change
 //   and are easy to get wrong. Each step points to the official website instead.
 // - The list is kept only in this browser, like My papers.
-import { askCloudJSON, isTemporary } from './explain'
+import { askCloudJSON, isTemporary, withDeadline } from './explain'
 import { countryNameEnglish } from './countries'
 import { hostOf, isHelpDomain } from './officialDomains'
 import { msg } from './i18n'
@@ -89,33 +89,24 @@ ${citizenship ? `Their citizenship: ${countryNameEnglish(citizenship)}.` : 'They
 Write the checklist in ${language}.`
 }
 
-// Stops waiting after `ms`, even when a step inside has no timeout of its own
-// (for example getting the App Check token). A late answer is ignored.
-function withDeadline(promise, ms) {
-  let timer
-  const deadline = new Promise((_, reject) => {
-    timer = setTimeout(() => reject(new Error('Gemini timed out')), ms)
-  })
-  return Promise.race([promise, deadline]).finally(() => clearTimeout(timer))
-}
-
 // Gemini's busy errors come and go, so wait a moment and try once more before
 // giving up. Both models are tried each time (see askCloudJSON). Everything
 // together stops after about `budget` milliseconds, so nobody waits for minutes.
 export function askCloudWithRetry(schema, systemInstruction, prompt, onStatus = () => {}, { timeout = 15000, budget = 30000 } = {}) {
-  async function attempt() {
+  return withDeadline(async (state) => {
     const start = Date.now()
     try {
-      return await askCloudJSON(schema, systemInstruction, prompt, onStatus, { timeout, budget })
+      return await askCloudJSON(schema, systemInstruction, prompt, onStatus, { timeout, budget, outer: state })
     } catch (err) {
       const left = budget - (Date.now() - start) - 2500
-      if (err?.quota || !isTemporary(err) || left < 8000) throw err
+      if (err?.quota || !isTemporary(err) || left < 8000 || state.expired) throw err
       onStatus(msg('Gemini is busy. Trying again...'))
       await new Promise((resolve) => setTimeout(resolve, 2500))
-      return askCloudJSON(schema, systemInstruction, prompt, onStatus, { timeout, budget: left })
+      // Time ran out while waiting: do not send another request.
+      if (state.expired) throw new Error('Gemini timed out')
+      return askCloudJSON(schema, systemInstruction, prompt, onStatus, { timeout, budget: left, outer: state })
     }
-  }
-  return withDeadline(attempt(), budget + 2000)
+  }, budget + 2000)
 }
 
 // A short message people can act on, instead of the technical error.
@@ -145,7 +136,7 @@ const PHONE_WORD =
 
 // "Call 08-12-3456": a number right after a word like "call" is a phone number,
 // even when it looks like a date.
-const PHONE_CUE = new RegExp(`(?:${PHONE_WORD.source})[\\s:.\\p{Pd}]{0,3}$`, 'iu')
+const PHONE_CUE = new RegExp(`(?:${PHONE_WORD.source})[\\s:.(\\p{Pd}]{0,4}$`, 'iu')
 
 // Could this be a real date? 12.34.5678 cannot. Only checked for 0-9 digits;
 // dates in other digits are kept as they are.
@@ -162,7 +153,9 @@ export function stripPhoneNumbers(text) {
   const dates = []
   const kept = text.replace(DATE, (date, offset, whole) => {
     const before = whole.slice(Math.max(0, offset - 24), offset)
-    if (PHONE_CUE.test(before) || !couldBeDate(date)) return date
+    // 2026-11-25 is always a date; 08-12-3456 after "call" is a phone number.
+    const fullDate = /^\p{Nd}{4}[-./]/u.test(date)
+    if (!couldBeDate(date) || (!fullDate && PHONE_CUE.test(before))) return date
     return `${dates.push(date) - 1}`
   })
   return kept
@@ -201,15 +194,16 @@ const LEGAL_WORDS = new RegExp(
     'överklag', 'avslag', 'utvisning', 'avvisning', 'domstol', 'advokat', 'jurist', 'polis', 'böter',
     'kronofogd', 'vräkning', 'förvar',
     // German
-    'abgelehnt', 'ablehnung', 'widerspruch', 'einspruch', 'klage', 'gericht', 'anwalt', 'abschiebung',
+    'abgelehnt', 'ablehnung', 'widerspruch', 'einspruch', 'klage', 'gerichtsverfahren', 'amtsgericht',
+    'verwaltungsgericht', 'vor gericht', 'gerichtstermin', 'anwalt', 'abschiebung',
     'ausweisung', 'bußgeld', 'bussgeld', 'strafe', 'polizei', 'schulden', 'inkasso', 'räumung', 'festgenommen',
     // Turkish
     'itiraz', 'reddedil', 'sınır dışı', 'mahkeme', 'avukat', 'ceza', 'borç', 'tahliye', 'gözaltı', 'tutuklan',
     // Polish
-    'odwołan', 'odmow', 'odrzuc', 'wydalen', 'sąd', 'adwokat', 'prawnik', 'policj', 'grzywn', 'dług',
-    'eksmisj', 'zatrzyma',
+    'odwołan', 'odmow', 'odrzuc', 'wydalen', 'sąd', 'adwokat', 'prawnik', 'policj', 'grzywn', 'zadłuż',
+    'komornik', 'windykac', 'eksmisj', 'zatrzyma',
     // Somali
-    'racfaan', 'la diiday', 'masaafur', 'tarxiil', 'maxkamad', 'qareen', 'booliis', 'ganaax', 'deyn', 'xabsi',
+    'racfaan', 'la diiday', 'masaafur', 'tarxiil', 'maxkamad', 'qareen', 'booliis', 'ganaax', 'xabsi',
   ]
     .map((word) => `(?<!\\p{L})${word}`)
     .concat([

@@ -1763,7 +1763,7 @@ button.chat-panel-close:hover:not(:disabled) {
   /* My move: the phases in two columns, everything else full width. */
   .move .move-sheet {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     column-gap: 48px;
     align-items: start;
   }
@@ -1771,4 +1771,14 @@ button.chat-panel-close:hover:not(:disabled) {
   .move .move-sheet > :not(.move-phase) {
     grid-column: 1 / -1;
   }
+}
+
+/* A very long word in a step wraps instead of pushing out of its column. */
+.move-phase {
+  min-width: 0;
+}
+
+.move-step-body strong,
+.move-step-body span {
+  overflow-wrap: break-word;
 }
