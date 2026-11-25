@@ -2,6 +2,13 @@
 
 Kamarat is a buddy for people moving to a new country. It guides you through the setup, explains your official letters without giving away who you are, tells you who to contact, and keeps your move organised, in a language you understand.
 
+<p align="center">
+  <img src="docs/screenshots/home.jpg" alt="Kamarat home screen" width="260">
+  <img src="docs/screenshots/ask.jpg" alt="Asking Kamarat what to do in the first week" width="260">
+</p>
+
+Try it: [kamarat-hackathon.web.app](https://kamarat-hackathon.web.app) (desktop Chrome with Gemini Nano for the on-device part).
+
 I have lived in Senegal, France, Sweden and the US, and every move came with forms, numbers and letters I did not fully understand. Kamarat is the friend I wanted: one who knows the system, never guesses, and never asks for my personal number just to explain a paragraph.
 
 There are three parts:
