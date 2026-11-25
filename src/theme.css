@@ -337,6 +337,7 @@ label.chip-button:hover {
 .chip-radio.chip-selected::before {
   content: '✓' / '';
   font-weight: 800;
+  margin-inline-end: 6px;
 }
 
 /* ---------- Surfaces: white, flat, round corners ---------- */
@@ -580,6 +581,7 @@ button.paper-item .muted {
 }
 
 .how-icon {
+  flex: none;
   box-sizing: content-box;
   padding: 12px;
   border-radius: 16px;
@@ -962,4 +964,267 @@ button.footer-language:hover:not(:disabled) {
 .toast {
   background: var(--green);
   border: none;
+}
+
+/* ---------- Home: the two ways in besides scanning ---------- */
+.home-paths {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 761px) {
+  .home-paths {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+button.home-path {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border: none;
+  border-radius: 20px;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  text-align: start;
+}
+
+button.home-path:hover:not(:disabled) {
+  background: #d6e6de;
+}
+
+button.home-path > span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+button.home-path strong {
+  font-size: 1.2rem;
+}
+
+button.home-path .muted {
+  color: var(--green-dark);
+  font-weight: 400;
+}
+
+.path-icon {
+  flex: none;
+  box-sizing: content-box;
+  padding: 11px;
+  border-radius: 14px;
+  background: var(--green);
+  color: #fff;
+}
+
+/* ---------- My move and Ask Kamarat pages ---------- */
+.move,
+.guide {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.move-head {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.move-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.move-progress .progress-track {
+  flex: 1;
+}
+
+.move-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 28px 24px;
+  border-radius: 28px;
+  background: #fff;
+}
+
+.move-phase {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.move-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.move-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 0;
+}
+
+.move-step + .move-step {
+  border-top: 1px solid var(--line);
+}
+
+.move-step .done-toggle {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #fff;
+}
+
+.move-step-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.move-step-body strong {
+  font-size: 1.1rem;
+  line-height: 1.3;
+}
+
+.move-step.is-done .move-step-body strong {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.move-step-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin-top: 4px;
+}
+
+.move-step-links .small,
+a.move-site,
+.move-step-links .link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+a.move-site {
+  color: var(--green);
+  font-weight: 600;
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+}
+
+.move-own {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.move-own-row {
+  display: flex;
+  gap: 8px;
+}
+
+.move-own-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.move-setup .move-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.move-setup label,
+.move-setup legend {
+  font-weight: 700;
+}
+
+.move-setup .chip-button {
+  font-weight: 600;
+}
+
+.move-setup select {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #fff;
+}
+
+.move-privacy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guide .chat {
+  margin: 0;
+}
+
+.guide-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.guide-contacts ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guide-contacts .bubble-page > span,
+.guide-contact-plain > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.guide-contact-plain {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.guide-followups {
+  margin-top: 10px;
+}
+
+@media (max-width: 760px) {
+  .move-sheet {
+    margin-inline: -20px;
+    padding: 28px 20px;
+    border-radius: 28px;
+  }
+}
+
+.bubble-you .quote-head {
+  color: #cfe4da;
 }

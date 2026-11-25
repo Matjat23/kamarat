@@ -5,7 +5,7 @@ import { t } from '../i18n'
 import { isPhone } from '../device'
 import { Logo, CameraIcon, GlobeIcon, CloseIcon } from './Icons'
 
-export default function SiteMenu({ open, onClose, active, papersCount, language, country, onHome, onNew, onPapers, onScan, onSettings }) {
+export default function SiteMenu({ open, onClose, active, papersCount, language, country, onHome, onMove, onAsk, onNew, onPapers, onScan, onSettings }) {
   const panel = useRef(null)
   const firstLink = useRef(null)
 
@@ -52,6 +52,8 @@ export default function SiteMenu({ open, onClose, active, papersCount, language,
 
   const links = [
     { id: 'home', label: t('Home'), action: onHome },
+    { id: 'move', label: t('My move'), action: onMove },
+    { id: 'ask', label: t('Ask Kamarat'), action: onAsk },
     { id: 'new', label: t('Add a letter'), action: onNew },
     { id: 'papers', label: t('My papers'), action: onPapers, count: papersCount },
     { id: 'settings', label: t('Language and country'), action: onSettings },

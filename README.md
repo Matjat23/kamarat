@@ -1,10 +1,18 @@
 # Kamarat
 
-Kamarat helps you understand an official notice, like a letter from a migration agency, a tax office or a university, without giving away who you are.
+Kamarat is a buddy for people moving to a new country. It guides you through the setup, explains your official letters without giving away who you are, tells you who to contact, and keeps your move organised, in a language you understand.
 
-I have lived in Senegal, France, Sweden and the US, and every move came with letters I did not fully understand. Kamarat is the friend I wanted: one who knows the system, never guesses, and never asks for my personal number just to explain a paragraph.
+I have lived in Senegal, France, Sweden and the US, and every move came with forms, numbers and letters I did not fully understand. Kamarat is the friend I wanted: one who knows the system, never guesses, and never asks for my personal number just to explain a paragraph.
 
-## How it works
+There are three parts:
+
+- My move: You say where you are moving, from where and why, and Kamarat makes a list of the setup steps for that country (registering your address, the personal number, health care, a bank account, the language course) that you can tick off. Only the countries and the reason are sent, nothing about you. Each step names the authority, and a website is only shown as a link when my code has checked that it is a government address. The list stays in your browser.
+- Ask Kamarat: A chat for questions about the new country. Your question is checked on the device first, so names and numbers are hidden before it is sent. Answers say who can help, with checked official links. Kamarat never gives phone numbers, addresses or fees, because those are easy to get wrong; it points to the official website instead.
+- Letters: Kamarat reads an official letter and tells you what it means and what to do, as described below.
+
+The screens and answers come in the ten most spoken languages in the world, including Arabic and Urdu written right to left.
+
+## How the letter help works
 
 1. You paste a notice.
 2. Gemini Nano runs on your own device and lists your personal details (names, ID numbers, addresses, case numbers, phones, emails). My code checks that each one really is in the text, adds pattern checks, and replaces them with labels like `[NAME_1]`. Dates and amounts stay as they are.

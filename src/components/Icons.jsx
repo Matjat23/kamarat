@@ -192,6 +192,15 @@ export function ChatIcon(props) {
   )
 }
 
+export function ListIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="m4 6.5 1.5 1.5L8.5 5M4 12.5 5.5 14l3-3M4 18.5 5.5 20l3-3" />
+      <path d="M11.5 6.5h8.5M11.5 12.5h8.5M11.5 18.5h8.5" />
+    </svg>
+  )
+}
+
 export function MenuIcon(props) {
   return (
     <svg {...base} strokeWidth={2} {...props}>

@@ -35,6 +35,9 @@ import TranslationsPage from './components/TranslationsPage'
 import { listPapers, PAPERS_CHANGED } from './papers'
 import { Logo, GlobeIcon, MenuIcon } from './components/Icons'
 import SiteMenu from './components/SiteMenu'
+import MyMove from './components/MyMove'
+import AskGuide from './components/AskGuide'
+import { loadMovePlan, MOVE_CHANGED } from './move'
 import Onboarding, { Settings } from './components/Setup'
 import { isPhone } from './device'
 import './App.css'
@@ -116,6 +119,8 @@ export default function App() {
   const [uiRetry, setUiRetry] = useState(0)
   const [toastClosed, setToastClosed] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [guideQuestion, setGuideQuestion] = useState('')
+  const [movePlan, setMovePlan] = useState(loadMovePlan)
   const menuButton = useRef(null)
   // The first visit asks for the language and the country, once.
   const [setupDone, setSetupDone] = useState(setupWasDone)
@@ -226,14 +231,17 @@ export default function App() {
     }
     const onNavigate = () => setRoute(readRoute())
     const onPapers = () => setPapers(listPapers())
+    const onMove = () => setMovePlan(loadMovePlan())
     window.addEventListener('popstate', onNavigate)
     window.addEventListener('hashchange', onNavigate)
     window.addEventListener(PAPERS_CHANGED, onPapers)
+    window.addEventListener(MOVE_CHANGED, onMove)
     checkOnDeviceModel().then(setNanoStatus)
     return () => {
       window.removeEventListener('popstate', onNavigate)
       window.removeEventListener('hashchange', onNavigate)
       window.removeEventListener(PAPERS_CHANGED, onPapers)
+      window.removeEventListener(MOVE_CHANGED, onMove)
     }
   }, [])
 
@@ -397,6 +405,12 @@ export default function App() {
   const expired = (view === 'check' && !checkReady) || (view === 'letter' && !shared)
   const inFlow = view === 'new' || view === 'check'
 
+  // Opens the guide chat, with a question ready to send or edit.
+  function openGuide(question = '') {
+    setGuideQuestion(question)
+    go('ask')
+  }
+
   function closeMenu() {
     setMenuOpen(false)
     // Back to the Menu button, so keyboard users do not lose their place.
@@ -424,6 +438,8 @@ export default function App() {
       title: 'Kamarat',
       links: [
         { label: t('Home'), onClick: () => go('') },
+        { label: t('My move'), onClick: () => go('move') },
+        { label: t('Ask Kamarat'), onClick: () => openGuide() },
         { label: t('Add a letter'), onClick: newLetter },
         { label: t('My papers'), onClick: () => go('papers') },
       ],
@@ -476,6 +492,8 @@ export default function App() {
         language={language}
         country={country}
         onHome={() => go('')}
+        onMove={() => go('move')}
+        onAsk={() => openGuide()}
         onNew={newLetter}
         onPapers={() => go('papers')}
         onScan={scanNow}
@@ -509,7 +527,15 @@ export default function App() {
             onExample={(example) => pickExample(example, { fresh: true })}
             onOpenPaper={(id) => go(`papers/${id}`)}
             onOpenPapers={() => go('papers')}
+            movePlan={movePlan}
+            onMove={() => go('move')}
+            onAsk={() => openGuide()}
           />
+        )}
+
+        {view === 'move' && <MyMove country={country} language={language} onAsk={openGuide} />}
+        {view === 'ask' && (
+          <AskGuide country={country} language={language} startQuestion={guideQuestion} onAddLetter={newLetter} />
         )}
 
         {view === 'new' && (

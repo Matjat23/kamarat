@@ -17,64 +17,20 @@ import { countryNameEnglish, weekendDays, weekendText, dayNames } from './countr
 import { hostOf, isOfficialDomain } from './officialDomains'
 import { t, dateLocale } from './i18n'
 
-// Languages Kamarat can answer in. Each one is shown in its own script, so
-// people can find theirs. English first, then by English name.
+// Languages Kamarat can answer in: the ten most spoken languages in the world.
+// Each one is shown in its own script, so people can find theirs. English
+// first, then by English name.
 export const LANGUAGES = [
   { name: 'English', native: 'English', code: 'en' },
-  { name: 'Albanian', native: 'Shqip', code: 'sq' },
-  { name: 'Amharic', native: 'አማርኛ', code: 'am' },
   { name: 'Arabic', native: 'العربية', code: 'ar', rtl: true },
-  { name: 'Bambara', native: 'Bamanankan', code: 'bm' },
   { name: 'Bengali', native: 'বাংলা', code: 'bn' },
-  { name: 'Bosnian', native: 'Bosanski', code: 'bs' },
   { name: 'Chinese (Simplified)', native: '简体中文', code: 'zh' },
-  { name: 'Danish', native: 'Dansk', code: 'da' },
-  { name: 'Dari', native: 'دری', code: 'fa-AF', rtl: true },
-  { name: 'Dutch', native: 'Nederlands', code: 'nl' },
-  { name: 'Finnish', native: 'Suomi', code: 'fi' },
   { name: 'French', native: 'Français', code: 'fr' },
-  { name: 'Fula', native: 'Pulaar', code: 'ff' },
-  { name: 'German', native: 'Deutsch', code: 'de' },
-  { name: 'Greek', native: 'Ελληνικά', code: 'el' },
-  { name: 'Hausa', native: 'Hausa', code: 'ha' },
-  { name: 'Hebrew', native: 'עברית', code: 'he', rtl: true },
   { name: 'Hindi', native: 'हिन्दी', code: 'hi' },
-  { name: 'Igbo', native: 'Igbo', code: 'ig' },
-  { name: 'Indonesian', native: 'Bahasa Indonesia', code: 'id' },
-  { name: 'Italian', native: 'Italiano', code: 'it' },
-  { name: 'Japanese', native: '日本語', code: 'ja' },
-  { name: 'Kinyarwanda', native: 'Ikinyarwanda', code: 'rw' },
-  { name: 'Korean', native: '한국어', code: 'ko' },
-  { name: 'Kurdish (Kurmanji)', native: 'Kurmancî', code: 'kmr' },
-  { name: 'Kurdish (Sorani)', native: 'کوردی', code: 'ckb', rtl: true },
-  { name: 'Lingala', native: 'Lingála', code: 'ln' },
-  { name: 'Malay', native: 'Bahasa Melayu', code: 'ms' },
-  { name: 'Nepali', native: 'नेपाली', code: 'ne' },
-  { name: 'Norwegian', native: 'Norsk', code: 'nb' },
-  { name: 'Oromo', native: 'Afaan Oromoo', code: 'om' },
-  { name: 'Pashto', native: 'پښتو', code: 'ps', rtl: true },
-  { name: 'Persian', native: 'فارسی', code: 'fa', rtl: true },
-  { name: 'Polish', native: 'Polski', code: 'pl' },
   { name: 'Portuguese', native: 'Português', code: 'pt' },
-  { name: 'Punjabi', native: 'ਪੰਜਾਬੀ', code: 'pa' },
-  { name: 'Romanian', native: 'Română', code: 'ro' },
   { name: 'Russian', native: 'Русский', code: 'ru' },
-  { name: 'Serbian', native: 'Српски', code: 'sr' },
-  { name: 'Somali', native: 'Soomaali', code: 'so' },
   { name: 'Spanish', native: 'Español', code: 'es' },
-  { name: 'Swahili', native: 'Kiswahili', code: 'sw' },
-  { name: 'Swedish', native: 'Svenska', code: 'sv' },
-  { name: 'Tagalog', native: 'Tagalog', code: 'tl' },
-  { name: 'Tamil', native: 'தமிழ்', code: 'ta' },
-  { name: 'Thai', native: 'ไทย', code: 'th' },
-  { name: 'Tigrinya', native: 'ትግርኛ', code: 'ti' },
-  { name: 'Turkish', native: 'Türkçe', code: 'tr' },
-  { name: 'Ukrainian', native: 'Українська', code: 'uk' },
   { name: 'Urdu', native: 'اردو', code: 'ur', rtl: true },
-  { name: 'Uzbek', native: 'Oʻzbekcha', code: 'uz' },
-  { name: 'Vietnamese', native: 'Tiếng Việt', code: 'vi' },
-  { name: 'Wolof', native: 'Wolof', code: 'wo' },
-  { name: 'Yoruba', native: 'Yorùbá', code: 'yo' },
 ]
 
 // How a language is listed in the pickers: its own name, and the English name

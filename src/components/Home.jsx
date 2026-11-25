@@ -7,7 +7,9 @@ import { EXAMPLES } from '../examples'
 import { isPhone } from '../device'
 import { languageProps } from '../explain'
 import { t } from '../i18n'
-import { CameraIcon, FileIcon, ClipboardIcon, ArrowIcon, LockIcon, CheckIcon, Flag, LetterArt } from './Icons'
+import { CameraIcon, FileIcon, ClipboardIcon, ArrowIcon, LockIcon, CheckIcon, ChatIcon, ListIcon, Flag, LetterArt } from './Icons'
+import { moveProgress } from '../move'
+import { countryName } from '../countries'
 
 function greeting() {
   const hour = new Date().getHours()
@@ -17,7 +19,7 @@ function greeting() {
   return t('Good evening')
 }
 
-export default function Home({ papers, onResume, onFile, onPaste, onExample, onOpenPaper, onOpenPapers }) {
+export default function Home({ papers, onResume, onFile, onPaste, onExample, onOpenPaper, onOpenPapers, movePlan, onMove, onAsk }) {
   const cameraInput = useRef(null)
   const fileInput = useRef(null)
   const phone = isPhone()
@@ -42,7 +44,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
       <div className="home-hero">
       <section className="home-hello">
         <h1 className="home-title" tabIndex={-1} data-step-heading>{greeting()}</h1>
-        <p className="lead">{t("Got an official letter? I'll tell you what it means and what to do.")}</p>
+        <p className="lead">{t("New in a country, or about to move? I'll help you set up, understand your letters and know who to contact.")}</p>
       </section>
       <LetterArt className="home-art" />
 
@@ -73,6 +75,33 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
 
       {/* Everything else sits on a white sheet below the top. */}
       <div className="home-sheet">
+      <ul className="home-paths">
+        <li>
+          <button className="home-path" onClick={onMove}>
+            <ListIcon className="path-icon" width={28} height={28} />
+            <span>
+              <strong>{t('My move')}</strong>
+              <span className="small muted">
+                {movePlan
+                  ? t('{country}: {done} of {total} steps done', { country: countryName(movePlan.to), ...moveProgress(movePlan) })
+                  : t('Your setup steps for the new country, in one list.')}
+              </span>
+            </span>
+            <ArrowIcon className="arrow-forward" width={20} height={20} />
+          </button>
+        </li>
+        <li>
+          <button className="home-path" onClick={onAsk}>
+            <ChatIcon className="path-icon" width={28} height={28} />
+            <span>
+              <strong>{t('Ask Kamarat')}</strong>
+              <span className="small muted">{t('Questions about your new country, and who can help.')}</span>
+            </span>
+            <ArrowIcon className="arrow-forward" width={20} height={20} />
+          </button>
+        </li>
+      </ul>
+
       {onResume && (
         <button className="home-card resume" onClick={onResume}>
           <span>
