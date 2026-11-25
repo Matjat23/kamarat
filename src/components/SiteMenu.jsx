@@ -1,11 +1,13 @@
-// The menu behind the "Menu" button: a full screen panel with big, plain
-// links, one main button and the language at the bottom.
+// The menu behind the "Menu" button: a drawer that slides in from the side,
+// with the page still visible (dimmed) behind it. Links are rows, like the
+// More screen on phones; the page you are on is marked.
 import { useEffect, useRef } from 'react'
 import { t } from '../i18n'
-import { isPhone } from '../device'
-import { Logo, CameraIcon, GlobeIcon, CloseIcon } from './Icons'
+import { LANGUAGES } from '../explain'
+import { countryName } from '../countries'
+import { GlobeIcon, CloseIcon, HomeIcon, ListIcon, ChatIcon, CameraIcon, FolderIcon, ChevronIcon } from './Icons'
 
-export default function SiteMenu({ open, onClose, active, papersCount, language, country, onHome, onMove, onAsk, onNew, onPapers, onScan, onSettings }) {
+export default function SiteMenu({ open, onClose, active, papersCount, language, country, onHome, onMove, onAsk, onNew, onPapers, onSettings }) {
   const panel = useRef(null)
   const firstLink = useRef(null)
   // The latest onClose, so the effect below only runs when the menu opens or
@@ -55,53 +57,66 @@ export default function SiteMenu({ open, onClose, active, papersCount, language,
   }
 
   const links = [
-    { id: 'home', label: t('Home'), action: onHome },
-    { id: 'move', label: t('My move'), action: onMove },
-    { id: 'ask', label: t('Ask Katty'), action: onAsk },
-    { id: 'new', label: t('Add a letter'), action: onNew },
-    { id: 'papers', label: t('My papers'), action: onPapers, count: papersCount },
-    { id: 'settings', label: t('Language and country'), action: onSettings },
+    { id: 'home', label: t('Home'), icon: HomeIcon, action: onHome },
+    { id: 'move', label: t('My move'), icon: ListIcon, action: onMove },
+    { id: 'ask', label: t('Ask Katty'), icon: ChatIcon, action: onAsk },
+    { id: 'new', label: t('Add a letter'), icon: CameraIcon, action: onNew },
+    { id: 'papers', label: t('My papers'), icon: FolderIcon, action: onPapers, count: papersCount },
   ]
+  const native = LANGUAGES.find((l) => l.name === language)?.native ?? language
 
   return (
-    <div className="site-menu" role="dialog" aria-modal="true" aria-label={t('Menu')} ref={panel}>
-      <div className="site-menu-top">
-        <span className="site-menu-brand">
-          <Logo size={34} />
-          <span className="wordmark">Katty</span>
-        </span>
-        <button className="menu-toggle menu-close" onClick={onClose}>
-          <CloseIcon width={30} height={30} />
-          <span>{t('Close')}</span>
-        </button>
-      </div>
+    <div className="site-menu">
+      {/* Clicking the dimmed page closes the menu, like Escape. */}
+      <div className="site-menu-backdrop" onClick={onClose} aria-hidden="true" />
+      <aside className="site-menu-panel" role="dialog" aria-modal="true" aria-label={t('Menu')} ref={panel}>
+        <div className="site-menu-top">
+          <span className="site-menu-title">{t('Menu')}</span>
+          <button className="site-menu-close" onClick={onClose}>
+            <CloseIcon width={24} height={24} />
+            <span>{t('Close')}</span>
+          </button>
+        </div>
 
-      <nav className="site-menu-body" aria-label={t('Main')}>
-        <ul className="site-menu-links">
-          {links.map((link, i) => (
-            <li key={link.id}>
+        <nav className="site-menu-body" aria-label={t('Main')}>
+          <ul className="row-group site-menu-links">
+            {links.map((link, i) => (
+              <li key={link.id}>
+                <button
+                  ref={i === 0 ? firstLink : undefined}
+                  className={`row ${active === link.id ? 'is-active' : ''}`}
+                  aria-current={active === link.id ? 'page' : undefined}
+                  onClick={() => pick(link.action)}
+                >
+                  <link.icon className="row-icon" width={20} height={20} />
+                  <span className="row-text">
+                    <span className="row-label">{link.label}</span>
+                  </span>
+                  {link.count > 0 && <span className="papers-count">{link.count}</span>}
+                  <ChevronIcon className="row-chevron arrow-forward" width={18} height={18} />
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <ul className="row-group site-menu-links">
+            <li>
               <button
-                ref={i === 0 ? firstLink : undefined}
-                className={active === link.id ? 'is-active' : ''}
-                aria-current={active === link.id ? 'page' : undefined}
-                onClick={() => pick(link.action)}
+                className={`row ${active === 'settings' ? 'is-active' : ''}`}
+                aria-current={active === 'settings' ? 'page' : undefined}
+                onClick={() => pick(onSettings)}
               >
-                {link.label}
-                {link.count > 0 && <span className="papers-count">{link.count}</span>}
+                <GlobeIcon className="row-icon" width={20} height={20} />
+                <span className="row-text">
+                  <span className="row-label">{t('Language and country')}</span>
+                  <span className="row-sub">{native}{country ? ` · ${countryName(country)}` : ''}</span>
+                </span>
+                <ChevronIcon className="row-chevron arrow-forward" width={18} height={18} />
               </button>
             </li>
-          ))}
-        </ul>
-
-        <button className="primary site-menu-scan" onClick={() => pick(onScan)}>
-          <CameraIcon width={24} height={24} /> {isPhone() ? t('Scan a letter') : t('Add a letter')}
-        </button>
-
-        <button className="site-menu-language" onClick={() => pick(onSettings)}>
-          <GlobeIcon width={24} height={24} />
-          <span>{language}{country ? ` · ${country}` : ''}</span>
-        </button>
-      </nav>
+          </ul>
+        </nav>
+      </aside>
     </div>
   )
 }

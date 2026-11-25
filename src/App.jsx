@@ -41,7 +41,6 @@ import MyMove from './components/MyMove'
 import AskGuide from './components/AskGuide'
 import { loadMovePlan, MOVE_CHANGED } from './move'
 import Onboarding, { Settings } from './components/Setup'
-import { isPhone } from './device'
 import './App.css'
 import './layout.css'
 import './redesign.css'
@@ -137,7 +136,6 @@ export default function App() {
   const menuScreen = useRef(null)
   // The first visit asks for the language and the country, once.
   const [setupDone, setSetupDone] = useState(setupWasDone)
-  const scanInput = useRef(null)
   // Where the person lives: their own choice, or a guess from the browser.
   const [country, setCountryState] = useState(() => savedCountry() || guessCountry())
   const [nanoStatus, setNanoStatus] = useState('checking')
@@ -214,12 +212,6 @@ export default function App() {
     }
     setSetupDone(true)
     if (!country) saveCountry('')
-  }
-
-  // The round Scan button on phones opens the camera straight away.
-  function scanNow() {
-    if (isPhone()) scanInput.current?.click()
-    else newLetter()
   }
 
   function setCountry(code) {
@@ -505,18 +497,6 @@ export default function App() {
           <Logo size={38} />
           <span className="wordmark">Katty</span>
         </button>
-        <input
-          ref={scanInput}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          hidden
-          onChange={(event) => {
-            const file = event.target.files?.[0]
-            event.target.value = ''
-            if (file) readLetterFile(file, { fresh: true })
-          }}
-        />
         <button
           ref={menuButton}
           className="menu-toggle"
@@ -541,7 +521,6 @@ export default function App() {
         onAsk={() => openGuide()}
         onNew={newLetter}
         onPapers={() => go('papers')}
-        onScan={scanNow}
         onSettings={() => go('settings')}
       />
 

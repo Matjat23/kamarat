@@ -171,112 +171,127 @@ button.menu-toggle:hover:not(:disabled) {
   background: var(--paper);
 }
 
-/* ---------- The menu panel ---------- */
+/* ---------- The menu: a drawer from the side ---------- */
 .site-menu {
   position: fixed;
   inset: 0;
   z-index: 60;
+}
+
+.site-menu-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(29, 29, 27, 0.4);
+  animation: menu-fade 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-menu-panel {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: min(400px, 100%);
   display: flex;
   flex-direction: column;
-  background: var(--paper-deep);
+  background: var(--paper);
+  box-shadow: 0 0 48px rgba(0, 0, 0, 0.16);
   overflow-y: auto;
+  animation: menu-in 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[dir='rtl'] .site-menu-panel {
+  animation-name: menu-in-rtl;
+}
+
+@keyframes menu-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes menu-in {
+  from { opacity: 0; transform: translateX(32px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes menu-in-rtl {
+  from { opacity: 0; transform: translateX(-32px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-menu-backdrop,
+  .site-menu-panel {
+    animation: none;
+  }
 }
 
 .site-menu-top {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  justify-content: space-between;
   min-height: var(--header-h);
+  padding-inline: 24px 12px;
+  border-bottom: 1px solid rgba(29, 29, 27, 0.08);
   background: #fff;
 }
 
-.site-menu-brand {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px max(20px, calc((100% - 880px) / 2 + 20px));
+.site-menu-title {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
 }
 
-.site-menu-top button.menu-close {
-  border-radius: 0;
-  padding: 10px 22px;
+button.site-menu-close {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 500;
+}
+
+button.site-menu-close:hover:not(:disabled) {
   background: var(--paper-deep);
 }
 
 .site-menu-body {
-  flex: 1;
-  width: 100%;
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 32px 20px 40px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 16px;
+  padding: 24px;
 }
 
-.site-menu-links {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+/* The page you are on: green, with a bar at the start of the row. */
+.site-menu-links .row.is-active {
+  border-inline-start: 4px solid var(--green);
+  padding-inline-start: 16px;
+  color: var(--green);
 }
 
-.site-menu-links button {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  padding: 6px 0;
-  border: none;
-  border-radius: 0;
-  background: none;
-  color: var(--ink);
-  font-size: clamp(2rem, 8vw, 2.75rem);
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  text-align: start;
-}
-
-.site-menu-links button:hover:not(:disabled),
-.site-menu-links button.is-active {
-  background: none;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 7px;
+.site-menu-links .row.is-active .row-icon,
+.site-menu-links .row.is-active .row-label {
+  color: var(--green);
+  font-weight: 600;
 }
 
 .site-menu-links .papers-count {
-  font-size: 1rem;
-  letter-spacing: 0;
-}
-
-button.site-menu-scan {
-  align-self: flex-start;
-  width: min(100%, 380px);
-  justify-content: center;
-  padding: 18px 28px;
-  font-size: 1.15rem;
-}
-
-button.site-menu-language {
-  margin-top: auto;
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  padding: 8px 0;
-  border: none;
-  background: none;
-  color: var(--ink);
-  font-size: 1.15rem;
-  font-weight: 500;
-}
-
-button.site-menu-language:hover:not(:disabled) {
-  background: none;
-  text-decoration: underline;
+  flex: none;
+  min-width: 24px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--paper-deep);
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Buttons ---------- */
