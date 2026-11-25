@@ -57,15 +57,23 @@ h3,
 
 .home-title,
 .flow-title,
-.answer-title {
-  font-weight: 700;
+.answer-title,
+.page-title {
+  font-weight: 600;
   color: var(--ink);
 }
 
 .home-title {
-  font-size: clamp(2.6rem, 10vw, 4rem);
-  line-height: 1.02;
-  letter-spacing: -0.035em;
+  font-size: clamp(36px, 9vw, 56px);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+}
+
+.page-title {
+  margin: 0;
+  font-size: clamp(32px, 8vw, 40px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .flow-title,
@@ -76,15 +84,16 @@ h3,
 }
 
 .lead {
-  font-size: clamp(1.15rem, 4vw, 1.35rem);
-  line-height: 1.5;
-  color: var(--ink);
+  font-size: 18px;
+  line-height: 28px;
+  color: var(--ink-soft);
 }
 
 .section-title,
 .home-card-title {
-  font-size: 1.45rem;
-  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -128,7 +137,7 @@ h3,
 .top .wordmark,
 .site-menu-brand .wordmark {
   font-size: 1.55rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.03em;
   color: var(--green);
 }
@@ -277,7 +286,7 @@ button.primary {
   border: none;
   border-radius: 14px;
   padding: 14px 24px;
-  font-weight: 700;
+  font-weight: 600;
   box-shadow: none;
 }
 
@@ -294,7 +303,7 @@ button.secondary {
   color: var(--ink);
   border: 1.5px solid var(--ink);
   border-radius: 14px;
-  font-weight: 700;
+  font-weight: 600;
   box-shadow: none;
 }
 
@@ -336,7 +345,7 @@ label.chip-button:hover {
 /* The chosen reply option also gets a tick, so it does not rely on colour */
 .chip-radio.chip-selected::before {
   content: '✓' / '';
-  font-weight: 800;
+  font-weight: 600;
   margin-inline-end: 6px;
 }
 
@@ -381,7 +390,7 @@ button.home-card.resume:hover:not(:disabled) {
 .home-hero {
   display: grid;
   gap: 24px;
-  padding: 8px 0 36px;
+  padding: 8px 0 40px;
 }
 
 .home-hello {
@@ -389,66 +398,96 @@ button.home-card.resume:hover:not(:disabled) {
 }
 
 .home-hello .lead {
-  max-width: 32ch;
-  margin-top: 14px;
+  max-width: 34ch;
+  margin-top: 16px;
 }
 
 .home-art {
   width: 100%;
-  max-width: 340px;
+  max-width: 320px;
   height: auto;
   justify-self: center;
 }
 
 .scan-card {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
+/* The one green thing on the page: add a letter. */
 button.scan-main {
   width: 100%;
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 20px 22px;
+  min-height: 72px;
+  padding: 16px 20px;
   border: none;
-  border-radius: 18px;
+  border-radius: 16px;
   background: var(--green);
   color: #fff;
   box-shadow: none;
   text-align: start;
+  transition: background-color 150ms var(--ease), transform 150ms var(--ease);
 }
 
 button.scan-main:hover:not(:disabled) {
   background: var(--green-dark);
 }
 
-button.scan-main strong {
-  font-size: 1.25rem;
-}
-
-button.scan-main .small {
-  color: #cfe4da;
+button.scan-main:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .scan-icon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.14);
   color: #fff;
+}
+
+.scan-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scan-text strong {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+
+.scan-text span {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 400;
+  color: #cfe4da;
 }
 
 .scan-more {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
-.scan-more .chip-button {
+.scan-more .secondary {
   flex: 1 1 0;
   min-width: 140px;
+  min-height: 48px;
   justify-content: center;
-  padding: 12px 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
 }
 
-.scan-more .chip-button:only-child {
+.scan-more .secondary:only-child {
   flex: 0 1 auto;
 }
 
@@ -459,7 +498,8 @@ button.scan-main .small {
       'hello art'
       'scan art';
     align-items: center;
-    column-gap: 36px;
+    column-gap: 40px;
+    padding: 32px 0 48px;
   }
 
   .home-hello {
@@ -475,21 +515,21 @@ button.scan-main .small {
   }
 }
 
-/* The white sheet under the top */
+/* Under the top: white cards with rows, on the page colour. */
 .home-sheet {
   display: flex;
   flex-direction: column;
   gap: 32px;
-  padding: 32px 28px 28px;
-  border-radius: 32px;
-  background: #fff;
+  padding: 0 0 48px;
 }
 
 .home-section {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-/* Lists: plain rows with a thin line between them */
+/* Lists on other screens: plain rows with a thin line between them */
 .coming-list,
 .paper-list {
   list-style: none;
@@ -508,7 +548,7 @@ button.scan-main .small {
 button.coming-item,
 button.paper-item {
   width: 100%;
-  padding: 16px 6px;
+  padding: 16px 8px;
   border: none;
   border-radius: 12px;
   background: transparent;
@@ -529,13 +569,16 @@ button.paper-item .muted {
 
 /* How close a date is: a small coloured label, never the position in a list */
 .coming-when {
+  flex: none;
   align-self: center;
   padding: 4px 12px;
   border-radius: 999px;
   background: var(--paper-deep);
   color: var(--ink-soft);
-  font-weight: 700;
-  font-size: 0.88rem;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
@@ -555,50 +598,69 @@ button.paper-item .muted {
   color: #9b2c2c;
 }
 
-/* How it works: a light green section with dark icon tiles, like a leaflet */
+/* How it works: three numbered steps in a white card */
 .home-how {
-  gap: 24px;
-  padding: 32px 24px;
-  border: none;
-  border-radius: 24px;
-  background: var(--green-soft);
-  color: var(--green-dark);
-  box-shadow: none;
-}
-
-.home-how .section-title {
-  color: var(--green-dark);
-  font-size: clamp(1.6rem, 6vw, 2.1rem);
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  background: #fff;
 }
 
 .home-how ol {
-  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .home-how li {
-  flex-direction: column;
-  gap: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
 }
 
-.how-icon {
+.home-how li > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 4px;
+}
+
+.how-num {
   flex: none;
-  box-sizing: content-box;
-  padding: 12px;
-  border-radius: 16px;
-  background: var(--green);
-  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 50%;
+  color: var(--green);
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .home-how li strong {
-  font-size: 1.2rem;
-  line-height: 1.25;
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
 }
 
-.home-how li .muted {
-  color: var(--green-dark);
+.home-examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 
 .home-promise {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   margin: 0;
 }
 
@@ -609,33 +671,15 @@ button.paper-item .muted {
   }
 
   .home-hero {
-    padding-bottom: 28px;
+    padding-bottom: 32px;
   }
 
   .home-art {
-    max-width: 300px;
+    max-width: 280px;
   }
 
-  /* The sheet runs edge to edge and down to the footer */
-  .main:has(.home-sheet) {
-    padding-bottom: 0;
-  }
-
-  .home-sheet {
-    margin-inline: -20px;
-    padding: 32px 20px 64px;
-    border-radius: 28px 28px 0 0;
-  }
-
-  .app:has(.home-sheet) .site-footer {
-    margin-top: -28px;
-    position: relative;
-  }
-
-  .home-how li {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 18px;
+  .home-how {
+    padding: 20px;
   }
 
   .toast,
@@ -663,7 +707,7 @@ button.paper-item .muted {
 .worry-chip {
   border: none !important;
   border-radius: 999px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .worry-chip.worry-INFO { background: var(--green-soft); color: var(--green-dark); }
@@ -687,7 +731,7 @@ button.paper-item .muted {
   border: 1.5px solid var(--ink);
   border-radius: 12px;
   color: var(--ink);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 @media (max-width: 420px) {
@@ -867,7 +911,7 @@ textarea {
 .footer-column h2 {
   margin: 0 0 14px;
   font-size: 1.3rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #fff;
 }
 
@@ -917,7 +961,7 @@ textarea {
 
 .footer-brand .wordmark {
   font-size: 1.55rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.03em;
   color: var(--gold);
 }
@@ -939,7 +983,7 @@ button.footer-language {
   border-radius: 12px;
   background: transparent;
   color: #fff;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 button.footer-language:hover:not(:disabled) {
@@ -964,64 +1008,6 @@ button.footer-language:hover:not(:disabled) {
 .toast {
   background: var(--green);
   border: none;
-}
-
-/* ---------- Home: the two ways in besides scanning ---------- */
-.home-paths {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 12px;
-}
-
-@media (min-width: 761px) {
-  .home-paths {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-button.home-path {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 18px;
-  border: none;
-  border-radius: 20px;
-  background: var(--green-soft);
-  color: var(--green-dark);
-  text-align: start;
-}
-
-button.home-path:hover:not(:disabled) {
-  background: #d6e6de;
-}
-
-button.home-path > span {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-button.home-path strong {
-  font-size: 1.2rem;
-}
-
-button.home-path .muted {
-  color: var(--green-dark);
-  font-weight: 400;
-}
-
-.path-icon {
-  flex: none;
-  box-sizing: content-box;
-  padding: 11px;
-  border-radius: 14px;
-  background: var(--green);
-  color: #fff;
 }
 
 /* ---------- My move and Ask Katty pages ---------- */
@@ -1160,7 +1146,7 @@ a.move-site {
 
 .move-setup label,
 .move-setup legend {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .move-setup .chip-button {
@@ -1237,7 +1223,7 @@ a.move-site {
 }
 
 .guide-where label {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .guide-legal {
@@ -1257,7 +1243,7 @@ a.move-search {
   text-transform: none;
   letter-spacing: 0;
   font-size: 0.98rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--ink);
 }
 
@@ -1279,4 +1265,243 @@ a.move-search {
 
 .move-error p {
   margin: 0;
+}
+
+/* ---------- Rows in white cards (Home, More), like a phone settings list ---------- */
+:root {
+  --hairline: rgba(29, 29, 27, 0.08);
+  --hairline-strong: rgba(29, 29, 27, 0.14);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.row-group {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.row-group > li + li {
+  border-top: 1px solid var(--hairline);
+}
+
+.row-group .row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 64px;
+  padding-block: 12px;
+  padding-inline: 20px 16px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  transition: background-color 150ms var(--ease);
+}
+
+.row-group .row:hover:not(:disabled) {
+  background: var(--paper);
+}
+
+.row-group .row:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: -2px;
+}
+
+.row-icon {
+  flex: none;
+  color: var(--muted);
+}
+
+.row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row-label {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 500;
+  overflow-wrap: break-word;
+}
+
+.row-sub {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--muted);
+  overflow-wrap: break-word;
+}
+
+.row-chevron {
+  flex: none;
+  color: var(--muted);
+}
+
+/* How far the move list is: a thin green line under the row. */
+.row-progress {
+  display: block;
+  height: 4px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: var(--paper-deep);
+  overflow: hidden;
+}
+
+.row-progress span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--green);
+}
+
+/* ---------- More (phones) ---------- */
+.more-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.row-facts {
+  gap: 12px;
+  padding: 20px;
+}
+
+.row-facts .group-title {
+  margin: 0;
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.row-facts p {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.more-note {
+  margin: 0;
+}
+
+/* ---------- Tab bar (phones only) ---------- */
+.tab-bar {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .tab-bar {
+    position: fixed;
+    inset-inline: 16px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 40;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    padding: 6px;
+    border: 1px solid var(--hairline);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  .tab-bar-item {
+    min-width: 0;
+    min-height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px;
+    border: none;
+    border-radius: 22px;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+    color: var(--ink);
+    font: inherit;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    transition: background-color 150ms var(--ease), color 150ms var(--ease);
+  }
+
+  .tab-bar-item span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tab-bar-item.is-active {
+    background: var(--paper-deep);
+    color: var(--green);
+  }
+
+  .tab-bar-item:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+
+  /* The Menu button is replaced by More, except while adding a letter. */
+  .app:not(.in-flow) .menu-toggle {
+    display: none;
+  }
+
+  /* Room at the bottom so the bar never covers the footer or a message. */
+  .app:not(.in-flow) .site-footer {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+
+  .app:not(.in-flow) .toast {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (forced-colors: active) {
+  .tab-bar,
+  .row-group {
+    border: 1px solid CanvasText;
+  }
+
+  .tab-bar-item.is-active {
+    outline: 2px solid Highlight;
+  }
+}
+
+/* Arabic, Persian, Urdu and the other right-to-left scripts: no tracking, more room for the marks. */
+[dir='rtl'] .home-title,
+[dir='rtl'] .page-title,
+[dir='rtl'] .section-title {
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+/* Bold text is 600 everywhere, also inside an already bold parent (the browser default would go to 900). */
+strong,
+b {
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .tab-bar-item.is-active span {
+    font-weight: 600;
+  }
 }

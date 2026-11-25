@@ -19,6 +19,7 @@ import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { speak, stopSpeaking, canSpeak } from '../speak'
 import { SharedText, QuoteInNotice } from './Text'
 import ReviewBeforeSend from './ReviewBeforeSend'
+import { friendlyError } from '../move'
 import { t } from '../i18n'
 import { CloudIcon, DeviceIcon, LandmarkIcon, ArrowIcon, PenIcon, SpeakerIcon, Dots } from './Icons'
 
@@ -154,7 +155,7 @@ export default function AskKatty({ shared, labelMap, details, language, onAskSen
       })
       update({ status: 'done', ...answer })
     } catch (err) {
-      update({ status: 'error', error: err.message })
+      update({ status: 'error', error: friendlyError(err).message })
     }
   }
 

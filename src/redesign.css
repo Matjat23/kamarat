@@ -27,7 +27,7 @@
   border: 1px solid var(--line-strong);
   background: #fff;
   font-size: 0.88rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--ink-soft);
   white-space: nowrap;
@@ -119,7 +119,7 @@ button.scan-main .small {
 .section-title {
   font-family: var(--font-body);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);

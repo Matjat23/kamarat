@@ -6,7 +6,7 @@ const base = {
   viewBox: '0 0 24 24',
   fill: 'none',
   stroke: 'currentColor',
-  strokeWidth: 1.8,
+  strokeWidth: 1.5,
   strokeLinecap: 'round',
   strokeLinejoin: 'round',
   'aria-hidden': true,
@@ -14,13 +14,14 @@ const base = {
 
 export function Logo({ size = 40 }) {
   return (
-    // Two friends side by side: "kamrat" means friend.
+    // A letter that smiles: Katty is the friend who reads your letters with you.
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
       <rect width="64" height="64" rx="16" fill="#173d33" />
-      <circle cx="25" cy="23" r="7" fill="#faf6ee" />
-      <path d="M13 51c0-9 5.4-15 12-15s12 6 12 15z" fill="#faf6ee" />
-      <circle cx="40" cy="25" r="6.5" fill="#e08a68" />
-      <path d="M29 51c0-8.4 5-14 11-14s11 5.6 11 14z" fill="#e08a68" />
+      <rect x="11" y="16" width="42" height="33" rx="5" fill="#ffffff" />
+      <circle cx="25" cy="25" r="2.6" fill="#173d33" />
+      <circle cx="39" cy="25" r="2.6" fill="#173d33" />
+      <path d="M13 31q19 15 38 0" stroke="#173d33" strokeWidth="3" fill="none" strokeLinecap="round" />
+      <circle cx="48" cy="44" r="5" fill="#f2c27b" />
     </svg>
   )
 }
@@ -201,6 +202,26 @@ export function ListIcon(props) {
   )
 }
 
+export function MoreIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="5" cy="12" r="1.2" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.2" fill="currentColor" />
+      <circle cx="19" cy="12" r="1.2" fill="currentColor" />
+    </svg>
+  )
+}
+
+// Points forward: right in left-to-right screens, left in right-to-left ones
+// (give it the arrow-forward class).
+export function ChevronIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M9.5 6l6 6-6 6" />
+    </svg>
+  )
+}
+
 export function MenuIcon(props) {
   return (
     <svg {...base} strokeWidth={2} {...props}>
@@ -227,7 +248,7 @@ export function LetterArt(props) {
       <rect x="128" y="40" width="114" height="124" rx="10" fill="#fffaf0" />
       <rect x="146" y="60" width="60" height="9" rx="4.5" fill="#f2c27b" />
       <rect x="146" y="80" width="80" height="6" rx="3" fill="#ddd7c9" />
-      <rect x="146" y="94" width="70" height="6" rx="3" fill="#ddd7c9" />
+      <rect x="146" y="92" width="56" height="10" rx="2" fill="#1d1d1b" />
       <rect x="146" y="108" width="52" height="6" rx="3" fill="#ddd7c9" />
       <circle cx="216" cy="128" r="14" fill="#4ecdc4" />
       <path d="M209 128.5l5 5 9-10" fill="none" stroke="#173d33" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -247,11 +268,6 @@ export function LetterArt(props) {
       <rect x="322" y="104" width="6" height="16" rx="3" fill="#173d33" />
       <rect x="284" y="150" width="46" height="9" rx="4.5" fill="#173d33" />
       <rect x="284" y="166" width="30" height="7" rx="3.5" fill="#ddd7c9" />
-      <circle cx="306" cy="60" r="7" fill="#ff8f8f" />
-      <circle cx="58" cy="176" r="6" fill="#f2c27b" />
-      <rect x="326" y="210" width="12" height="12" rx="3" fill="#4ecdc4" transform="rotate(45 332 216)" />
-      <path d="M118 8 v18 M109 17 h18 M111.5 10.5 l13 13 M124.5 10.5 l-13 13" stroke="#8f86e8" strokeWidth="3.5" strokeLinecap="round" />
-      <path d="M22 214 q9 -14 18 0 t18 0" fill="none" stroke="#ff8f8f" strokeWidth="4" strokeLinecap="round" />
     </svg>
   )
 }

@@ -232,7 +232,7 @@ button.start-tile.start-main:hover:not(:disabled) {
   border-radius: 50%;
   background: var(--green-soft);
   color: var(--green-dark);
-  font-weight: 700;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -281,7 +281,7 @@ button.paper-item:hover:not(:disabled) {
   min-width: 104px;
   display: flex;
   flex-direction: column;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--green-dark);
 }
 
@@ -364,7 +364,7 @@ button.paper-item {
 
 .flow-steps li.current {
   color: var(--ink);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .flow-steps li.done {
@@ -380,7 +380,7 @@ button.paper-item {
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .flow-steps li.current .flow-dot {
@@ -666,7 +666,7 @@ button.paper-item {
 .step-group-title {
   font-family: var(--font-body);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -768,7 +768,7 @@ button.step-main:hover:not(:disabled) {
 .date-chip {
   flex: none;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   padding: 3px 9px;
   border-radius: 999px;
   background: var(--paper-deep);

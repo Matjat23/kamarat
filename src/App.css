@@ -42,7 +42,7 @@
 
 .wordmark {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.55rem;
   letter-spacing: -0.02em;
   color: var(--green-dark);
@@ -83,7 +83,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.78rem;
   background: var(--paper-deep);
   color: var(--muted);
@@ -220,7 +220,7 @@ h4 {
 .eyebrow {
   display: block;
   font-size: 0.74rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -692,7 +692,7 @@ textarea,
 
 .redact-label {
   font-size: 0.68em;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   opacity: 0.85;
@@ -767,7 +767,7 @@ select {
   justify-content: center;
   background: var(--green);
   color: #fff;
-  font-weight: 700;
+  font-weight: 600;
   font-family: var(--font-display);
   font-size: 1.05rem;
 }
@@ -876,7 +876,7 @@ select {
   background: var(--terracotta);
   color: #fff;
   font-size: 0.74rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 4px 0;
@@ -888,7 +888,7 @@ select {
 .date-day {
   font-family: var(--font-display);
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.1;
   padding-top: 4px;
 }
@@ -937,7 +937,7 @@ blockquote {
   font-family: var(--font-body);
   font-style: normal;
   font-size: 0.74rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -1352,7 +1352,7 @@ summary:focus-visible {
 
 .state-label {
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   padding: 3px 10px;
   border-radius: 999px;
   white-space: nowrap;
@@ -1834,7 +1834,7 @@ fieldset.intents {
 .worry-chip {
   align-self: flex-start;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 3px 10px;

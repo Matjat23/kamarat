@@ -33,8 +33,9 @@ import MyPapers, { SavedLetter } from './components/MyPapers'
 import EvalPage from './components/EvalPage'
 import TranslationsPage from './components/TranslationsPage'
 import { listPapers, PAPERS_CHANGED } from './papers'
-import { Logo, GlobeIcon, MenuIcon } from './components/Icons'
+import { Logo, GlobeIcon, MenuIcon, HomeIcon, ListIcon, ChatIcon, MoreIcon } from './components/Icons'
 import SiteMenu from './components/SiteMenu'
+import More from './components/More'
 import MyMove from './components/MyMove'
 import AskGuide from './components/AskGuide'
 import { loadMovePlan, MOVE_CHANGED } from './move'
@@ -468,6 +469,14 @@ export default function App() {
     )
   }
   const activeNav = inFlow || view === 'letter' ? 'new' : view
+  // The tab bar on phones: four places, everything else lives under More.
+  const tabs = [
+    { id: 'home', label: t('Home'), icon: HomeIcon, onClick: () => go('') },
+    { id: 'move', label: t('My move'), icon: ListIcon, onClick: () => go('move') },
+    { id: 'ask', label: t('Ask'), icon: ChatIcon, onClick: () => openGuide() },
+    { id: 'more', label: t('More'), icon: MoreIcon, onClick: () => go('more') },
+  ]
+  const activeTab = ['home', 'move', 'ask'].includes(view) ? view : view === 'letter' ? 'home' : 'more'
   const footerLinks = [
     {
       title: 'Katty',
@@ -568,6 +577,17 @@ export default function App() {
           />
         )}
 
+        {view === 'more' && (
+          <More
+            papersCount={papers.length}
+            language={language}
+            country={country}
+            onPapers={() => go('papers')}
+            onNew={newLetter}
+            onSettings={() => go('settings')}
+          />
+        )}
+
         {view === 'move' && <MyMove country={country} language={language} onAsk={openGuide} />}
         {view === 'ask' && (
           <AskGuide
@@ -644,6 +664,24 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* Phones: a tab bar at the bottom, in reach of the thumb. Hidden while
+          you add and check a letter, which has its own Back and Next. */}
+      {!inFlow && (
+        <nav className="tab-bar" aria-label={t('Main')} inert={menuOpen}>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`tab-bar-item ${activeTab === tab.id ? 'is-active' : ''}`}
+              aria-current={activeTab === tab.id ? 'page' : undefined}
+              onClick={tab.onClick}
+            >
+              <tab.icon width={22} height={22} />
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </nav>
+      )}
 
       <footer className="site-footer" inert={menuOpen}>
         <div className="footer-columns">

@@ -109,6 +109,10 @@ export async function askCloudWithRetry(schema, systemInstruction, prompt, onSta
 export function friendlyError(err) {
   if (err?.quota) return err
   if (isTemporary(err)) return new Error(msg('Gemini is busy right now. Please try again in a minute'))
+  // The page was not allowed to use Gemini (App Check or the API key said no).
+  if (/app check|40[13]|permission|api key/i.test(err?.message ?? '')) {
+    return new Error(msg('Katty cannot reach Gemini from here right now. Please try again later'))
+  }
   return err
 }
 
