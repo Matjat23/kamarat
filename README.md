@@ -17,7 +17,7 @@ There are three parts:
 - Ask Kamarat: A chat for questions about the new country. Your question is checked on the device first, so names and numbers are hidden, and you always see exactly what will be sent before it goes. Answers say who can help, with checked links, or a web search that is marked as a search. Kamarat is told never to give phone numbers, addresses or fees, because those are easy to get wrong, and my code also takes out phone numbers and asks you to check any numbers on the official website. Legal questions, like a refusal or an appeal, get a note to ask a free legal advice service first.
 - Letters: Kamarat reads an official letter and tells you what it means and what to do, as described below.
 
-Kamarat answers in 55 languages, including Arabic, Persian, Pashto, Kurdish (Sorani), Hebrew and Urdu written right to left. The screens for eleven of them (English, Arabic, Bengali, Chinese, French, Hindi, Portuguese, Russian, Spanish, Swedish and Urdu) ship with the app. For the other languages, Gemini translates the screens the first time and the browser keeps that translation.
+Kamarat answers in 55 languages, including Arabic, Persian, Dari, Pashto, Kurdish (Sorani), Hebrew and Urdu written right to left. The screens for 21 of them ship with the app: English, Arabic, Bengali, Chinese, Dari, French, German, Hindi, Kurdish (Sorani), Pashto, Persian, Polish, Portuguese, Russian, Somali, Spanish, Swedish, Tigrinya, Turkish, Ukrainian and Urdu. I made these translations with AI, so they still need a check by native speakers, most of all Somali, Tigrinya, Pashto and Sorani. For the other languages, Gemini translates the screens the first time and the browser keeps that translation.
 
 ## How the letter help works
 
@@ -72,7 +72,7 @@ Without Gemini Nano, a rule-based check looks for numbers, emails, names (after 
 
 ## Translating the screens
 
-The screen texts are in `src/ui-strings.json` (`python tools/extract_strings.py` updates it). Eleven languages were translated and checked by hand. The others are translated once with Google Cloud Translation and shipped as files too:
+The screen texts are in `src/ui-strings.json` (`python tools/extract_strings.py` updates it). The shipped translations are in `public/i18n`; `tools/ship_translation.py` checks that a translation has every text and keeps every placeholder before it writes the file. The remaining languages can be translated once with Google Cloud Translation, if the project has billing:
 
 1. In the Google Cloud console for the Firebase project, turn on the Cloud Translation API (it needs billing).
 2. Create an API key that is only allowed to use the Cloud Translation API.

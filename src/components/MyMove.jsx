@@ -8,7 +8,7 @@ import {
 } from '../move'
 import { countryList, countryName } from '../countries'
 import { languageProps } from '../explain'
-import { t } from '../i18n'
+import { t, uiLanguageCode } from '../i18n'
 import { ArrowIcon, ChatIcon, CheckIcon, LandmarkIcon, LockIcon, Dots } from './Icons'
 
 // A web search for the organisation in that country, marked as a search.
@@ -25,7 +25,9 @@ function CountrySelect({ id, value, onChange, countries, empty }) {
 
 function MoveSetup({ country, language, onMade, onExample }) {
   const uid = useId()
-  const countries = useMemo(() => countryList(), [])
+  // Country names follow the screen language, once its translation has loaded.
+  const screenLanguage = uiLanguageCode()
+  const countries = useMemo(() => countryList(), [screenLanguage])
   const [to, setTo] = useState(country || '')
   const [from, setFrom] = useState('')
   const [citizenship, setCitizenship] = useState('')

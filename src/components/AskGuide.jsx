@@ -25,7 +25,7 @@ import { isOfficialDomain } from '../officialDomains'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { SharedText } from './Text'
 import ReviewBeforeSend from './ReviewBeforeSend'
-import { t } from '../i18n'
+import { t, uiLanguageCode } from '../i18n'
 import { CloudIcon, LandmarkIcon, ArrowIcon, CameraIcon, Dots } from './Icons'
 
 const COUNTRY_KEY = 'kamarat.ask.country.v1'
@@ -127,7 +127,9 @@ function GuideAnswer({ turn, language, place, onAsk, onAddLetter }) {
 
 export default function AskGuide({ country, language, startQuestion, onAddLetter }) {
   const uid = useId()
-  const countries = useMemo(() => countryList(), [])
+  // Country names follow the screen language, once its translation has loaded.
+  const screenLanguage = uiLanguageCode()
+  const countries = useMemo(() => countryList(), [screenLanguage])
   const plan = useMemo(() => loadMovePlan(), [])
   const [where, setWhere] = useState(() => savedAskCountry() || plan?.to || country || '')
   const [question, setQuestion] = useState(startQuestion || '')
