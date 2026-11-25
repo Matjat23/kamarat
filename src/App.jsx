@@ -198,6 +198,9 @@ export default function App() {
   function finishSetup() {
     try {
       localStorage.setItem(SETUP_KEY, 'done')
+      // Save the language shown as chosen, also when the person kept the one
+      // Kamarat picked for them, so setup is not asked again next time.
+      localStorage.setItem(LANGUAGE_KEY, language)
     } catch {
       // private mode: asked again next time
     }
