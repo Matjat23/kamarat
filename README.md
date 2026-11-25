@@ -10,7 +10,7 @@ There are three parts:
 - Ask Kamarat: A chat for questions about the new country. Your question is checked on the device first, so names and numbers are hidden, and you always see exactly what will be sent before it goes. Answers say who can help, with checked links, or a web search that is marked as a search. Kamarat is told never to give phone numbers, addresses or fees, because those are easy to get wrong, and my code also takes out phone numbers and asks you to check any numbers on the official website. Legal questions, like a refusal or an appeal, get a note to ask a free legal advice service first.
 - Letters: Kamarat reads an official letter and tells you what it means and what to do, as described below.
 
-The screens and answers come in the ten most spoken languages in the world, including Arabic and Urdu written right to left. The screen texts ship with the app, so changing the language does not wait for the AI.
+Kamarat answers in 55 languages, including Arabic, Persian, Pashto, Kurdish (Sorani), Hebrew and Urdu written right to left. The screens for eleven of them (English, Arabic, Bengali, Chinese, French, Hindi, Portuguese, Russian, Spanish, Swedish and Urdu) ship with the app. For the other languages, Gemini translates the screens the first time and the browser keeps that translation.
 
 ## How the letter help works
 
