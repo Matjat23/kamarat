@@ -1228,3 +1228,35 @@ a.move-site {
 .bubble-you .quote-head {
   color: #cfe4da;
 }
+
+.guide-where select {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #fff;
+}
+
+.guide-where label {
+  font-weight: 700;
+}
+
+.guide-legal {
+  margin-top: 10px;
+}
+
+button.guide-new {
+  align-self: flex-start;
+}
+
+a.move-search {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.review-final .quote-head {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--ink);
+}

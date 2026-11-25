@@ -8,6 +8,10 @@ import { Logo, CameraIcon, GlobeIcon, CloseIcon } from './Icons'
 export default function SiteMenu({ open, onClose, active, papersCount, language, country, onHome, onMove, onAsk, onNew, onPapers, onScan, onSettings }) {
   const panel = useRef(null)
   const firstLink = useRef(null)
+  // The latest onClose, so the effect below only runs when the menu opens or
+  // closes, not every time the app updates (which would move focus).
+  const closeRef = useRef(onClose)
+  closeRef.current = onClose
 
   // While open: the page behind does not scroll, Escape closes, and Tab stays
   // inside the panel.
@@ -20,7 +24,7 @@ export default function SiteMenu({ open, onClose, active, papersCount, language,
     function onKey(event) {
       if (event.key === 'Escape') {
         event.preventDefault()
-        onClose()
+        closeRef.current()
         return
       }
       if (event.key !== 'Tab') return
@@ -41,7 +45,7 @@ export default function SiteMenu({ open, onClose, active, papersCount, language,
       document.body.style.overflow = before
       document.removeEventListener('keydown', onKey)
     }
-  }, [open, onClose])
+  }, [open])
 
   if (!open) return null
 

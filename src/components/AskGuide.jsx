@@ -2,26 +2,41 @@
 //
 // - The question is checked on this device first: numbers and emails are
 //   hidden, and Gemini Nano looks for names and other details when it is
-//   available. You see what will be sent.
-// - Answers name who can help, with a link only when it is a government site.
-// - The chat is not saved anywhere.
-import { useEffect, useId, useRef, useState } from 'react'
+//   available. When it is not, the device cannot spot names, so you always see
+//   exactly what will be sent and choose to send it.
+// - The country the answers are about is shown at the top and can be changed.
+// - Answers name who can help, with a link only when it is an official site or
+//   a well-known non-profit. Answers with numbers in them, and legal problems,
+//   get a note to check with the official body or get free legal advice.
+// - The chat is not saved anywhere. "New chat" starts again.
+import { useId, useMemo, useRef, useState } from 'react'
 import { askGuide, GUIDE_QUESTIONS, MAX_GUIDE_QUESTIONS } from '../guide'
 import { loadMovePlan } from '../move'
 import { maskNote } from '../reply'
 import { detectWithAI } from '../privacy'
 import { languageProps } from '../explain'
-import { countryName } from '../countries'
+import { countryList } from '../countries'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { SharedText } from './Text'
 import { t } from '../i18n'
 import { CloudIcon, LandmarkIcon, ArrowIcon, CameraIcon, Dots } from './Icons'
+
+const searchLink = (name) => `https://www.google.com/search?q=${encodeURIComponent(name)}`
 
 function GuideAnswer({ turn, language, onAsk, onAddLetter }) {
   const langProps = languageProps(language)
   return (
     <>
       <p className="bubble-text" {...langProps}>{turn.answer}</p>
+
+      {turn.legal && (
+        <p className="notice notice-warn guide-legal">
+          {t('This sounds like a legal question. Kamarat cannot give legal advice. Before you act, ask a free legal advice service or a lawyer.')}
+        </p>
+      )}
+      {turn.hasNumbers && !turn.legal && (
+        <p className="small muted">{t('Numbers like fees, dates and time limits can change. Check them on the official website.')}</p>
+      )}
 
       {turn.contacts.length > 0 && (
         <div className="guide-contacts">
@@ -45,6 +60,9 @@ function GuideAnswer({ turn, language, onAsk, onAddLetter }) {
                     <span>
                       <strong className="small">{c.organisation}</strong>
                       <span className="small muted" {...langProps}>{c.why}</span>
+                      <a className="small" href={searchLink(c.organisation)} target="_blank" rel="noopener noreferrer">
+                        {t('Search for them')}
+                      </a>
                     </span>
                   </span>
                 )}
@@ -78,17 +96,17 @@ function GuideAnswer({ turn, language, onAsk, onAddLetter }) {
 
 export default function AskGuide({ country, language, startQuestion, onAddLetter }) {
   const uid = useId()
+  const countries = useMemo(() => countryList(), [])
+  const plan = useMemo(() => loadMovePlan(), [])
+  const [where, setWhere] = useState(plan?.to || country || '')
   const [question, setQuestion] = useState(startQuestion || '')
   const [turns, setTurns] = useState([])
   const [confirm, setConfirm] = useState(null)
   const [checking, setChecking] = useState(false)
   const nextId = useRef(1)
-  const plan = loadMovePlan()
-  const where = plan?.to || country
-
-  useEffect(() => {
-    if (startQuestion) setQuestion(startQuestion)
-  }, [startQuestion])
+  // The move list's origin and reason only apply when the chat is about the
+  // same country as the list.
+  const planHere = plan && plan.to === where ? plan : null
 
   const busy = checking || turns.some((turn) => turn.status === 'loading')
   const left = MAX_GUIDE_QUESTIONS - turns.length
@@ -99,18 +117,22 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
     if (!raw || busy || left <= 0) return
     const base = maskNote(raw, [], {})
     let full = base
+    let namesChecked = false
     if ((await checkOnDeviceModel()) === 'available') {
       setChecking(true)
       try {
         const aiItems = (await detectWithAI(detectorModel, raw)).items
         full = maskNote(raw, [], {}, aiItems)
+        namesChecked = true
       } catch (err) {
         console.warn('On-device check of the question failed, pattern check only.', err)
       }
       setChecking(false)
     }
-    if (full.masked !== base.masked) {
-      setConfirm({ masked: full.masked })
+    // Without the on-device check nobody looked for names, so the person sees
+    // exactly what will be sent and decides.
+    if (!namesChecked || full.masked !== base.masked) {
+      setConfirm({ masked: full.masked, namesChecked, fromInput })
       return
     }
     submit(full.masked, fromInput)
@@ -128,7 +150,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
         question: masked,
         history,
         country: where,
-        plan,
+        plan: planHere,
         language,
         onStatus: (statusText) => update({ statusText: t(statusText) }),
       })
@@ -136,6 +158,12 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
     } catch (err) {
       update({ status: 'error', error: err.message })
     }
+  }
+
+  function newChat() {
+    setTurns([])
+    setConfirm(null)
+    setQuestion('')
   }
 
   function onKeyDown(event) {
@@ -150,10 +178,15 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
       <section className="move-head">
         <h1 className="flow-title" tabIndex={-1} data-step-heading>{t('Ask Kamarat')}</h1>
         <p className="lead">
-          {where
-            ? t('Questions about moving to and living in {country}. Kamarat tells you who can help and where to find them.', { country: countryName(where) })
-            : t('Questions about moving to and living in a new country. Kamarat tells you who can help and where to find them.')}
+          {t('Questions about moving to and living in a new country. Kamarat tells you who can help and where to find them.')}
         </p>
+        <div className="move-field guide-where">
+          <label htmlFor={`${uid}-where`}>{t('The answers are about')}</label>
+          <select id={`${uid}-where`} value={where} onChange={(e) => setWhere(e.target.value)} disabled={busy}>
+            <option value="">{t('Choose a country')}</option>
+            {countries.map((c) => <option key={c.code} value={c.code}>{c.name}</option>)}
+          </select>
+        </div>
       </section>
 
       <div className="move-sheet ask">
@@ -180,7 +213,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
         {turns.length === 0 && !confirm && (
           <div className="chips" aria-label={t('Suggested questions')}>
             {GUIDE_QUESTIONS.map((q) => (
-              <button key={q} className="chip-button" disabled={busy} onClick={() => send(t(q), false)}>
+              <button key={q} className="chip-button" disabled={busy || !where} onClick={() => send(t(q), false)}>
                 {t(q)}
               </button>
             ))}
@@ -189,11 +222,23 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
 
         {confirm ? (
           <div className="review-note review-final" role="status">
-            <span className="quote-head">{t('Kamarat found more personal details and hid them. This is exactly what will be sent:')}</span>
+            <span className="quote-head">
+              {confirm.namesChecked
+                ? t('Kamarat found more personal details and hid them. This is exactly what will be sent:')
+                : t('On this device Kamarat cannot spot names. Check that there are no names or other personal details, then send. This is exactly what will be sent:')}
+            </span>
             <SharedText text={confirm.masked} className="review-note-text" />
             <div className="buttons">
-              <button className="secondary" onClick={() => setConfirm(null)}>{t('Edit question')}</button>
-              <button className="primary" onClick={() => submit(confirm.masked)}>{t('Send it')}</button>
+              <button
+                className="secondary"
+                onClick={() => {
+                  if (!confirm.fromInput) setQuestion(confirm.masked)
+                  setConfirm(null)
+                }}
+              >
+                {t('Edit question')}
+              </button>
+              <button className="primary" onClick={() => submit(confirm.masked, confirm.fromInput)}>{t('Send it')}</button>
             </div>
           </div>
         ) : left > 0 ? (
@@ -216,7 +261,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
               dir="auto"
             />
             <p id={`${uid}-help`} className="small muted">
-              {t('Kamarat hides names and numbers on your device before sending. Leave out anything else you would rather not share.')}
+              {t('Kamarat hides numbers and emails on your device, and looks for names when your device can. Leave out names and anything else you would rather not share.')}
             </p>
             {preview && preview !== question.trim() && (
               <div className="review-note">
@@ -224,12 +269,16 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
                 <SharedText text={preview} className="review-note-text" />
               </div>
             )}
-            <button className="primary" type="submit" disabled={busy || !question.trim()}>
+            <button className="primary" type="submit" disabled={busy || !question.trim() || !where}>
               {checking ? <span role="status"><Dots /> {t('Checking your question on your device...')}</span> : t('Ask')}
             </button>
           </form>
         ) : (
-          <p className="small muted">{t('That is all the questions for now. Open Ask Kamarat again to start a new chat.')}</p>
+          <p className="small muted">{t('That is all the questions for this chat. Start a new chat to ask more.')}</p>
+        )}
+
+        {turns.length > 0 && (
+          <button className="secondary guide-new" onClick={newChat} disabled={busy}>{t('New chat')}</button>
         )}
         <p className="small muted">{t('Kamarat is not a lawyer. Check important things with the official body.')}</p>
       </div>

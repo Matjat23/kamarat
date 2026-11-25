@@ -61,7 +61,11 @@ const SETUP_KEY = 'kamarat.setup.v1'
 
 function setupWasDone() {
   try {
-    return localStorage.getItem(SETUP_KEY) === 'done'
+    if (localStorage.getItem(SETUP_KEY) !== 'done') return false
+    // Kamarat used to offer more languages. If the saved one is no longer
+    // offered, ask again instead of quietly switching to English.
+    const saved = localStorage.getItem(LANGUAGE_KEY)
+    return !saved || LANGUAGES.some((l) => l.name === saved)
   } catch {
     return false
   }
@@ -120,6 +124,7 @@ export default function App() {
   const [toastClosed, setToastClosed] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [guideQuestion, setGuideQuestion] = useState('')
+  const [guideSession, setGuideSession] = useState(0)
   const [movePlan, setMovePlan] = useState(loadMovePlan)
   const menuButton = useRef(null)
   // The first visit asks for the language and the country, once.
@@ -229,7 +234,11 @@ export default function App() {
     if (window.history.state?.kamarat === undefined) {
       window.history.replaceState({ kamarat: 0 }, '', window.location.href)
     }
-    const onNavigate = () => setRoute(readRoute())
+    // Back and Forward always close the menu, even when the screen stays the same.
+    const onNavigate = () => {
+      setMenuOpen(false)
+      setRoute(readRoute())
+    }
     const onPapers = () => setPapers(listPapers())
     const onMove = () => setMovePlan(loadMovePlan())
     window.addEventListener('popstate', onNavigate)
@@ -250,6 +259,8 @@ export default function App() {
   const routeKey = `${route.view}/${route.id ?? ''}`
   useEffect(() => {
     stopSpeaking()
+    setMenuOpen(false)
+    if (route.view !== 'ask') setGuideQuestion('')
     window.scrollTo({ top: 0 })
     requestAnimationFrame(() => {
       const heading = [...document.querySelectorAll('[data-step-heading]')].find((el) => el.offsetParent)
@@ -408,6 +419,7 @@ export default function App() {
   // Opens the guide chat, with a question ready to send or edit.
   function openGuide(question = '') {
     setGuideQuestion(question)
+    setGuideSession((n) => n + 1)
     go('ask')
   }
 
@@ -455,7 +467,7 @@ export default function App() {
 
   return (
     <div className={`app ${inFlow ? 'in-flow' : ''}`}>
-      <header className="top">
+      <header className="top" inert={menuOpen}>
         <button className="brand" onClick={() => go('')} aria-label={t('Kamarat home')}>
           <Logo size={38} />
           <span className="wordmark">Kamarat</span>
@@ -500,7 +512,7 @@ export default function App() {
         onSettings={() => go('settings')}
       />
 
-      <main className="main">
+      <main className="main" inert={menuOpen}>
         {new URLSearchParams(window.location.search).has('eval') && <EvalPage />}
         {import.meta.env.DEV && new URLSearchParams(window.location.search).has('translations') && <TranslationsPage />}
 
@@ -535,7 +547,13 @@ export default function App() {
 
         {view === 'move' && <MyMove country={country} language={language} onAsk={openGuide} />}
         {view === 'ask' && (
-          <AskGuide country={country} language={language} startQuestion={guideQuestion} onAddLetter={newLetter} />
+          <AskGuide
+            key={guideSession}
+            country={country}
+            language={language}
+            startQuestion={guideQuestion}
+            onAddLetter={newLetter}
+          />
         )}
 
         {view === 'new' && (
@@ -604,7 +622,7 @@ export default function App() {
         )}
       </main>
 
-      <footer className="site-footer">
+      <footer className="site-footer" inert={menuOpen}>
         <div className="footer-columns">
           {footerLinks.map((column) => (
             <nav key={column.title} className="footer-column" aria-label={column.title}>

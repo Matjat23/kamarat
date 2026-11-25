@@ -33,6 +33,58 @@ export const LANGUAGES = [
   { name: 'Urdu', native: 'اردو', code: 'ur', rtl: true },
 ]
 
+// Languages Kamarat offered before the list was cut to ten. They are not
+// offered any more, but letters saved in them still get the right lang and
+// reading direction, and a saved choice of one of them asks the person to
+// choose again.
+export const RETIRED_LANGUAGES = [
+  { name: 'Albanian', native: 'Shqip', code: 'sq' },
+  { name: 'Amharic', native: 'አማርኛ', code: 'am' },
+  { name: 'Bambara', native: 'Bamanankan', code: 'bm' },
+  { name: 'Bosnian', native: 'Bosanski', code: 'bs' },
+  { name: 'Danish', native: 'Dansk', code: 'da' },
+  { name: 'Dari', native: 'دری', code: 'fa-AF', rtl: true },
+  { name: 'Dutch', native: 'Nederlands', code: 'nl' },
+  { name: 'Finnish', native: 'Suomi', code: 'fi' },
+  { name: 'Fula', native: 'Pulaar', code: 'ff' },
+  { name: 'German', native: 'Deutsch', code: 'de' },
+  { name: 'Greek', native: 'Ελληνικά', code: 'el' },
+  { name: 'Hausa', native: 'Hausa', code: 'ha' },
+  { name: 'Hebrew', native: 'עברית', code: 'he', rtl: true },
+  { name: 'Igbo', native: 'Igbo', code: 'ig' },
+  { name: 'Indonesian', native: 'Bahasa Indonesia', code: 'id' },
+  { name: 'Italian', native: 'Italiano', code: 'it' },
+  { name: 'Japanese', native: '日本語', code: 'ja' },
+  { name: 'Kinyarwanda', native: 'Ikinyarwanda', code: 'rw' },
+  { name: 'Korean', native: '한국어', code: 'ko' },
+  { name: 'Kurdish (Kurmanji)', native: 'Kurmancî', code: 'kmr' },
+  { name: 'Kurdish (Sorani)', native: 'کوردی', code: 'ckb', rtl: true },
+  { name: 'Lingala', native: 'Lingála', code: 'ln' },
+  { name: 'Malay', native: 'Bahasa Melayu', code: 'ms' },
+  { name: 'Nepali', native: 'नेपाली', code: 'ne' },
+  { name: 'Norwegian', native: 'Norsk', code: 'nb' },
+  { name: 'Oromo', native: 'Afaan Oromoo', code: 'om' },
+  { name: 'Pashto', native: 'پښتو', code: 'ps', rtl: true },
+  { name: 'Persian', native: 'فارسی', code: 'fa', rtl: true },
+  { name: 'Polish', native: 'Polski', code: 'pl' },
+  { name: 'Punjabi', native: 'ਪੰਜਾਬੀ', code: 'pa' },
+  { name: 'Romanian', native: 'Română', code: 'ro' },
+  { name: 'Serbian', native: 'Српски', code: 'sr' },
+  { name: 'Somali', native: 'Soomaali', code: 'so' },
+  { name: 'Swahili', native: 'Kiswahili', code: 'sw' },
+  { name: 'Swedish', native: 'Svenska', code: 'sv' },
+  { name: 'Tagalog', native: 'Tagalog', code: 'tl' },
+  { name: 'Tamil', native: 'தமிழ்', code: 'ta' },
+  { name: 'Thai', native: 'ไทย', code: 'th' },
+  { name: 'Tigrinya', native: 'ትግርኛ', code: 'ti' },
+  { name: 'Turkish', native: 'Türkçe', code: 'tr' },
+  { name: 'Ukrainian', native: 'Українська', code: 'uk' },
+  { name: 'Uzbek', native: 'Oʻzbekcha', code: 'uz' },
+  { name: 'Vietnamese', native: 'Tiếng Việt', code: 'vi' },
+  { name: 'Wolof', native: 'Wolof', code: 'wo' },
+  { name: 'Yoruba', native: 'Yorùbá', code: 'yo' },
+]
+
 // How a language is listed in the pickers: its own name, and the English name
 // when that is different, so it can be found either way.
 export function languageLabel(language) {
@@ -42,7 +94,7 @@ export function languageLabel(language) {
 // lang and dir attributes for text written in the chosen language, so screen
 // readers pronounce it right and Arabic and Persian read right to left.
 export function languageProps(language) {
-  const found = LANGUAGES.find((l) => l.name === language)
+  const found = LANGUAGES.find((l) => l.name === language) ?? RETIRED_LANGUAGES.find((l) => l.name === language)
   return found ? { lang: found.code, dir: found.rtl ? 'rtl' : 'ltr' } : {}
 }
 

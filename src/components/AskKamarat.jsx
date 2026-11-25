@@ -103,18 +103,22 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
     if (!raw || busy || left <= 0) return
     const base = maskNote(raw, details, labelMap)
     let full = base
+    let namesChecked = false
     if ((await checkOnDeviceModel()) === 'available') {
       setChecking(true)
       try {
         const aiItems = (await detectWithAI(detectorModel, raw)).items
         full = maskNote(raw, details, labelMap, aiItems)
+        namesChecked = true
       } catch (err) {
         console.warn('On-device check of the question failed, pattern check only.', err)
       }
       setChecking(false)
     }
-    if (full.masked !== base.masked) {
-      setConfirm({ masked: full.masked })
+    // Names from the letter are always hidden, but new names in the question
+    // can only be found by Gemini Nano. Without it, show what will be sent.
+    if (!namesChecked || full.masked !== base.masked) {
+      setConfirm({ masked: full.masked, namesChecked })
       return
     }
     submit(full.masked, fromInput)
@@ -213,7 +217,11 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
 
       {confirm ? (
         <div className="review-note review-final" role="status">
-          <span className="quote-head">{t('Kamarat found more personal details and hid them. This is exactly what will be sent:')}</span>
+          <span className="quote-head">
+            {confirm.namesChecked
+              ? t('Kamarat found more personal details and hid them. This is exactly what will be sent:')
+              : t('On this device Kamarat cannot spot names. Check that there are no names or other personal details, then send. This is exactly what will be sent:')}
+          </span>
           <SharedText text={confirm.masked} className="review-note-text" />
           <div className="buttons">
             <button className="secondary" onClick={() => setConfirm(null)}>{t('Edit question')}</button>
@@ -240,7 +248,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
             dir="auto"
           />
           <p id={`${uid}-help`} className="small muted">
-            {t('Kamarat hides names and numbers on your device before sending. Leave out anything else you would rather not share.')}{' '}
+            {t('Names and numbers from your letter are hidden on your device before sending. Kamarat looks for new names when your device can. Leave out anything else you would rather not share.')}{' '}
             {t('{left} of {max} questions left for this letter.', { left, max: MAX_QUESTIONS })}
           </p>
           {preview && preview !== question.trim() && (

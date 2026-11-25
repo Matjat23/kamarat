@@ -109,7 +109,14 @@ function StepItem({ step, language, onToggle, onAsk }) {
             </a>
           )}
           {step.organisation && !step.website && (
-            <span className="small muted"><LandmarkIcon width={16} height={16} /> {step.organisation}</span>
+            <a
+              className="move-site move-search"
+              href={`https://www.google.com/search?q=${encodeURIComponent(step.organisation)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <LandmarkIcon width={16} height={16} /> {step.organisation} · {t('Search for them')}
+            </a>
           )}
           <button className="link-button small" onClick={() => onAsk(step)}>
             <ChatIcon width={16} height={16} /> {t('Ask about this')}
@@ -201,7 +208,7 @@ export default function MyMove({ country, language, onAsk }) {
         </form>
 
         <p className="small muted">
-          {t('Kamarat made this list with AI. Check each step on the official website before you rely on it. Only government websites are shown as links.')}
+          {t('Kamarat made this list with AI. Check each step on the official website before you rely on it. Kamarat only links to official websites and well-known help organisations it has checked.')}
         </p>
         <div className="buttons">
           <button className="secondary" onClick={() => onAsk('')}>
