@@ -1,5 +1,5 @@
-// Home: what Katty is and one big way in (add a letter), then your move,
-// questions, what is coming up and your letters, as rows in white cards.
+// Home: what Katty is, then three ways in by situation (moving, a letter, a
+// question), then what is coming up and your letters, as rows in white cards.
 // "How it works" is only shown until you have kept a letter.
 import { useRef } from 'react'
 import { upcomingDeadlines, paperActions } from '../papers'
@@ -58,14 +58,50 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
         </section>
         <LetterArt className="home-art" />
 
-        <section className="scan-card">
-          <button className="scan-main" onClick={() => (phone ? cameraInput : fileInput).current?.click()}>
-            <span className="scan-icon"><CameraIcon width={24} height={24} /></span>
-            <span className="scan-text">
-              <strong>{phone ? t('Scan a letter') : t('Add a letter')}</strong>
-              <span>{phone ? t('Read on your device, never uploaded') : t('A photo or a PDF, read on your device')}</span>
-            </span>
-          </button>
+        {/* Three ways in, by where you are in your move. The letter is green:
+            it is where Katty reads private papers on your device. */}
+        <div className="home-ways-wrap">
+          <ul className="home-ways">
+            <li>
+              <button className="way" onClick={onMove}>
+                <span className="way-icon"><ListIcon width={22} height={22} /></span>
+                <span className="way-text">
+                  <span className="way-title">{t("I'm moving or just arrived")}</span>
+                  <span className="way-sub">
+                    {progress
+                      ? t('{country}: {done} of {total} steps done', { country: countryName(movePlan.to), ...progress })
+                      : t('Your setup steps for the new country, in one list.')}
+                  </span>
+                  {progress && progress.total > 0 && (
+                    <span className="row-progress" aria-hidden="true">
+                      <span style={{ width: `${(progress.done / progress.total) * 100}%` }} />
+                    </span>
+                  )}
+                </span>
+                <ChevronIcon className="way-chevron arrow-forward" width={20} height={20} />
+              </button>
+            </li>
+            <li>
+              <button className="way is-main" onClick={() => (phone ? cameraInput : fileInput).current?.click()}>
+                <span className="way-icon"><CameraIcon width={22} height={22} /></span>
+                <span className="way-text">
+                  <span className="way-title">{t('I got a letter')}</span>
+                  <span className="way-sub">{phone ? t('Read on your device, never uploaded') : t('A photo or a PDF, read on your device')}</span>
+                </span>
+                <ChevronIcon className="way-chevron arrow-forward" width={20} height={20} />
+              </button>
+            </li>
+            <li>
+              <button className="way" onClick={onAsk}>
+                <span className="way-icon"><ChatIcon width={22} height={22} /></span>
+                <span className="way-text">
+                  <span className="way-title">{t('I have a question')}</span>
+                  <span className="way-sub">{t('Questions about your new country, and who can help.')}</span>
+                </span>
+                <ChevronIcon className="way-chevron arrow-forward" width={20} height={20} />
+              </button>
+            </li>
+          </ul>
           <div className="scan-more">
             {phone && (
               <button className="secondary" onClick={() => fileInput.current?.click()}>
@@ -78,30 +114,10 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
           </div>
           <input ref={cameraInput} type="file" accept="image/*" capture="environment" hidden onChange={picked} />
           <input ref={fileInput} type="file" accept="image/*,application/pdf" hidden onChange={picked} />
-        </section>
+        </div>
       </div>
 
       <div className="home-sheet">
-        <ul className="row-group">
-          <Row
-            icon={ListIcon}
-            title={t('My move')}
-            sub={
-              progress
-                ? t('{country}: {done} of {total} steps done', { country: countryName(movePlan.to), ...progress })
-                : t('Your setup steps for the new country, in one list.')
-            }
-            onClick={onMove}
-          >
-            {progress && progress.total > 0 && (
-              <span className="row-progress" aria-hidden="true">
-                <span style={{ width: `${(progress.done / progress.total) * 100}%` }} />
-              </span>
-            )}
-          </Row>
-          <Row icon={ChatIcon} title={t('Ask Katty')} sub={t('Questions about your new country, and who can help.')} onClick={onAsk} />
-        </ul>
-
         {onResume && (
           <ul className="row-group">
             <Row title={t('Continue with your letter')} sub={t('The explanation is still open.')} onClick={onResume} />

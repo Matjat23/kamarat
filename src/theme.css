@@ -1732,23 +1732,6 @@ button.chat-panel-close:hover:not(:disabled) {
     max-width: 460px;
   }
 
-  /* My move and Ask Katty side by side. */
-  .home-sheet > .row-group:first-child {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .home-sheet > .row-group:first-child > li + li {
-    border-top: none;
-    border-inline-start: 1px solid var(--hairline);
-  }
-
-  .home-sheet > .row-group:first-child .row {
-    height: 100%;
-    min-height: 88px;
-    padding-inline: 24px;
-  }
-
   /* How it works: three steps next to each other. */
   .home-how {
     padding: 32px;
@@ -1781,4 +1764,160 @@ button.chat-panel-close:hover:not(:disabled) {
 .move-step-body strong,
 .move-step-body span {
   overflow-wrap: break-word;
+}
+
+/* ---------- Home: three ways in ---------- */
+.home-ways-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-ways {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+/* On a phone each way is a row: icon, text, arrow. */
+button.way {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'icon text chevron';
+  align-items: center;
+  column-gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  transition: background-color 150ms var(--ease), transform 150ms var(--ease);
+}
+
+button.way:hover:not(:disabled) {
+  background: var(--paper);
+}
+
+button.way:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.way-icon {
+  grid-area: icon;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--paper-deep);
+  color: var(--green);
+}
+
+.way-text {
+  grid-area: text;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.way-title {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+  overflow-wrap: break-word;
+}
+
+.way-sub {
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--muted);
+  overflow-wrap: break-word;
+}
+
+.way-chevron {
+  grid-area: chevron;
+  color: var(--muted);
+}
+
+/* The letter: the one green thing on the page. */
+button.way.is-main {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+
+button.way.is-main:hover:not(:disabled) {
+  background: var(--green-dark);
+}
+
+button.way.is-main .way-icon {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+button.way.is-main .way-sub,
+button.way.is-main .way-chevron {
+  color: #cfe4da;
+}
+
+button.way:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* On a phone the ways come right after the title, the drawing after them. */
+@media (max-width: 760px) {
+  .home-hero {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-hello {
+    order: 1;
+  }
+
+  .home-ways-wrap {
+    order: 2;
+  }
+
+  .home-art {
+    order: 3;
+    max-width: 240px;
+  }
+}
+
+/* On a computer: the title and the drawing on top, the three ways in a row under them. */
+@media (min-width: 761px) {
+  .home-hero {
+    grid-template-areas:
+      'hello art'
+      'ways ways';
+  }
+
+  .home-ways-wrap {
+    grid-area: ways;
+  }
+
+  .home-ways {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  button.way {
+    grid-template-areas:
+      'icon . chevron'
+      'text text text';
+    align-items: start;
+    align-content: start;
+    row-gap: 16px;
+    padding: 24px;
+  }
 }
