@@ -259,7 +259,6 @@
  "Search for a country": "Chercher un pays",
  "Step {step} of 2": "Étape {step} sur 2",
  "Which language do you speak?": "Quelle langue parlez-vous ?",
- "Kamarat explains your letters in this language.": "Kamarat vous explique vos courriers dans cette langue.",
  "Where do you live now?": "Où vivez-vous maintenant ?",
  "So Kamarat can find the right official websites and count working days the right way.": "Pour que Kamarat trouve les bons sites officiels et compte correctement les jours ouvrables.",
  "Kept letters are saved only on this device. No account needed.": "Les courriers gardés sont enregistrés uniquement sur cet appareil. Pas besoin de compte.",
@@ -385,5 +384,6 @@
  "That is all the questions for this chat. Start a new chat to ask more.": "C'est tout pour cette discussion. Commencez une nouvelle discussion pour poser d'autres questions.",
  "New chat": "Nouvelle discussion",
  "Names and numbers from your letter are hidden on your device before sending. Kamarat looks for new names when your device can. Leave out anything else you would rather not share.": "Les noms et numéros de votre lettre sont masqués sur votre appareil avant l'envoi. Kamarat cherche les nouveaux noms quand votre appareil le permet. N'écrivez rien que vous préférez garder pour vous.",
- "Kamarat made this list with AI. Check each step on the official website before you rely on it. Kamarat only links to official websites and well-known help organisations it has checked.": "Kamarat a fait cette liste avec l'IA. Vérifiez chaque étape sur le site officiel avant de vous y fier. Kamarat ne met des liens que vers des sites officiels et des associations d'aide connues qu'il a vérifiés."
+ "Kamarat made this list with AI. Check each step on the official website before you rely on it. Kamarat only links to official websites and well-known help organisations it has checked.": "Kamarat a fait cette liste avec l'IA. Vérifiez chaque étape sur le site officiel avant de vous y fier. Kamarat ne met des liens que vers des sites officiels et des associations d'aide connues qu'il a vérifiés.",
+ "Kamarat helps you in this language: your move, your questions and your letters.": "Kamarat vous aide dans cette langue : votre installation, vos questions et vos courriers."
 }

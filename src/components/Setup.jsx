@@ -167,7 +167,7 @@ export default function Onboarding({ language, country, onLanguage, onCountry, o
       {step === 1 ? (
         <>
           <h1 className="flow-title" tabIndex={-1} ref={headingRef} data-step-heading>{t('Which language do you speak?')}</h1>
-          <p className="muted">{t('Kamarat explains your letters in this language.')}</p>
+          <p className="muted">{t('Kamarat helps you in this language: your move, your questions and your letters.')}</p>
           <LanguagePicker value={language} onChange={onLanguage} />
           <TranslationNote status={uiStatus} onRetry={onRetry} />
           <button className="primary big wide" onClick={() => setStep(2)}>
