@@ -16,7 +16,7 @@ export function Logo({ size = 40 }) {
   return (
     // Two friends side by side: "kamrat" means friend.
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
-      <rect width="64" height="64" rx="16" fill="#2f5d50" />
+      <rect width="64" height="64" rx="16" fill="#173d33" />
       <circle cx="25" cy="23" r="7" fill="#faf6ee" />
       <path d="M13 51c0-9 5.4-15 12-15s12 6 12 15z" fill="#faf6ee" />
       <circle cx="40" cy="25" r="6.5" fill="#e08a68" />

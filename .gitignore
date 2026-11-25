@@ -28,3 +28,4 @@ dist-ssr
 eval-report.md
 results.json
 __pycache__/
+design-preview/

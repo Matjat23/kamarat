@@ -38,6 +38,8 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
 
   return (
     <div className="home">
+      {/* The green top: hello and the one main button. */}
+      <div className="home-hero">
       <section className="home-hello">
         <h1 className="home-title" tabIndex={-1} data-step-heading>{greeting()}</h1>
         <p className="lead">{t("Got an official letter? I'll tell you what it means and what to do.")}</p>
@@ -66,6 +68,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
         <input ref={cameraInput} type="file" accept="image/*" capture="environment" hidden onChange={picked} />
         <input ref={fileInput} type="file" accept="image/*,application/pdf" hidden onChange={picked} />
       </section>
+      </div>
 
       {onResume && (
         <button className="home-card resume" onClick={onResume}>

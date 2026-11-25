@@ -1,0 +1,462 @@
+/* Kamarat look: "Bold forest" (deep green, golden button, crisp cards) mixed
+   with "Playful stickers" (rounded headings, outlined cards with an offset
+   shadow, bright accents). Loaded last, so it wins over the older files. */
+
+:root {
+  --paper: #fbf6ea;
+  --paper-deep: #f3ead6;
+  --card: #ffffff;
+  --ink: #1d2a24;
+  --ink-soft: #33443c;
+  --muted: #66716b;
+  --line: #e6dfcd;
+  --line-strong: #cfc6b0;
+
+  --green: #173d33;
+  --green-dark: #0e2a22;
+  --green-soft: #e1eee7;
+  --terracotta: #ff6b6b;
+  --terracotta-soft: #ffe1dc;
+  --amber: #b7791f;
+  --amber-soft: #fff1cc;
+
+  --gold: #f2c27b;
+  --gold-dark: #e8ac55;
+  --coral: #ff6b6b;
+  --teal: #4ecdc4;
+  --sun: #ffd93d;
+  --stick: #173d33;
+  --stick-shadow: 3px 3px 0 #173d33;
+
+  --radius: 20px;
+  --radius-sm: 14px;
+  --font-body: 'DM Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Baloo 2', 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-body);
+  background: var(--paper);
+}
+
+body {
+  background: var(--paper);
+}
+
+/* Rounded, friendly headings */
+h1,
+h2,
+.wordmark,
+.home-title,
+.flow-title,
+.answer-title,
+.home-card-title,
+.word-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.home-title {
+  font-size: 2.2rem;
+  line-height: 1.05;
+}
+
+.flow-title,
+.answer-title {
+  line-height: 1.1;
+}
+
+/* Buttons: golden stickers with an outline and an offset shadow */
+button.primary {
+  background: var(--gold);
+  border: 2px solid var(--stick);
+  color: var(--stick);
+  font-weight: 700;
+  box-shadow: var(--stick-shadow);
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--gold-dark);
+}
+
+button.primary:active:not(:disabled),
+button.secondary:active:not(:disabled),
+.chip-button:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--stick);
+}
+
+button.primary:disabled {
+  box-shadow: none;
+  opacity: 0.45;
+}
+
+button.secondary {
+  background: #fff;
+  border: 2px solid var(--stick);
+  color: var(--stick);
+  font-weight: 700;
+  box-shadow: 2px 2px 0 var(--stick);
+}
+
+button.ghost {
+  color: var(--stick);
+}
+
+.link-button {
+  color: var(--stick);
+}
+
+.chip-button,
+.intents .chip-button {
+  border: 2px solid var(--stick) !important;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--stick);
+  font-weight: 600;
+}
+
+.chip-selected {
+  background: var(--teal) !important;
+  color: var(--stick) !important;
+}
+
+/* Cards: white stickers */
+.card,
+.home-card,
+.step-row,
+.paper-item,
+.coming-item,
+.bubble-kamarat,
+.source,
+.answer-next,
+.check-group,
+.home-how {
+  border: 2px solid var(--stick) !important;
+  box-shadow: var(--stick-shadow);
+}
+
+.card {
+  border-radius: 22px;
+}
+
+/* Header and navigation */
+.top .wordmark {
+  color: var(--stick);
+}
+
+button.nav-item.active {
+  background: var(--gold);
+  color: var(--stick);
+}
+
+.locale-chip {
+  border: 2px solid var(--stick) !important;
+  color: var(--stick);
+  box-shadow: 2px 2px 0 var(--stick);
+}
+
+/* Home: the green top with the golden button */
+.home-hero {
+  background: var(--green);
+  color: #fff;
+  border: 2px solid var(--stick);
+  border-radius: 28px;
+  padding: 24px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 4px 4px 0 var(--coral);
+}
+
+.home-hero .home-title {
+  color: #fff;
+}
+
+.home-hero .lead {
+  color: #cfe4da;
+}
+
+.home-hero button.scan-main {
+  background: var(--gold);
+  color: var(--stick);
+  border: 2px solid #0b1f19;
+  box-shadow: 4px 4px 0 #0b1f19;
+  transform: rotate(-1.5deg);
+}
+
+.home-hero button.scan-main:hover:not(:disabled) {
+  background: var(--gold-dark);
+}
+
+.home-hero button.scan-main .small {
+  color: #4b5a52;
+}
+
+.home-hero .scan-icon {
+  background: rgba(23, 61, 51, 0.12);
+}
+
+.home-hero .scan-more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.home-hero .scan-more .chip-button {
+  flex: 1 1 0;
+  min-width: 130px;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 9px 8px;
+  font-size: 0.9rem;
+  background: transparent;
+  color: #fff;
+  border-color: #fff !important;
+  box-shadow: none;
+}
+
+.home-hero .scan-more .chip-button:only-child {
+  flex: 0 1 auto;
+}
+
+.section-title {
+  color: var(--stick);
+}
+
+/* Home and My papers: colourful, slightly tilted sticker cards */
+.coming-list li:nth-child(3n + 1) .coming-item,
+.paper-list li:nth-child(3n + 1) .paper-item {
+  background: #d9f5f2;
+  transform: rotate(-0.8deg);
+}
+
+.coming-list li:nth-child(3n + 2) .coming-item,
+.paper-list li:nth-child(3n + 2) .paper-item {
+  background: #fff3b8;
+  transform: rotate(0.7deg);
+}
+
+.coming-list li:nth-child(3n) .coming-item,
+.paper-list li:nth-child(3n) .paper-item {
+  background: #ffe1dc;
+  transform: rotate(-0.5deg);
+}
+
+.coming-when {
+  color: var(--stick);
+}
+
+.coming-when.is-soon {
+  color: #c0392b;
+}
+
+button.home-card.resume {
+  background: var(--sun);
+  border-color: var(--stick);
+}
+
+.home-how {
+  background: #fff;
+}
+
+.how-number {
+  background: var(--teal);
+  color: var(--stick);
+  border: 2px solid var(--stick);
+}
+
+/* Phones: a white bar with a round coral scan sticker */
+@media (max-width: 760px) {
+  .nav {
+    border-top: 2px solid var(--stick) !important;
+  }
+
+  .nav-new .nav-icon-phone {
+    background: var(--coral);
+    color: #fff;
+    border: 2px solid var(--stick);
+    box-shadow: 2px 2px 0 var(--stick);
+  }
+
+  button.nav-item.active {
+    background: var(--green-soft);
+  }
+
+  .home-title {
+    font-size: 1.9rem;
+  }
+
+  .home-hero {
+    padding: 22px 16px 20px;
+  }
+}
+
+/* The letter screen */
+.answer-card {
+  border: 2px solid var(--stick) !important;
+  border-left-width: 2px !important;
+  box-shadow: var(--stick-shadow);
+  border-radius: 24px;
+}
+
+.worry-INFO { background: #e3f7f4; }
+.worry-ACTION { background: #fff5dd; }
+.worry-UNSURE { background: #f1ece2; }
+.worry-URGENT { background: #ffe6e2; }
+.worry-HELP { background: #ffd9d4; }
+
+.worry-chip {
+  border: 2px solid var(--stick) !important;
+  color: var(--stick) !important;
+}
+
+.worry-chip.worry-INFO { background: var(--teal); }
+.worry-chip.worry-ACTION { background: var(--gold); }
+.worry-chip.worry-UNSURE { background: #d9d2c3; }
+.worry-chip.worry-URGENT { background: var(--coral); }
+.worry-chip.worry-HELP { background: #c0392b; color: #fff !important; }
+
+.tabs button.active {
+  color: var(--stick);
+  border-bottom-color: var(--coral);
+}
+
+.tab-count {
+  background: var(--coral);
+  color: #fff;
+}
+
+.step-group-title {
+  color: var(--stick);
+}
+
+.group-MUST .step-group-title {
+  color: #c0392b;
+}
+
+.date-chip {
+  border: 1.5px solid var(--stick);
+}
+
+.date-chip.chip-soon {
+  background: var(--sun);
+  color: var(--stick);
+}
+
+.date-chip.chip-late {
+  background: var(--coral);
+  color: #fff;
+}
+
+.date-tile {
+  border: 2px solid var(--stick) !important;
+}
+
+.date-month {
+  background: var(--coral) !important;
+  color: #fff !important;
+}
+
+.done-toggle {
+  border: 2px solid var(--stick) !important;
+}
+
+.done-toggle.is-done {
+  background: var(--teal) !important;
+  color: var(--stick) !important;
+}
+
+.progress-track span {
+  background: var(--teal) !important;
+}
+
+.received-first {
+  border: 2px solid var(--stick) !important;
+  background: var(--sun) !important;
+  box-shadow: var(--stick-shadow);
+}
+
+.bubble-you {
+  background: var(--teal);
+  border: 2px solid var(--stick);
+  color: var(--stick);
+}
+
+/* Check step */
+.count-pill {
+  background: var(--stick);
+}
+
+.confirm-line {
+  border: 2px solid var(--stick);
+  background: var(--sun);
+}
+
+/* Long pick lists: light rows, only the chosen one is a sticker */
+.search-item {
+  border: 1.5px solid var(--line-strong) !important;
+  box-shadow: none;
+}
+
+.search-item.is-chosen {
+  background: var(--gold) !important;
+  color: var(--stick) !important;
+  border: 2px solid var(--stick) !important;
+  box-shadow: 2px 2px 0 var(--stick);
+}
+
+.search-list input,
+.search-input {
+  border: 2px solid var(--stick) !important;
+}
+
+/* Small message at the bottom */
+.toast {
+  background: var(--stick);
+  border: 2px solid #0b1f19;
+}
+
+/* Right to left: the offset shadows stay on the reading side */
+[dir='rtl'] .home-hero button.scan-main {
+  transform: rotate(1.5deg);
+}
+
+/* Progress while Kamarat reads */
+.stages li.is-done .stage-dot {
+  background: var(--teal);
+  border-color: var(--stick);
+  color: var(--stick);
+}
+
+.stages li.is-now .stage-dot {
+  background: var(--sun);
+  border-color: var(--stick);
+  color: var(--stick);
+}
+
+/* Form fields */
+select,
+textarea {
+  border: 2px solid var(--stick);
+}
+
+.language-pick select,
+.home-country select {
+  border: 2px solid var(--stick);
+}
+
+/* Wide screens: the same tilt looks much stronger on a wide card, so halve it */
+@media (min-width: 761px) {
+  .home-hero button.scan-main {
+    transform: rotate(-0.6deg);
+  }
+
+  .coming-list li .coming-item,
+  .paper-list li .paper-item {
+    transform: rotate(-0.3deg) !important;
+  }
+
+  .coming-list li:nth-child(even) .coming-item,
+  .paper-list li:nth-child(even) .paper-item {
+    transform: rotate(0.3deg) !important;
+  }
+}

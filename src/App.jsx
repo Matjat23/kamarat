@@ -39,6 +39,7 @@ import { isPhone } from './device'
 import './App.css'
 import './layout.css'
 import './redesign.css'
+import './theme.css'
 
 const METHOD_TEXT = {
   pdf: msg('Text taken from your PDF on this device.'),
