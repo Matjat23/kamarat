@@ -1,341 +1,674 @@
-/* Kamarat look: "Bold forest" (deep green, golden button, crisp cards) mixed
-   with "Playful stickers" (rounded headings, outlined cards with an offset
-   shadow, bright accents). Loaded last, so it wins over the older files. */
+/* Kamarat look: calm and plain. An off-white page, a white header that stays
+   on top, big bold headings, white sheets with round corners, one green main
+   button, soft grey or outlined buttons, and colour only where it means
+   something (how close a date is, how serious a letter is).
+   Loaded last, so it wins over App.css, layout.css and redesign.css. */
 
 :root {
-  --paper: #fbf6ea;
-  --paper-deep: #f3ead6;
+  --paper: #f6f5f1;
+  --paper-deep: #ecebe6;
   --card: #ffffff;
-  --ink: #1d2a24;
-  --ink-soft: #33443c;
-  --muted: #66716b;
-  --line: #e6dfcd;
-  --line-strong: #cfc6b0;
+  --ink: #1d1d1b;
+  --ink-soft: #3b3b37;
+  --muted: #5e5e57;
+  --line: #e5e3dd;
+  --line-strong: #cbc8c0;
 
   --green: #173d33;
   --green-dark: #0e2a22;
-  --green-soft: #e1eee7;
+  --green-soft: #e3ede8;
   --terracotta: #c94040;
-  --terracotta-soft: #ffe1dc;
-  --amber: #b7791f;
+  --terracotta-soft: #fde4e1;
+  --amber: #8a5a00;
   --amber-soft: #fff1cc;
-
   --gold: #f2c27b;
-  --gold-dark: #e8ac55;
-  --coral: #ff6b6b;
   --coral-deep: #c94040;
-  --coral-soft: #ff8f8f;
-  --teal: #4ecdc4;
-  --sun: #ffd93d;
-  --stick: #173d33;
-  --stick-shadow: 3px 3px 0 #173d33;
 
+  --header-h: 76px;
   --radius: 20px;
   --radius-sm: 14px;
+  --shadow: none;
   --font-body: 'DM Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Baloo 2', 'DM Sans', system-ui, sans-serif;
+  --font-display: 'DM Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
   font-family: var(--font-body);
+  color: var(--ink);
   background: var(--paper);
 }
 
 body {
   background: var(--paper);
+  color: var(--ink);
 }
 
-/* Rounded, friendly headings */
+/* ---------- Type ---------- */
 h1,
 h2,
+h3,
 .wordmark,
 .home-title,
 .flow-title,
 .answer-title,
 .home-card-title,
-.word-title {
+.word-title,
+.section-title {
   font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+}
+
+.home-title,
+.flow-title,
+.answer-title {
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .home-title {
-  font-size: 2.2rem;
-  line-height: 1.05;
+  font-size: clamp(2.6rem, 10vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
 }
 
 .flow-title,
 .answer-title {
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.lead {
+  font-size: clamp(1.15rem, 4vw, 1.35rem);
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.section-title,
+.home-card-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* ---------- Page frame: white header on top, content in a column ---------- */
+.top,
+.main,
+.site-menu,
+.site-menu-top,
+.site-menu-brand,
+.site-menu-body,
+.site-footer,
+.home-sheet {
+  box-sizing: border-box;
+}
+
+.app,
+.app.in-flow {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  min-height: var(--header-h);
+  margin: 0;
+  padding: 10px max(20px, calc((100% - 880px) / 2 + 20px));
+  background: #fff;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 16px;
+}
+
+.top .wordmark,
+.site-menu-brand .wordmark {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--green);
+}
+
+.main {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 20px 56px;
+  flex: 1;
+  line-height: 1.6;
+}
+
+/* The Menu button: three lines with the word under them */
+button.menu-toggle {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 500;
   line-height: 1.1;
 }
 
-/* Buttons: golden stickers with an outline and an offset shadow */
+button.menu-toggle:hover:not(:disabled) {
+  background: var(--paper);
+}
+
+/* ---------- The menu panel ---------- */
+.site-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper-deep);
+  overflow-y: auto;
+}
+
+.site-menu-top {
+  display: flex;
+  align-items: stretch;
+  min-height: var(--header-h);
+  background: #fff;
+}
+
+.site-menu-brand {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px max(20px, calc((100% - 880px) / 2 + 20px));
+}
+
+.site-menu-top button.menu-close {
+  border-radius: 0;
+  padding: 10px 22px;
+  background: var(--paper-deep);
+}
+
+.site-menu-body {
+  flex: 1;
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.site-menu-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.site-menu-links button {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  color: var(--ink);
+  font-size: clamp(2rem, 8vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-align: start;
+}
+
+.site-menu-links button:hover:not(:disabled),
+.site-menu-links button.is-active {
+  background: none;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
+}
+
+.site-menu-links .papers-count {
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+button.site-menu-scan {
+  align-self: flex-start;
+  width: min(100%, 380px);
+  justify-content: center;
+  padding: 18px 28px;
+  font-size: 1.15rem;
+}
+
+button.site-menu-language {
+  margin-top: auto;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 0;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+button.site-menu-language:hover:not(:disabled) {
+  background: none;
+  text-decoration: underline;
+}
+
+/* ---------- Buttons ---------- */
 button.primary {
-  background: var(--gold);
-  border: 2px solid var(--stick);
-  color: var(--stick);
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 24px;
   font-weight: 700;
-  box-shadow: var(--stick-shadow);
+  box-shadow: none;
 }
 
 button.primary:hover:not(:disabled) {
-  background: var(--gold-dark);
-}
-
-button.primary:active:not(:disabled),
-button.secondary:active:not(:disabled),
-.chip-button:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 var(--stick);
+  background: var(--green-dark);
 }
 
 button.primary:disabled {
-  box-shadow: none;
-  opacity: 0.45;
+  opacity: 0.4;
 }
 
 button.secondary {
   background: #fff;
-  border: 2px solid var(--stick);
-  color: var(--stick);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 14px;
   font-weight: 700;
-  box-shadow: 2px 2px 0 var(--stick);
+  box-shadow: none;
 }
 
-button.ghost {
-  color: var(--stick);
+button.secondary:hover:not(:disabled) {
+  background: var(--paper);
+  text-decoration: underline;
 }
 
+button.ghost,
 .link-button {
-  color: var(--stick);
+  color: var(--ink);
 }
 
-.chip-button,
-.intents .chip-button {
-  border: 2px solid var(--stick) !important;
-  background: #fff;
-  box-shadow: 2px 2px 0 var(--stick);
+/* Small choices: soft grey pills */
+button.chip-button,
+label.chip-button,
+.intents button.chip-button,
+.intents label.chip-button {
+  background: var(--paper-deep);
+  color: var(--ink);
+  border: none;
+  border-radius: 999px;
   font-weight: 600;
+  box-shadow: none;
 }
 
-.chip-selected {
-  background: var(--teal) !important;
-  color: var(--stick) !important;
+button.chip-button:hover:not(:disabled),
+label.chip-button:hover {
+  background: #e1dfd8;
+  text-decoration: none;
 }
 
+.chip-selected,
+.intents .chip-selected {
+  background: var(--green) !important;
+  color: #fff !important;
+}
+
+/* The chosen reply option also gets a tick, so it does not rely on colour */
 .chip-radio.chip-selected::before {
   content: '✓' / '';
   font-weight: 800;
 }
 
-/* Windows high contrast removes backgrounds and shadows, so mark the
-   chosen item with the system highlight colour */
-@media (forced-colors: active) {
-  .chip-selected,
-  .search-item.is-chosen,
-  button.nav-item.active {
-    outline: 3px solid Highlight;
-    outline-offset: 2px;
-  }
-}
-
-/* Cards: white stickers */
-.card,
-.home-card,
-.step-row,
-.paper-item,
-.coming-item,
-.bubble-kamarat,
-.source,
-.answer-next,
-.check-group,
-.home-how {
-  border: 2px solid var(--stick) !important;
-  box-shadow: var(--stick-shadow);
-}
-
+/* ---------- Surfaces: white, flat, round corners ---------- */
 .card {
-  border-radius: 22px;
-}
-
-/* Header and navigation */
-.top .wordmark {
-  color: var(--stick);
-}
-
-button.nav-item.active {
-  background: var(--gold);
-  color: var(--stick);
-}
-
-.locale-chip {
-  border: 2px solid var(--stick) !important;
-  color: var(--stick);
-  box-shadow: 2px 2px 0 var(--stick);
-}
-
-/* Home: the green top with the golden button */
-.home-hero {
-  background: var(--green);
-  color: #fff;
-  border: 2px solid var(--stick);
+  background: #fff;
+  border: none;
   border-radius: 28px;
-  padding: 24px 20px 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  box-shadow: 4px 4px 0 var(--coral);
-}
-
-.home-hero .home-title {
-  color: #fff;
-}
-
-.home-hero .lead {
-  color: #cfe4da;
-}
-
-.home-hero button.scan-main {
-  background: var(--gold);
-  color: var(--stick);
-  border: 2px solid #0b1f19;
-  box-shadow: 4px 4px 0 #0b1f19;
-  transform: rotate(-1.5deg);
-}
-
-.home-hero button.scan-main:hover:not(:disabled) {
-  background: var(--gold-dark);
-}
-
-.home-hero button.scan-main .small {
-  color: var(--ink-soft);
-}
-
-/* Focus ring: the usual green ring would vanish on the green block */
-.home-hero :focus-visible,
-.toast :focus-visible {
-  outline-color: var(--gold);
-}
-
-.home-hero .scan-icon {
-  background: rgba(23, 61, 51, 0.12);
-}
-
-.home-hero .scan-more {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.home-hero .scan-more .chip-button {
-  flex: 1 1 0;
-  min-width: 130px;
-  justify-content: center;
-  text-align: center;
-  gap: 6px;
-  padding: 9px 8px;
-  font-size: 0.9rem;
-  background: transparent;
-  color: #fff;
-  border-color: #fff !important;
   box-shadow: none;
 }
 
-.home-hero .scan-more .chip-button:only-child {
-  flex: 0 1 auto;
-}
-
-.section-title {
-  color: var(--stick);
-}
-
-/* Home and My papers: slightly tilted sticker cards. The tilt is only
-   decoration; the colour of a deadline card says how close it is. */
-.coming-list li:nth-child(odd) .coming-item,
-.paper-list li:nth-child(odd) .paper-item {
-  transform: rotate(-0.7deg);
-}
-
-.coming-list li:nth-child(even) .coming-item,
-.paper-list li:nth-child(even) .paper-item {
-  transform: rotate(0.6deg);
-}
-
-.coming-item,
-.paper-item {
+.home-card {
   background: #fff;
-}
-
-.coming-item.is-later {
-  background: #d9f5f2;
-}
-
-.coming-item.is-soon {
-  background: #fff3b8;
-}
-
-.coming-item.is-late {
-  background: #ffe1dc;
-}
-
-.coming-item .muted,
-.paper-item .muted {
-  color: #4b5a52;
-}
-
-.coming-when {
-  color: var(--stick);
-}
-
-.coming-when.is-soon {
-  color: #b03030;
+  border: none;
+  border-radius: 24px;
+  box-shadow: none;
 }
 
 button.home-card.resume {
-  background: var(--sun);
-  border-color: var(--stick);
+  background: var(--green-soft);
+  border: none;
 }
 
-.home-how {
+button.home-card.resume:hover:not(:disabled) {
+  background: #d6e6de;
+}
+
+.step-row,
+.check-group,
+.source,
+.answer-next,
+.search-item {
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+
+/* ---------- Home ---------- */
+.home {
+  gap: 0;
+}
+
+.home-hero {
+  display: grid;
+  gap: 24px;
+  padding: 8px 0 36px;
+}
+
+.home-hello {
+  padding: 0;
+}
+
+.home-hello .lead {
+  max-width: 32ch;
+  margin-top: 14px;
+}
+
+.home-art {
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  justify-self: center;
+}
+
+.scan-card {
+  gap: 12px;
+}
+
+button.scan-main {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 22px;
+  border: none;
+  border-radius: 18px;
+  background: var(--green);
+  color: #fff;
+  box-shadow: none;
+  text-align: start;
+}
+
+button.scan-main:hover:not(:disabled) {
+  background: var(--green-dark);
+}
+
+button.scan-main strong {
+  font-size: 1.25rem;
+}
+
+button.scan-main .small {
+  color: #cfe4da;
+}
+
+.scan-icon {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.scan-more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.scan-more .chip-button {
+  flex: 1 1 0;
+  min-width: 140px;
+  justify-content: center;
+  padding: 12px 14px;
+}
+
+.scan-more .chip-button:only-child {
+  flex: 0 1 auto;
+}
+
+@media (min-width: 761px) {
+  .home-hero {
+    grid-template-columns: 1.1fr 1fr;
+    grid-template-areas:
+      'hello art'
+      'scan art';
+    align-items: center;
+    column-gap: 36px;
+  }
+
+  .home-hello {
+    grid-area: hello;
+  }
+
+  .home-art {
+    grid-area: art;
+  }
+
+  .scan-card {
+    grid-area: scan;
+  }
+}
+
+/* The white sheet under the top */
+.home-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 32px 28px 28px;
+  border-radius: 32px;
   background: #fff;
 }
 
-.how-number {
-  background: var(--teal);
-  color: var(--stick);
-  border: 2px solid var(--stick);
+.home-section {
+  gap: 12px;
 }
 
-/* Phones: a white bar with a round coral scan sticker */
+/* Lists: plain rows with a thin line between them */
+.coming-list,
+.paper-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.coming-list li + li,
+.paper-list li + li {
+  border-top: 1px solid var(--line);
+}
+
+button.coming-item,
+button.paper-item {
+  width: 100%;
+  padding: 16px 6px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  text-align: start;
+}
+
+button.coming-item:hover:not(:disabled),
+button.paper-item:hover:not(:disabled) {
+  background: var(--paper);
+}
+
+button.coming-item .muted,
+button.paper-item .muted {
+  color: var(--muted);
+}
+
+/* How close a date is: a small coloured label, never the position in a list */
+.coming-when {
+  align-self: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--paper-deep);
+  color: var(--ink-soft);
+  font-weight: 700;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.coming-item.is-later .coming-when {
+  background: var(--green-soft);
+  color: var(--green-dark);
+}
+
+.coming-item.is-soon .coming-when,
+.coming-when.is-soon {
+  background: var(--amber-soft);
+  color: #6b4700;
+}
+
+.coming-item.is-late .coming-when {
+  background: var(--terracotta-soft);
+  color: #9b2c2c;
+}
+
+/* How it works: a light green section with dark icon tiles, like a leaflet */
+.home-how {
+  gap: 24px;
+  padding: 32px 24px;
+  border: none;
+  border-radius: 24px;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  box-shadow: none;
+}
+
+.home-how .section-title {
+  color: var(--green-dark);
+  font-size: clamp(1.6rem, 6vw, 2.1rem);
+}
+
+.home-how ol {
+  gap: 28px;
+}
+
+.home-how li {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.how-icon {
+  box-sizing: content-box;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--green);
+  color: #fff;
+}
+
+.home-how li strong {
+  font-size: 1.2rem;
+  line-height: 1.25;
+}
+
+.home-how li .muted {
+  color: var(--green-dark);
+}
+
+.home-promise {
+  margin: 0;
+}
+
+/* ---------- Phones ---------- */
 @media (max-width: 760px) {
-  .nav {
-    border-top: 2px solid var(--stick) !important;
-  }
-
-  .nav-new .nav-icon-phone {
-    background: var(--coral);
-    color: var(--stick);
-    border: 2px solid var(--stick);
-    box-shadow: 2px 2px 0 var(--stick);
-  }
-
-  button.nav-item.active {
-    background: var(--green-soft);
-  }
-
-  .home-title {
-    font-size: 1.9rem;
+  .main {
+    padding: 24px 20px 48px;
   }
 
   .home-hero {
-    padding: 22px 16px 20px;
+    padding-bottom: 28px;
+  }
+
+  .home-art {
+    max-width: 300px;
+  }
+
+  /* The sheet runs edge to edge and down to the footer */
+  .main:has(.home-sheet) {
+    padding-bottom: 0;
+  }
+
+  .home-sheet {
+    margin-inline: -20px;
+    padding: 32px 20px 64px;
+    border-radius: 28px 28px 0 0;
+  }
+
+  .app:has(.home-sheet) .site-footer {
+    margin-top: -28px;
+    position: relative;
+  }
+
+  .home-how li {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .toast,
+  .app.in-flow .toast {
+    bottom: calc(16px + env(safe-area-inset-bottom));
   }
 }
 
-/* The letter screen */
-.answer-card {
-  border: 2px solid var(--stick) !important;
-  border-left-width: 2px !important;
-  box-shadow: var(--stick-shadow);
+/* ---------- The letter screen ---------- */
+.answer-card,
+.answer-card[class*='worry-'] {
+  background: #fff;
+  border: none !important;
+  border-inline-start: 6px solid var(--green) !important;
   border-radius: 24px;
+  box-shadow: none;
 }
+
+/* The stripe says how serious the letter is */
+.answer-card.worry-ACTION { border-inline-start-color: #d99a32 !important; }
+.answer-card.worry-UNSURE { border-inline-start-color: #9a8f7d !important; }
+.answer-card.worry-URGENT,
+.answer-card.worry-HELP { border-inline-start-color: var(--coral-deep) !important; }
+
+.worry-chip {
+  border: none !important;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.worry-chip.worry-INFO { background: var(--green-soft); color: var(--green-dark); }
+.worry-chip.worry-ACTION { background: var(--amber-soft); color: #6b4700; }
+.worry-chip.worry-UNSURE { background: var(--paper-deep); color: var(--ink-soft); }
+.worry-chip.worry-URGENT { background: var(--terracotta-soft); color: #9b2c2c; }
+.worry-chip.worry-HELP { background: var(--coral-deep); color: #fff; }
 
 /* Letter header: a long sender name wraps instead of running under More */
 .letter-from > span:last-child {
@@ -344,13 +677,23 @@ button.home-card.resume {
   line-height: 1.25;
 }
 
+.more-menu {
+  flex-shrink: 0;
+}
+
+.more-menu summary {
+  border: 1.5px solid var(--ink);
+  border-radius: 12px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
 @media (max-width: 420px) {
   .letter-from .sender-avatar {
     display: none;
   }
 }
 
-/* The smallest phones: the sender gets its own line under Back and More */
 @media (max-width: 360px) {
   .letter-bar {
     flex-wrap: wrap;
@@ -363,42 +706,11 @@ button.home-card.resume {
   }
 }
 
-.more-menu {
-  flex-shrink: 0;
-}
-
-.more-menu summary {
-  border: 2px solid var(--stick);
-  color: var(--stick);
-  font-weight: 700;
-  box-shadow: 2px 2px 0 var(--stick);
-}
-
-/* Urgent letters and letters where you should get help get a coral shadow */
-.answer-card.worry-URGENT,
-.answer-card.worry-HELP {
-  box-shadow: 5px 5px 0 var(--coral-deep);
-}
-
-.worry-INFO { background: #e3f7f4; }
-.worry-ACTION { background: #fff5dd; }
-.worry-UNSURE { background: #f1ece2; }
-.worry-URGENT { background: #ffe6e2; }
-.worry-HELP { background: #ffd9d4; }
-
-.worry-chip {
-  border: 2px solid var(--stick) !important;
-  color: var(--stick) !important;
-}
-
-.worry-chip.worry-INFO { background: var(--teal); }
-.worry-chip.worry-ACTION { background: var(--gold); }
-.worry-chip.worry-UNSURE { background: #d9d2c3; }
-.worry-chip.worry-URGENT { background: var(--coral-soft); }
-.worry-chip.worry-HELP { background: #c0392b; color: #fff !important; }
-
+/* Tabs: under the white header, long words wrap only as a last resort */
 .tabs {
+  top: var(--header-h);
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: var(--paper);
 }
 
 .tabs button {
@@ -410,42 +722,45 @@ button.home-card.resume {
   line-height: 1.2;
 }
 
-/* A label only breaks inside a word when that word cannot fit at all */
 .tab-label {
   min-width: 0;
   overflow-wrap: break-word;
   hyphens: auto;
 }
 
+.tabs button.active {
+  color: var(--ink);
+  border-bottom-color: var(--green);
+}
+
 .tab-count {
   flex-shrink: 0;
-}
-
-.tabs button.active {
-  color: var(--stick);
-  border-bottom-color: var(--stick);
-}
-
-.tab-count {
   background: var(--coral-deep);
   color: #fff;
 }
 
+.step-row {
+  background: #fff;
+  border-radius: 18px;
+}
+
 .step-group-title {
-  color: var(--stick);
+  color: var(--ink);
 }
 
 .group-MUST .step-group-title {
-  color: #c0392b;
+  color: #9b2c2c;
 }
 
 .date-chip {
-  border: 1.5px solid var(--stick);
+  border: none;
+  background: var(--paper-deep);
+  color: var(--ink-soft);
 }
 
 .date-chip.chip-soon {
-  background: var(--sun);
-  color: var(--stick);
+  background: var(--amber-soft);
+  color: #6b4700;
 }
 
 .date-chip.chip-late {
@@ -454,119 +769,197 @@ button.home-card.resume {
 }
 
 .date-tile {
-  border: 2px solid var(--stick) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: none;
 }
 
 .date-month {
-  background: var(--coral-deep) !important;
+  background: var(--green) !important;
   color: #fff !important;
 }
 
 .done-toggle {
-  border: 2px solid var(--stick) !important;
+  border: 2px solid var(--line-strong);
 }
 
 .done-toggle.is-done {
-  background: var(--teal) !important;
-  color: var(--stick) !important;
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
 }
 
 .progress-track span {
-  background: var(--teal) !important;
+  background: var(--green);
 }
 
 .received-first {
-  border: 2px solid var(--stick) !important;
-  background: var(--sun) !important;
-  box-shadow: var(--stick-shadow);
-}
-
-.bubble-you {
-  background: var(--teal);
-  border: 2px solid var(--stick);
-  color: var(--stick);
-}
-
-/* Check step */
-.count-pill {
-  background: var(--stick);
-}
-
-.confirm-line {
-  border: 2px solid var(--stick);
-  background: var(--sun);
-}
-
-/* Long pick lists: light rows, only the chosen one is a sticker */
-.search-item {
-  border: 1.5px solid var(--line-strong) !important;
+  border: none;
+  background: var(--amber-soft);
   box-shadow: none;
 }
 
+.bubble-kamarat {
+  border: none;
+  background: var(--paper);
+}
+
+.bubble-you {
+  border: none;
+  background: var(--green);
+  color: #fff;
+}
+
+/* ---------- Check step and setup lists ---------- */
+.count-pill {
+  background: var(--green);
+}
+
+.confirm-line {
+  border: 1px solid #ecd391;
+  background: var(--amber-soft);
+}
+
+.search-item {
+  border-radius: 14px;
+}
+
 .search-item.is-chosen {
-  background: var(--gold) !important;
-  color: var(--stick) !important;
-  border: 2px solid var(--stick) !important;
-  box-shadow: 2px 2px 0 var(--stick);
+  background: var(--green-soft) !important;
+  color: var(--ink) !important;
+  border: 2px solid var(--green) !important;
 }
 
 .search-item.is-chosen .muted {
-  color: var(--stick);
+  color: var(--ink-soft);
 }
 
-.search-list input,
-.search-input {
-  border: 2px solid var(--stick) !important;
+.app.app-setup {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 32px 20px;
 }
 
-/* Small message at the bottom */
-.toast {
-  background: var(--stick);
-  border: 2px solid #0b1f19;
-}
-
-/* Right to left: the offset shadows stay on the reading side */
-[dir='rtl'] .home-hero button.scan-main {
-  transform: rotate(1.5deg);
-}
-
-/* Progress while Kamarat reads */
-.stages li.is-done .stage-dot {
-  background: var(--teal);
-  border-color: var(--stick);
-  color: var(--stick);
-}
-
-.stages li.is-now .stage-dot {
-  background: var(--sun);
-  border-color: var(--stick);
-  color: var(--stick);
-}
-
-/* Form fields */
 select,
 textarea {
-  border: 2px solid var(--stick);
+  border: 1px solid var(--line-strong);
 }
 
-.language-pick select,
-.home-country select {
-  border: 2px solid var(--stick);
+/* ---------- Footer: dark green with columns ---------- */
+.site-footer {
+  margin-top: 32px;
+  padding: 48px max(24px, calc((100% - 880px) / 2 + 20px)) 32px;
+  border-radius: 28px 28px 0 0;
+  background: var(--green);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
 }
 
-/* Wide screens: the same tilt looks much stronger on a wide card, so halve it */
-@media (min-width: 761px) {
-  .home-hero button.scan-main {
-    transform: rotate(-0.6deg);
-  }
+.footer-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 32px;
+}
 
-  .coming-list li:nth-child(odd) .coming-item,
-  .paper-list li:nth-child(odd) .paper-item {
-    transform: rotate(-0.3deg);
-  }
+.footer-column h2 {
+  margin: 0 0 14px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+}
 
-  .coming-list li:nth-child(even) .coming-item,
-  .paper-list li:nth-child(even) .paper-item {
-    transform: rotate(0.3deg);
+.footer-column ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-column button {
+  padding: 2px 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  color: #e8efe9;
+  font: inherit;
+  font-size: 1.05rem;
+  text-align: start;
+}
+
+.footer-column button:hover:not(:disabled) {
+  background: none;
+  color: #fff;
+  text-decoration: underline;
+}
+
+.footer-facts li {
+  color: #cfe0d7;
+  line-height: 1.45;
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px 32px;
+}
+
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-brand .wordmark {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--gold);
+}
+
+.footer-note {
+  flex: 1 1 280px;
+  margin: 0;
+  color: #cfe0d7;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+button.footer-language {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border: 1.5px solid #fff;
+  border-radius: 12px;
+  background: transparent;
+  color: #fff;
+  font-weight: 700;
+}
+
+button.footer-language:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- Focus, high contrast, small messages ---------- */
+.site-footer :focus-visible,
+.toast :focus-visible {
+  outline-color: var(--gold);
+}
+
+@media (forced-colors: active) {
+  .chip-selected,
+  .search-item.is-chosen,
+  .site-menu-links button.is-active {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
   }
+}
+
+.toast {
+  background: var(--green);
+  border: none;
 }

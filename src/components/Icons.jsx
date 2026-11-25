@@ -192,6 +192,61 @@ export function ChatIcon(props) {
   )
 }
 
+export function MenuIcon(props) {
+  return (
+    <svg {...base} strokeWidth={2} {...props}>
+      <path d="M3.5 6.5h17M3.5 12h17M3.5 17.5h17" />
+    </svg>
+  )
+}
+
+export function CloseIcon(props) {
+  return (
+    <svg {...base} strokeWidth={2} {...props}>
+      <path d="M5.5 5.5l13 13M18.5 5.5l-13 13" />
+    </svg>
+  )
+}
+
+// The picture on the home page: a letter in an envelope with a lock (private),
+// a speech bubble (your language), a calendar (dates) and a few bits of confetti.
+export function LetterArt(props) {
+  return (
+    <svg viewBox="0 0 360 240" aria-hidden="true" {...props}>
+      <ellipse cx="185" cy="216" rx="120" ry="9" fill="#173d33" opacity="0.08" />
+      <rect x="110" y="92" width="150" height="110" rx="12" fill="#173d33" />
+      <rect x="128" y="40" width="114" height="124" rx="10" fill="#fffaf0" />
+      <rect x="146" y="60" width="60" height="9" rx="4.5" fill="#f2c27b" />
+      <rect x="146" y="80" width="80" height="6" rx="3" fill="#ddd7c9" />
+      <rect x="146" y="94" width="70" height="6" rx="3" fill="#ddd7c9" />
+      <rect x="146" y="108" width="52" height="6" rx="3" fill="#ddd7c9" />
+      <circle cx="216" cy="128" r="14" fill="#4ecdc4" />
+      <path d="M209 128.5l5 5 9-10" fill="none" stroke="#173d33" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M110 122 L185 166 L260 122 L260 190 a12 12 0 0 1 -12 12 L122 202 a12 12 0 0 1 -12 -12 Z" fill="#2c5f50" />
+      <path d="M110 202 L170 157 M260 202 L200 157" stroke="#173d33" strokeWidth="3" opacity="0.35" />
+      <circle cx="112" cy="94" r="19" fill="#f2c27b" />
+      <path d="M105 93 v-4 a7 7 0 0 1 14 0 v4" fill="none" stroke="#173d33" strokeWidth="3" />
+      <rect x="102" y="92" width="20" height="14" rx="3" fill="#173d33" />
+      <rect x="4" y="30" width="92" height="60" rx="14" fill="#cfeae6" />
+      <path d="M26 88 L20 110 L48 89 Z" fill="#cfeae6" />
+      <rect x="18" y="46" width="58" height="8" rx="4" fill="#ffffff" />
+      <rect x="18" y="62" width="40" height="8" rx="4" fill="#173d33" opacity="0.75" />
+      <rect x="64" y="62" width="20" height="8" rx="4" fill="#ffffff" />
+      <rect x="270" y="112" width="74" height="80" rx="12" fill="#ffffff" />
+      <path d="M270 124 a12 12 0 0 1 12 -12 h50 a12 12 0 0 1 12 12 v12 h-74 Z" fill="#c94040" />
+      <rect x="286" y="104" width="6" height="16" rx="3" fill="#173d33" />
+      <rect x="322" y="104" width="6" height="16" rx="3" fill="#173d33" />
+      <rect x="284" y="150" width="46" height="9" rx="4.5" fill="#173d33" />
+      <rect x="284" y="166" width="30" height="7" rx="3.5" fill="#ddd7c9" />
+      <circle cx="306" cy="60" r="7" fill="#ff8f8f" />
+      <circle cx="58" cy="176" r="6" fill="#f2c27b" />
+      <rect x="326" y="210" width="12" height="12" rx="3" fill="#4ecdc4" transform="rotate(45 332 216)" />
+      <path d="M118 8 v18 M109 17 h18 M111.5 10.5 l13 13 M124.5 10.5 l-13 13" stroke="#8f86e8" strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M22 214 q9 -14 18 0 t18 0" fill="none" stroke="#ff8f8f" strokeWidth="4" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 // Small flags drawn in SVG, because Windows does not show flag emoji.
 export function Flag({ country }) {
   const common = { width: 32, height: 22, viewBox: '0 0 32 22', 'aria-hidden': true, className: 'flag' }

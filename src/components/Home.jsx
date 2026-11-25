@@ -7,7 +7,7 @@ import { EXAMPLES } from '../examples'
 import { isPhone } from '../device'
 import { languageProps } from '../explain'
 import { t } from '../i18n'
-import { CameraIcon, FileIcon, ClipboardIcon, ArrowIcon, LockIcon, Flag } from './Icons'
+import { CameraIcon, FileIcon, ClipboardIcon, ArrowIcon, LockIcon, CheckIcon, Flag, LetterArt } from './Icons'
 
 function greeting() {
   const hour = new Date().getHours()
@@ -25,9 +25,9 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
   const recent = papers.slice(0, 3)
 
   const how = [
-    { title: t('Add your letter'), text: t('Take a photo, upload a PDF or paste the text.') },
-    { title: t('Check what is private'), text: t('Kamarat hides your personal details on your device, and you see exactly what is sent.') },
-    { title: t('Know what to do'), text: t('Clear steps, dates and answers, in your language.') },
+    { icon: CameraIcon, title: t('Add your letter'), text: t('Take a photo, upload a PDF or paste the text.') },
+    { icon: LockIcon, title: t('Check what is private'), text: t('Kamarat hides your personal details on your device, and you see exactly what is sent.') },
+    { icon: CheckIcon, title: t('Know what to do'), text: t('Clear steps, dates and answers, in your language.') },
   ]
 
   function picked(event) {
@@ -38,12 +38,13 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
 
   return (
     <div className="home">
-      {/* The green top: hello and the one main button. */}
+      {/* The top: a big hello, a picture and the one main button. */}
       <div className="home-hero">
       <section className="home-hello">
         <h1 className="home-title" tabIndex={-1} data-step-heading>{greeting()}</h1>
         <p className="lead">{t("Got an official letter? I'll tell you what it means and what to do.")}</p>
       </section>
+      <LetterArt className="home-art" />
 
       <section className="scan-card">
         <button className="scan-main" onClick={() => (phone ? cameraInput : fileInput).current?.click()}>
@@ -70,6 +71,8 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
       </section>
       </div>
 
+      {/* Everything else sits on a white sheet below the top. */}
+      <div className="home-sheet">
       {onResume && (
         <button className="home-card resume" onClick={onResume}>
           <span>
@@ -143,9 +146,9 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
         <section className="home-how" aria-label={t('How it works')}>
           <h2 className="section-title">{t('How it works')}</h2>
           <ol>
-            {how.map((step, i) => (
+            {how.map((step) => (
               <li key={step.title}>
-                <span className="how-number" aria-hidden="true">{i + 1}</span>
+                <step.icon className="how-icon" width={44} height={44} strokeWidth={1.5} />
                 <span>
                   <strong>{step.title}</strong>
                   <span className="small muted">{step.text}</span>
@@ -167,6 +170,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
       <p className="small muted home-promise">
         <LockIcon width={16} height={16} /> {t('No account needed. Kamarat explains letters; it is not legal advice.')}
       </p>
+      </div>
     </div>
   )
 }

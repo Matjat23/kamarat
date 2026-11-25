@@ -33,7 +33,8 @@ import MyPapers, { SavedLetter } from './components/MyPapers'
 import EvalPage from './components/EvalPage'
 import TranslationsPage from './components/TranslationsPage'
 import { listPapers, PAPERS_CHANGED } from './papers'
-import { Logo, FolderIcon, HomeIcon, PlusIcon, CameraIcon, GlobeIcon } from './components/Icons'
+import { Logo, GlobeIcon, MenuIcon } from './components/Icons'
+import SiteMenu from './components/SiteMenu'
 import Onboarding, { Settings } from './components/Setup'
 import { isPhone } from './device'
 import './App.css'
@@ -114,6 +115,8 @@ export default function App() {
   const [uiStatus, setUiStatus] = useState({ code: 'en', state: 'ready' })
   const [uiRetry, setUiRetry] = useState(0)
   const [toastClosed, setToastClosed] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuButton = useRef(null)
   // The first visit asks for the language and the country, once.
   const [setupDone, setSetupDone] = useState(setupWasDone)
   const scanInput = useRef(null)
@@ -394,13 +397,11 @@ export default function App() {
   const expired = (view === 'check' && !checkReady) || (view === 'letter' && !shared)
   const inFlow = view === 'new' || view === 'check'
 
-  const navItems = [
-    { id: 'home', label: t('Home'), icon: HomeIcon, onClick: () => go('') },
-    { id: 'new', label: t('New letter'), phoneLabel: t('Scan'), icon: PlusIcon, phoneIcon: CameraIcon, onClick: scanNow },
-    { id: 'papers', label: t('My papers'), icon: FolderIcon, onClick: () => go('papers'), count: papers.length },
-  ]
-  const langInfo = LANGUAGES.find((l) => l.name === language) ?? LANGUAGES[0]
-  const localeText = `${langInfo.code.slice(0, 2).toUpperCase()}${country ? ` · ${country}` : ''}`
+  function closeMenu() {
+    setMenuOpen(false)
+    // Back to the Menu button, so keyboard users do not lose their place.
+    requestAnimationFrame(() => menuButton.current?.focus())
+  }
 
   if (!setupDone && !new URLSearchParams(window.location.search).has('eval')) {
     return (
@@ -418,6 +419,23 @@ export default function App() {
     )
   }
   const activeNav = inFlow || view === 'letter' ? 'new' : view
+  const footerLinks = [
+    {
+      title: 'Kamarat',
+      links: [
+        { label: t('Home'), onClick: () => go('') },
+        { label: t('Add a letter'), onClick: newLetter },
+        { label: t('My papers'), onClick: () => go('papers') },
+      ],
+    },
+    {
+      title: t('Settings'),
+      links: [
+        { label: t('Language'), onClick: () => go('settings') },
+        { label: t('Where you live'), onClick: () => go('settings') },
+      ],
+    },
+  ]
 
   return (
     <div className={`app ${inFlow ? 'in-flow' : ''}`}>
@@ -426,23 +444,6 @@ export default function App() {
           <Logo size={38} />
           <span className="wordmark">Kamarat</span>
         </button>
-
-        <nav className="nav" aria-label={t('Main')}>
-          {navItems.map(({ id, label, phoneLabel, icon: Icon, phoneIcon: PhoneIcon, onClick, count }) => (
-            <button
-              key={id}
-              className={`nav-item nav-${id} ${activeNav === id ? 'active' : ''}`}
-              aria-current={activeNav === id ? 'page' : undefined}
-              onClick={onClick}
-            >
-              <span className="nav-icon"><Icon width={20} height={20} /></span>
-              {PhoneIcon && <span className="nav-icon-phone"><PhoneIcon width={24} height={24} /></span>}
-              <span className={phoneLabel ? 'label-desktop' : ''}>{label}</span>
-              {phoneLabel && <span className="label-phone">{phoneLabel}</span>}
-              {count > 0 && <span className="papers-count">{count}</span>}
-            </button>
-          ))}
-        </nav>
         <input
           ref={scanInput}
           type="file"
@@ -455,15 +456,31 @@ export default function App() {
             if (file) readLetterFile(file, { fresh: true })
           }}
         />
-
         <button
-          className="locale-chip"
-          onClick={() => go('settings')}
-          aria-label={t('Language and country: {language}, {country}', { language, country: country || '-' })}
+          ref={menuButton}
+          className="menu-toggle"
+          aria-haspopup="dialog"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(true)}
         >
-          <GlobeIcon width={18} height={18} /> {localeText}
+          <MenuIcon width={32} height={32} />
+          <span>{t('Menu')}</span>
         </button>
       </header>
+
+      <SiteMenu
+        open={menuOpen}
+        onClose={closeMenu}
+        active={activeNav}
+        papersCount={papers.length}
+        language={language}
+        country={country}
+        onHome={() => go('')}
+        onNew={newLetter}
+        onPapers={() => go('papers')}
+        onScan={scanNow}
+        onSettings={() => go('settings')}
+      />
 
       <main className="main">
         {new URLSearchParams(window.location.search).has('eval') && <EvalPage />}
@@ -561,8 +578,41 @@ export default function App() {
         )}
       </main>
 
-      <footer className="footer">
-        {t('Kamarat explains letters. It is not legal advice. Built with Gemini Nano on your device and Gemini in the cloud, through Firebase AI Logic.')}
+      <footer className="site-footer">
+        <div className="footer-columns">
+          {footerLinks.map((column) => (
+            <nav key={column.title} className="footer-column" aria-label={column.title}>
+              <h2>{column.title}</h2>
+              <ul>
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    <button onClick={link.onClick}>{link.label}</button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+          <div className="footer-column">
+            <h2>{t('Privacy')}</h2>
+            <ul className="footer-facts">
+              <li>{t('Your personal details are hidden on your device.')}</li>
+              <li>{t('Kept letters are saved only on this device.')}</li>
+              <li>{t('No account needed.')}</li>
+            </ul>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <span className="footer-brand">
+            <Logo size={34} />
+            <span className="wordmark">Kamarat</span>
+          </span>
+          <p className="footer-note">
+            {t('Kamarat explains letters. It is not legal advice. Built with Gemini Nano on your device and Gemini in the cloud, through Firebase AI Logic.')}
+          </p>
+          <button className="footer-language" onClick={() => go('settings')}>
+            <GlobeIcon width={22} height={22} /> {language}
+          </button>
+        </div>
       </footer>
     </div>
   )

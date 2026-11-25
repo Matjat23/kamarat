@@ -14,11 +14,9 @@
  "Downloading on-device AI: {percent}%": "Téléchargement de l'IA sur l'appareil : {percent} %",
  "Looking for personal details on your device...": "Recherche de vos informations personnelles sur votre appareil...",
  "New letter": "Nouveau courrier",
- "Scan": "Scanner",
  "My papers": "Mes papiers",
  "Kamarat home": "Accueil Kamarat",
  "Main": "Principal",
- "Language and country: {language}, {country}": "Langue et pays : {language}, {country}",
  "Kamarat explains letters. It is not legal advice. Built with Gemini Nano on your device and Gemini in the cloud, through Firebase AI Logic.": "Kamarat explique les courriers. Ce n'est pas un conseil juridique. Conçu avec Gemini Nano sur votre appareil et Gemini dans le cloud, via Firebase AI Logic.",
  "What happens if I miss the deadline?": "Que se passe-t-il si je dépasse le délai ?",
  "What exactly do I need to send?": "Que dois-je envoyer exactement ?",
@@ -327,5 +325,11 @@
  "Kamarat raised this because a deadline is less than a week away.": "Kamarat a relevé ce niveau parce qu'un délai est dans moins d'une semaine.",
  "Kamarat raised this because there is a deadline it cannot work out yet.": "Kamarat a relevé ce niveau parce qu'il y a un délai qu'il ne peut pas encore calculer.",
  "Kamarat raised this because the letter asks you to do something.": "Kamarat a relevé ce niveau parce que le courrier vous demande de faire quelque chose.",
- "Kamarat could not check some points in this letter, so it is being careful.": "Kamarat n'a pas pu vérifier certains points de ce courrier, il reste donc prudent."
+ "Kamarat could not check some points in this letter, so it is being careful.": "Kamarat n'a pas pu vérifier certains points de ce courrier, il reste donc prudent.",
+ "Settings": "Réglages",
+ "Menu": "Menu",
+ "Privacy": "Confidentialité",
+ "Your personal details are hidden on your device.": "Vos données personnelles sont masquées sur votre appareil.",
+ "Kept letters are saved only on this device.": "Les lettres gardées sont enregistrées uniquement sur cet appareil.",
+ "No account needed.": "Aucun compte nécessaire."
 }
