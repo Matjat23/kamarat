@@ -359,10 +359,14 @@ function askCloud(prompt, onStatus) {
   return askCloudJSON(SCHEMA, SYSTEM_INSTRUCTION, prompt, onStatus)
 }
 
-async function askOnDevice(prompt, languageCode) {
-  const model = getOnDeviceExplainModel(SCHEMA, languageCode)
-  await model.initializeDeviceModel()
-  return model.generateContent(prompt)
+// The on-device fallback has a firm limit too, so a stuck Gemini Nano never
+// leaves the screen waiting.
+export function askOnDevice(prompt, languageCode, schema = SCHEMA) {
+  return withDeadline(async () => {
+    const model = getOnDeviceExplainModel(schema, languageCode)
+    await model.initializeDeviceModel()
+    return model.generateContent(prompt)
+  }, 60000)
 }
 
 function normalise(text) {

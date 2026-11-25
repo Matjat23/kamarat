@@ -1781,32 +1781,46 @@ button.chat-panel-close:hover:not(:disabled) {
   gap: 12px;
 }
 
-/* On a phone each way is a row: icon, text, arrow. */
-button.way {
-  width: 100%;
+/* Each way is a card with one big button (icon, text, arrow). On a phone it
+   is a row; the letter card also holds Paste the text. */
+.way {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ink);
+  overflow: hidden;
+}
+
+button.way-hit {
+  flex: 1;
+  width: 100%;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   grid-template-areas: 'icon text chevron';
   align-items: center;
   column-gap: 16px;
   padding: 16px;
-  border: 1px solid var(--hairline);
-  border-radius: 16px;
-  background: #fff;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   box-shadow: none;
-  color: var(--ink);
+  transform: none;
+  color: inherit;
   font: inherit;
   text-align: start;
-  transition: background-color 150ms var(--ease), transform 150ms var(--ease);
+  transition: background-color 150ms var(--ease);
 }
 
-button.way:hover:not(:disabled) {
+button.way-hit:hover:not(:disabled) {
   background: var(--paper);
 }
 
-button.way:active:not(:disabled) {
-  transform: scale(0.98);
+button.way-hit:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: -3px;
 }
 
 .way-icon {
@@ -1848,30 +1862,57 @@ button.way:active:not(:disabled) {
   color: var(--muted);
 }
 
+/* Paste the text (and Upload a file on phones), under the letter card's text. */
+.way-extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding-block: 0 12px;
+  padding-inline: 76px 16px;
+}
+
+button.way-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+button.way-link:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
 /* The letter: the one green thing on the page. */
-button.way.is-main {
+.way.is-main {
   border-color: var(--green);
   background: var(--green);
   color: #fff;
 }
 
-button.way.is-main:hover:not(:disabled) {
+.way.is-main button.way-hit:hover:not(:disabled),
+.way.is-main button.way-link:hover:not(:disabled) {
   background: var(--green-dark);
 }
 
-button.way.is-main .way-icon {
+.way.is-main .way-icon {
   background: rgba(255, 255, 255, 0.14);
   color: #fff;
 }
 
-button.way.is-main .way-sub,
-button.way.is-main .way-chevron {
+.way.is-main .way-sub,
+.way.is-main .way-chevron {
   color: #cfe4da;
-}
-
-button.way:focus-visible {
-  outline: 3px solid var(--gold);
-  outline-offset: 2px;
 }
 
 /* On a phone the ways come right after the title, the drawing after them. */
@@ -1911,7 +1952,7 @@ button.way:focus-visible {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  button.way {
+  button.way-hit {
     grid-template-areas:
       'icon . chevron'
       'text text text';
@@ -1919,5 +1960,10 @@ button.way:focus-visible {
     align-content: start;
     row-gap: 16px;
     padding: 24px;
+  }
+
+  .way-extra {
+    padding-block: 0 20px;
+    padding-inline: 24px;
   }
 }

@@ -138,24 +138,26 @@ const PHONE_WORD =
 // even when it looks like a date.
 const PHONE_CUE = new RegExp(`(?:${PHONE_WORD.source})[\\s:.(\\p{Pd}]{0,4}$`, 'iu')
 
-// Could this be a real date? 12.34.5678 cannot. Only checked for 0-9 digits;
-// dates in other digits are kept as they are.
+// Could this be a real date? 12.34.5678 and 0207-12-30 cannot: a 4-digit year
+// has to be between 1900 and 2100. Only checked for 0-9 digits; dates in other
+// digits are kept as they are.
 function couldBeDate(text) {
   if (!/^[0-9./-]+$/.test(text)) return true
   const parts = text.split(/[-./]/)
   const [a, b, c] = parts.map(Number)
-  if (parts[0].length === 4) return b >= 1 && b <= 12 && c >= 1 && c <= 31
-  const year = parts[2].length === 2 || parts[2].length === 4
-  return year && a >= 1 && b >= 1 && ((a <= 31 && b <= 12) || (a <= 12 && b <= 31))
+  const yearOk = (part) => part.length === 2 || (part.length === 4 && Number(part) >= 1900 && Number(part) <= 2100)
+  if (parts[0].length === 4) return yearOk(parts[0]) && b >= 1 && b <= 12 && c >= 1 && c <= 31
+  return yearOk(parts[2]) && a >= 1 && b >= 1 && ((a <= 31 && b <= 12) || (a <= 12 && b <= 31))
 }
 
 export function stripPhoneNumbers(text) {
   const dates = []
   const kept = text.replace(DATE, (date, offset, whole) => {
     const before = whole.slice(Math.max(0, offset - 24), offset)
-    // 2026-11-25 is always a date; 08-12-3456 after "call" is a phone number.
-    const fullDate = /^\p{Nd}{4}[-./]/u.test(date)
-    if (!couldBeDate(date) || (!fullDate && PHONE_CUE.test(before))) return date
+    // A date with a real 4-digit year (2026-11-25, 25/11/2026) is always kept.
+    // 08-12-26 right after "call" is taken for a phone number.
+    const fullYear = /^\p{Nd}{4}[-./]|[-./]\p{Nd}{4}$/u.test(date)
+    if (!couldBeDate(date) || (!fullYear && PHONE_CUE.test(before))) return date
     return `${dates.push(date) - 1}`
   })
   return kept
@@ -194,16 +196,20 @@ const LEGAL_WORDS = new RegExp(
     'överklag', 'avslag', 'utvisning', 'avvisning', 'domstol', 'advokat', 'jurist', 'polis', 'böter',
     'kronofogd', 'vräkning', 'förvar',
     // German
-    'abgelehnt', 'ablehnung', 'widerspruch', 'einspruch', 'klage', 'gerichtsverfahren', 'amtsgericht',
-    'verwaltungsgericht', 'vor gericht', 'gerichtstermin', 'anwalt', 'abschiebung',
+    'abgelehnt', 'ablehnung', 'widerspruch', 'einspruch', 'klage', 'gerichts', 'amtsgericht',
+    'verwaltungsgericht', 'vor gericht', 'vom gericht', 'beim gericht', 'zum gericht', 'ans gericht', 'am gericht',
+    'anwalt', 'abschiebung',
     'ausweisung', 'bußgeld', 'bussgeld', 'strafe', 'polizei', 'schulden', 'inkasso', 'räumung', 'festgenommen',
     // Turkish
     'itiraz', 'reddedil', 'sınır dışı', 'mahkeme', 'avukat', 'ceza', 'borç', 'tahliye', 'gözaltı', 'tutuklan',
     // Polish
+    // dług (debt) as a whole word, so długo (long) does not count
     'odwołan', 'odmow', 'odrzuc', 'wydalen', 'sąd', 'adwokat', 'prawnik', 'policj', 'grzywn', 'zadłuż',
+    'dług(?:u|ów|ami|iem)?(?!\\p{L})',
     'komornik', 'windykac', 'eksmisj', 'zatrzyma',
     // Somali
-    'racfaan', 'la diiday', 'masaafur', 'tarxiil', 'maxkamad', 'qareen', 'booliis', 'ganaax', 'xabsi',
+    'racfaan', 'la diiday', 'masaafur', 'tarxiil', 'maxkamad', 'qareen', 'booliis', 'ganaax', 'xabsi', 'deynta',
+    'deymo',
   ]
     .map((word) => `(?<!\\p{L})${word}`)
     .concat([

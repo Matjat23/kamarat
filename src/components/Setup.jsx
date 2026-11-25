@@ -187,6 +187,7 @@ export default function Onboarding({ language, country, onLanguage, onCountry, o
           <h1 className="flow-title" tabIndex={-1} ref={headingRef} data-step-heading>{t('Where do you live now?')}</h1>
           <p className="muted">{t('So Katty can find the right official websites and count working days the right way.')}</p>
           <CountryPicker value={country} onChange={onCountry} locale={locale} />
+          <TranslationNote status={uiStatus} onRetry={onRetry} language={language} />
           <p className="small muted setup-promise">
             <LockIcon width={16} height={16} /> {t('Kept letters are saved only on this device. No account needed.')}
           </p>

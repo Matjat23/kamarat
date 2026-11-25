@@ -63,55 +63,62 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
         <div className="home-ways-wrap">
           <ul className="home-ways">
             <li>
-              <button className="way" onClick={onMove}>
-                <span className="way-icon"><ListIcon width={22} height={22} /></span>
-                <span className="way-text">
-                  <span className="way-title">{t("I'm moving or just arrived")}</span>
-                  <span className="way-sub">
-                    {progress
-                      ? t('{country}: {done} of {total} steps done', { country: countryName(movePlan.to), ...progress })
-                      : t('Your setup steps for the new country, in one list.')}
-                  </span>
-                  {progress && progress.total > 0 && (
-                    <span className="row-progress" aria-hidden="true">
-                      <span style={{ width: `${(progress.done / progress.total) * 100}%` }} />
+              <div className="way">
+                <button className="way-hit" onClick={onMove}>
+                  <span className="way-icon"><ListIcon width={22} height={22} /></span>
+                  <span className="way-text">
+                    <span className="way-title">{t("I'm moving or just arrived")}</span>
+                    <span className="way-sub">
+                      {progress
+                        ? t('{country}: {done} of {total} steps done', { country: countryName(movePlan.to), ...progress })
+                        : t('Your setup steps for the new country, in one list.')}
                     </span>
+                    {progress && progress.total > 0 && (
+                      <span className="row-progress" aria-hidden="true">
+                        <span style={{ width: `${(progress.done / progress.total) * 100}%` }} />
+                      </span>
+                    )}
+                  </span>
+                  <ChevronIcon className="way-chevron arrow-forward" width={20} height={20} />
+                </button>
+              </div>
+            </li>
+            <li>
+              {/* The card is the main button; the other ways to add a letter sit inside it. */}
+              <div className="way is-main">
+                <button className="way-hit" onClick={() => (phone ? cameraInput : fileInput).current?.click()}>
+                  <span className="way-icon"><CameraIcon width={22} height={22} /></span>
+                  <span className="way-text">
+                    <span className="way-title">{t('I got a letter')}</span>
+                    <span className="way-sub">{phone ? t('Read on your device, never uploaded') : t('A photo or a PDF, read on your device')}</span>
+                  </span>
+                  <ChevronIcon className="way-chevron arrow-forward" width={20} height={20} />
+                </button>
+                <div className="way-extra">
+                  {phone && (
+                    <button className="way-link" onClick={() => fileInput.current?.click()}>
+                      <FileIcon width={16} height={16} /> {t('Upload a file')}
+                    </button>
                   )}
-                </span>
-                <ChevronIcon className="way-chevron arrow-forward" width={20} height={20} />
-              </button>
+                  <button className="way-link" onClick={onPaste}>
+                    <ClipboardIcon width={16} height={16} /> {t('Paste the text')}
+                  </button>
+                </div>
+              </div>
             </li>
             <li>
-              <button className="way is-main" onClick={() => (phone ? cameraInput : fileInput).current?.click()}>
-                <span className="way-icon"><CameraIcon width={22} height={22} /></span>
-                <span className="way-text">
-                  <span className="way-title">{t('I got a letter')}</span>
-                  <span className="way-sub">{phone ? t('Read on your device, never uploaded') : t('A photo or a PDF, read on your device')}</span>
-                </span>
-                <ChevronIcon className="way-chevron arrow-forward" width={20} height={20} />
-              </button>
-            </li>
-            <li>
-              <button className="way" onClick={onAsk}>
-                <span className="way-icon"><ChatIcon width={22} height={22} /></span>
-                <span className="way-text">
-                  <span className="way-title">{t('I have a question')}</span>
-                  <span className="way-sub">{t('Questions about your new country, and who can help.')}</span>
-                </span>
-                <ChevronIcon className="way-chevron arrow-forward" width={20} height={20} />
-              </button>
+              <div className="way">
+                <button className="way-hit" onClick={onAsk}>
+                  <span className="way-icon"><ChatIcon width={22} height={22} /></span>
+                  <span className="way-text">
+                    <span className="way-title">{t('I have a question')}</span>
+                    <span className="way-sub">{t('Questions about your new country, and who can help.')}</span>
+                  </span>
+                  <ChevronIcon className="way-chevron arrow-forward" width={20} height={20} />
+                </button>
+              </div>
             </li>
           </ul>
-          <div className="scan-more">
-            {phone && (
-              <button className="secondary" onClick={() => fileInput.current?.click()}>
-                <FileIcon width={18} height={18} /> {t('Upload a file')}
-              </button>
-            )}
-            <button className="secondary" onClick={onPaste}>
-              <ClipboardIcon width={18} height={18} /> {t('Paste the text')}
-            </button>
-          </div>
           <input ref={cameraInput} type="file" accept="image/*" capture="environment" hidden onChange={picked} />
           <input ref={fileInput} type="file" accept="image/*,application/pdf" hidden onChange={picked} />
         </div>
@@ -181,7 +188,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
 
         {papers.length === 0 && (
           <section className="home-section home-how" aria-labelledby="home-how-title">
-            <h2 id="home-how-title" className="section-title">{t('How it works')}</h2>
+            <h2 id="home-how-title" className="section-title">{t('How Katty reads a letter')}</h2>
             <ol>
               {how.map((step, i) => (
                 <li key={step.title}>
@@ -205,7 +212,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
         )}
 
         <p className="small muted home-promise">
-          <LockIcon width={16} height={16} /> {t('No account needed. Katty explains letters; it is not legal advice.')}
+          <LockIcon width={16} height={16} /> {t('No account needed. Katty is not legal advice.')}
         </p>
       </div>
     </div>

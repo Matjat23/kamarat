@@ -9,8 +9,8 @@
 //   asking the sender, instead of guessing from general knowledge.
 // - An official page can be suggested, but only from the checked list, and the
 //   answer may not claim what the page says.
-import { askCloudJSON, isTemporary, quoteIsInText } from './explain'
-import { getOnDeviceExplainModel, ON_DEVICE_LANGUAGES } from './firebase'
+import { askCloudJSON, askOnDevice, isTemporary, quoteIsInText } from './explain'
+import { ON_DEVICE_LANGUAGES } from './firebase'
 import { SOURCES } from './sources'
 import { msg } from './i18n'
 
@@ -128,9 +128,7 @@ export async function askAboutNotice({ shared, question, history, language, onSt
     const deviceLanguage = code === 'en' ? 'English' : language
     onStatus('Cloud Gemini is not available. Answering on your device with Gemini Nano...')
     try {
-      const model = getOnDeviceExplainModel(SCHEMA, code)
-      await model.initializeDeviceModel()
-      const result = await model.generateContent(buildPrompt(shared, question, history, deviceLanguage, true))
+      const result = await askOnDevice(buildPrompt(shared, question, history, deviceLanguage, true), code, SCHEMA)
       const note =
         deviceLanguage !== language
           ? `Answered on your device. On-device AI cannot write ${language} yet, so this is in English.`
