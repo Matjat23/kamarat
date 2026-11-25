@@ -361,7 +361,7 @@ export default function LetterView({
             className={tab === item.id ? 'active' : ''}
             onClick={() => setTab(item.id)}
           >
-            {t(item.label)}
+            <span className="tab-label">{t(item.label)}</span>
             {item.id === 'steps' && todo.length > 0 && <span className="tab-count">{todo.length - doneCount}</span>}
           </button>
         ))}

@@ -14,7 +14,7 @@ import {
 } from '../papers'
 import { languageProps, explainNotice } from '../explain'
 import { SOURCES } from '../sources'
-import { WORRY, assessWorry, daysUntil, whenText } from '../worry'
+import { WORRY, assessWorry, daysUntil, whenText, closeness } from '../worry'
 import { t, dateLocale } from '../i18n'
 import LetterView from './LetterView'
 import { ArrowIcon, LockIcon } from './Icons'
@@ -162,7 +162,7 @@ export default function MyPapers({ onOpen, onNew }) {
               <ul className="coming-list">
                 {dated.map(({ paper, action, date }) => (
                   <li key={`${paper.id}-${action.index}`}>
-                    <button className="coming-item" onClick={() => onOpen(paper.id)}>
+                    <button className={`coming-item ${closeness(date)}`} onClick={() => onOpen(paper.id)}>
                       <span className={`coming-when ${daysUntil(date) <= 7 ? 'is-soon' : ''}`}>
                         {whenText(date)}
                         <span className="small muted">{shortDate(date)}</span>

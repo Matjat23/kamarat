@@ -54,6 +54,15 @@ export function daysUntil(date) {
   return Math.round((day - today) / 86400000)
 }
 
+// How close a date is, so a card can be coloured by meaning and not by its
+// place in a list: already late, within a week, or later.
+export function closeness(date) {
+  const days = daysUntil(date)
+  if (days < 0) return 'is-late'
+  if (days <= 7) return 'is-soon'
+  return 'is-later'
+}
+
 // "In 3 days", "Tomorrow", "2 days ago", in the language on screen.
 export function whenText(date) {
   const days = daysUntil(date)

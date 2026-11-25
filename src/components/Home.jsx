@@ -2,7 +2,7 @@
 // your letters. "How it works" is only shown until you have kept a letter.
 import { useRef } from 'react'
 import { upcomingDeadlines, paperActions } from '../papers'
-import { daysUntil, whenText } from '../worry'
+import { daysUntil, whenText, closeness } from '../worry'
 import { EXAMPLES } from '../examples'
 import { isPhone } from '../device'
 import { languageProps } from '../explain'
@@ -86,7 +86,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
           <ul className="coming-list">
             {dated.slice(0, 3).map(({ paper, action, date }) => (
               <li key={`${paper.id}-${action.index}`}>
-                <button className="coming-item" onClick={() => onOpenPaper(paper.id)}>
+                <button className={`coming-item ${closeness(date)}`} onClick={() => onOpenPaper(paper.id)}>
                   <span className={`coming-when ${daysUntil(date) <= 7 ? 'is-soon' : ''}`}>{whenText(date)}</span>
                   <span className="coming-body">
                     <strong {...languageProps(paper.language)}>{action.title}</strong>

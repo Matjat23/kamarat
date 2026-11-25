@@ -15,7 +15,7 @@
   --green: #173d33;
   --green-dark: #0e2a22;
   --green-soft: #e1eee7;
-  --terracotta: #ff6b6b;
+  --terracotta: #c94040;
   --terracotta-soft: #ffe1dc;
   --amber: #b7791f;
   --amber-soft: #fff1cc;
@@ -23,6 +23,8 @@
   --gold: #f2c27b;
   --gold-dark: #e8ac55;
   --coral: #ff6b6b;
+  --coral-deep: #c94040;
+  --coral-soft: #ff8f8f;
   --teal: #4ecdc4;
   --sun: #ffd93d;
   --stick: #173d33;
@@ -118,6 +120,22 @@ button.ghost {
   color: var(--stick) !important;
 }
 
+.chip-radio.chip-selected::before {
+  content: '✓' / '';
+  font-weight: 800;
+}
+
+/* Windows high contrast removes backgrounds and shadows, so mark the
+   chosen item with the system highlight colour */
+@media (forced-colors: active) {
+  .chip-selected,
+  .search-item.is-chosen,
+  button.nav-item.active {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
 /* Cards: white stickers */
 .card,
 .home-card,
@@ -187,7 +205,13 @@ button.nav-item.active {
 }
 
 .home-hero button.scan-main .small {
-  color: #4b5a52;
+  color: var(--ink-soft);
+}
+
+/* Focus ring: the usual green ring would vanish on the green block */
+.home-hero :focus-visible,
+.toast :focus-visible {
+  outline-color: var(--gold);
 }
 
 .home-hero .scan-icon {
@@ -222,23 +246,38 @@ button.nav-item.active {
   color: var(--stick);
 }
 
-/* Home and My papers: colourful, slightly tilted sticker cards */
-.coming-list li:nth-child(3n + 1) .coming-item,
-.paper-list li:nth-child(3n + 1) .paper-item {
+/* Home and My papers: slightly tilted sticker cards. The tilt is only
+   decoration; the colour of a deadline card says how close it is. */
+.coming-list li:nth-child(odd) .coming-item,
+.paper-list li:nth-child(odd) .paper-item {
+  transform: rotate(-0.7deg);
+}
+
+.coming-list li:nth-child(even) .coming-item,
+.paper-list li:nth-child(even) .paper-item {
+  transform: rotate(0.6deg);
+}
+
+.coming-item,
+.paper-item {
+  background: #fff;
+}
+
+.coming-item.is-later {
   background: #d9f5f2;
-  transform: rotate(-0.8deg);
 }
 
-.coming-list li:nth-child(3n + 2) .coming-item,
-.paper-list li:nth-child(3n + 2) .paper-item {
+.coming-item.is-soon {
   background: #fff3b8;
-  transform: rotate(0.7deg);
 }
 
-.coming-list li:nth-child(3n) .coming-item,
-.paper-list li:nth-child(3n) .paper-item {
+.coming-item.is-late {
   background: #ffe1dc;
-  transform: rotate(-0.5deg);
+}
+
+.coming-item .muted,
+.paper-item .muted {
+  color: #4b5a52;
 }
 
 .coming-when {
@@ -246,7 +285,7 @@ button.nav-item.active {
 }
 
 .coming-when.is-soon {
-  color: #c0392b;
+  color: #b03030;
 }
 
 button.home-card.resume {
@@ -272,7 +311,7 @@ button.home-card.resume {
 
   .nav-new .nav-icon-phone {
     background: var(--coral);
-    color: #fff;
+    color: var(--stick);
     border: 2px solid var(--stick);
     box-shadow: 2px 2px 0 var(--stick);
   }
@@ -298,6 +337,49 @@ button.home-card.resume {
   border-radius: 24px;
 }
 
+/* Letter header: a long sender name wraps instead of running under More */
+.letter-from > span:last-child {
+  min-width: 0;
+  overflow-wrap: break-word;
+  line-height: 1.25;
+}
+
+@media (max-width: 420px) {
+  .letter-from .sender-avatar {
+    display: none;
+  }
+}
+
+/* The smallest phones: the sender gets its own line under Back and More */
+@media (max-width: 360px) {
+  .letter-bar {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .letter-from {
+    order: 3;
+    flex-basis: 100%;
+  }
+}
+
+.more-menu {
+  flex-shrink: 0;
+}
+
+.more-menu summary {
+  border: 2px solid var(--stick);
+  color: var(--stick);
+  font-weight: 700;
+  box-shadow: 2px 2px 0 var(--stick);
+}
+
+/* Urgent letters and letters where you should get help get a coral shadow */
+.answer-card.worry-URGENT,
+.answer-card.worry-HELP {
+  box-shadow: 5px 5px 0 var(--coral-deep);
+}
+
 .worry-INFO { background: #e3f7f4; }
 .worry-ACTION { background: #fff5dd; }
 .worry-UNSURE { background: #f1ece2; }
@@ -312,16 +394,40 @@ button.home-card.resume {
 .worry-chip.worry-INFO { background: var(--teal); }
 .worry-chip.worry-ACTION { background: var(--gold); }
 .worry-chip.worry-UNSURE { background: #d9d2c3; }
-.worry-chip.worry-URGENT { background: var(--coral); }
+.worry-chip.worry-URGENT { background: var(--coral-soft); }
 .worry-chip.worry-HELP { background: #c0392b; color: #fff !important; }
 
-.tabs button.active {
-  color: var(--stick);
-  border-bottom-color: var(--coral);
+.tabs {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tabs button {
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  padding-inline: 2px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* A label only breaks inside a word when that word cannot fit at all */
+.tab-label {
+  min-width: 0;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .tab-count {
-  background: var(--coral);
+  flex-shrink: 0;
+}
+
+.tabs button.active {
+  color: var(--stick);
+  border-bottom-color: var(--stick);
+}
+
+.tab-count {
+  background: var(--coral-deep);
   color: #fff;
 }
 
@@ -343,7 +449,7 @@ button.home-card.resume {
 }
 
 .date-chip.chip-late {
-  background: var(--coral);
+  background: var(--coral-deep);
   color: #fff;
 }
 
@@ -352,7 +458,7 @@ button.home-card.resume {
 }
 
 .date-month {
-  background: var(--coral) !important;
+  background: var(--coral-deep) !important;
   color: #fff !important;
 }
 
@@ -404,6 +510,10 @@ button.home-card.resume {
   box-shadow: 2px 2px 0 var(--stick);
 }
 
+.search-item.is-chosen .muted {
+  color: var(--stick);
+}
+
 .search-list input,
 .search-input {
   border: 2px solid var(--stick) !important;
@@ -450,13 +560,13 @@ textarea {
     transform: rotate(-0.6deg);
   }
 
-  .coming-list li .coming-item,
-  .paper-list li .paper-item {
-    transform: rotate(-0.3deg) !important;
+  .coming-list li:nth-child(odd) .coming-item,
+  .paper-list li:nth-child(odd) .paper-item {
+    transform: rotate(-0.3deg);
   }
 
   .coming-list li:nth-child(even) .coming-item,
   .paper-list li:nth-child(even) .paper-item {
-    transform: rotate(0.3deg) !important;
+    transform: rotate(0.3deg);
   }
 }

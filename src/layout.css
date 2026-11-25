@@ -145,7 +145,7 @@ button.home-card.resume {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  text-align: left;
+  text-align: start;
   border-color: var(--green);
   background: var(--green-soft);
 }
@@ -170,7 +170,7 @@ button.start-tile {
   border: 1px solid var(--line-strong);
   border-radius: 16px;
   background: var(--paper);
-  text-align: left;
+  text-align: start;
   color: var(--ink);
 }
 
@@ -265,7 +265,7 @@ button.paper-item {
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--paper);
-  text-align: left;
+  text-align: start;
   color: var(--ink);
   font-weight: 400;
 }
@@ -536,7 +536,7 @@ button.paper-item {
 
 .more-list button {
   justify-content: flex-start;
-  text-align: left;
+  text-align: start;
   color: var(--ink) !important;
 }
 
@@ -711,7 +711,7 @@ button.step-main {
   padding: 8px 0;
   border: none;
   background: transparent;
-  text-align: left;
+  text-align: start;
   color: var(--ink);
 }
 
