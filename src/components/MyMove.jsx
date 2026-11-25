@@ -159,7 +159,7 @@ function StepItem({ step, language, place, onToggle, onAsk }) {
   )
 }
 
-function Phases({ steps, language, place, onToggle, onAsk }) {
+function Phases({ steps, language, place, country, onToggle, onAsk }) {
   return PHASES.map((phase) => {
     const inPhase = steps.filter((s) => s.phase === phase)
     if (inPhase.length === 0) return null
@@ -174,7 +174,7 @@ function Phases({ steps, language, place, onToggle, onAsk }) {
               language={step.own ? undefined : language}
               place={place}
               onToggle={onToggle ? () => onToggle(step.id) : null}
-              onAsk={(s) => onAsk(t('How do I do this: {step}?', { step: s.title }))}
+              onAsk={(s) => onAsk(t('How do I do this: {step}?', { step: s.title }), country)}
             />
           ))}
         </ol>
@@ -200,7 +200,7 @@ function ExampleList({ onAsk, onBack }) {
         </p>
       </section>
       <div className="move-sheet">
-        <Phases steps={steps} place={countryName(EXAMPLE_PLAN.to)} onAsk={onAsk} />
+        <Phases steps={steps} place={countryName(EXAMPLE_PLAN.to)} country={EXAMPLE_PLAN.to} onAsk={onAsk} />
         <div className="buttons">
           <button className="primary" onClick={onBack}>{t('Make my own list')}</button>
         </div>
@@ -262,7 +262,7 @@ export default function MyMove({ country, language, onAsk }) {
       </section>
 
       <div className="move-sheet">
-        <Phases steps={plan.steps} language={plan.language} place={countryName(plan.to)} onToggle={toggle} onAsk={onAsk} />
+        <Phases steps={plan.steps} language={plan.language} place={countryName(plan.to)} country={plan.to} onToggle={toggle} onAsk={onAsk} />
 
         <form className="move-own" onSubmit={addOwn}>
           <label htmlFor={`${uid}-own`} className="small muted">{t('Add your own step')}</label>
@@ -276,7 +276,7 @@ export default function MyMove({ country, language, onAsk }) {
           {t('Katty made this list with AI. Check each step on the official website before you rely on it. Katty only links to official websites and well-known help organisations it has checked.')}
         </p>
         <div className="buttons">
-          <button className="secondary" onClick={() => onAsk('')}>
+          <button className="secondary" onClick={() => onAsk('', plan.to)}>
             <ChatIcon width={18} height={18} /> {t('Ask Katty')}
           </button>
           <button className="ghost" onClick={startOver}>{t('Make a new list')}</button>

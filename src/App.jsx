@@ -129,6 +129,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [guideQuestion, setGuideQuestion] = useState('')
   const [guideSession, setGuideSession] = useState(0)
+  const [guideCountry, setGuideCountry] = useState('')
   const [movePlan, setMovePlan] = useState(loadMovePlan)
   const menuButton = useRef(null)
   // The screen showing now, and the one the menu was opened on.
@@ -266,7 +267,10 @@ export default function App() {
     screenNow.current = routeKey
     stopSpeaking()
     setMenuOpen(false)
-    if (route.view !== 'ask') setGuideQuestion('')
+    if (route.view !== 'ask') {
+      setGuideQuestion('')
+      setGuideCountry('')
+    }
     window.scrollTo({ top: 0 })
     requestAnimationFrame(() => {
       const heading = [...document.querySelectorAll('[data-step-heading]')].find((el) => el.offsetParent)
@@ -436,8 +440,12 @@ export default function App() {
   const inFlow = view === 'new' || view === 'check'
 
   // Opens the guide chat, with a question ready to send or edit.
-  function openGuide(question = '') {
+  // Opens the guide chat, with a question ready to send or edit. Coming from
+  // another screen starts a new chat; tapping Ask while already there keeps it.
+  function openGuide(question = '', countryCode = '') {
+    if (view === 'ask' && !question) return
     setGuideQuestion(question)
+    setGuideCountry(countryCode)
     setGuideSession((n) => n + 1)
     go('ask')
   }
@@ -574,6 +582,7 @@ export default function App() {
             country={country}
             language={language}
             startQuestion={guideQuestion}
+            startCountry={guideCountry}
             onAddLetter={newLetter}
           />
         )}

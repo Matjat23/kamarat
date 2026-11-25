@@ -14,9 +14,9 @@
 // - Answers that had numbers in them get a note to check them. Legal problems
 //   get a note about free legal advice, shown before the answer.
 // - The chat is not saved anywhere. "New chat" starts again.
-import { useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { askGuide, GUIDE_QUESTIONS, MAX_GUIDE_QUESTIONS } from '../guide'
-import { loadMovePlan } from '../move'
+import { loadMovePlan, MOVE_CHANGED } from '../move'
 import { maskNote } from '../reply'
 import { detectWithAI } from '../privacy'
 import { languageProps } from '../explain'
@@ -126,13 +126,20 @@ function GuideAnswer({ turn, language, place, onAsk, onAddLetter }) {
 }
 
 // compact: shown inside the floating chat panel, which has its own title.
-export default function AskGuide({ country, language, startQuestion, onAddLetter, compact = false }) {
+export default function AskGuide({ country, language, startQuestion, startCountry, onAddLetter, compact = false }) {
   const uid = useId()
   // Country names follow the screen language, once its translation has loaded.
   const screenLanguage = uiLanguageCode()
   const countries = useMemo(() => countryList(), [screenLanguage])
-  const plan = useMemo(() => loadMovePlan(), [])
-  const [where, setWhere] = useState(() => savedAskCountry() || plan?.to || country || '')
+  // The move list, kept up to date (the chat panel stays open while you change it).
+  const [plan, setPlan] = useState(loadMovePlan)
+  useEffect(() => {
+    const onChange = () => setPlan(loadMovePlan())
+    window.addEventListener(MOVE_CHANGED, onChange)
+    return () => window.removeEventListener(MOVE_CHANGED, onChange)
+  }, [])
+  // A question about a step in your move list is about that list's country.
+  const [where, setWhere] = useState(() => startCountry || savedAskCountry() || loadMovePlan()?.to || country || '')
   const [question, setQuestion] = useState(startQuestion || '')
   const [turns, setTurns] = useState([])
   const [review, setReview] = useState(null)

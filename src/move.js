@@ -89,20 +89,33 @@ ${citizenship ? `Their citizenship: ${countryNameEnglish(citizenship)}.` : 'They
 Write the checklist in ${language}.`
 }
 
+// Stops waiting after `ms`, even when a step inside has no timeout of its own
+// (for example getting the App Check token). A late answer is ignored.
+function withDeadline(promise, ms) {
+  let timer
+  const deadline = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error('Gemini timed out')), ms)
+  })
+  return Promise.race([promise, deadline]).finally(() => clearTimeout(timer))
+}
+
 // Gemini's busy errors come and go, so wait a moment and try once more before
 // giving up. Both models are tried each time (see askCloudJSON). Everything
 // together stops after about `budget` milliseconds, so nobody waits for minutes.
-export async function askCloudWithRetry(schema, systemInstruction, prompt, onStatus = () => {}, { timeout = 15000, budget = 30000 } = {}) {
-  const start = Date.now()
-  try {
-    return await askCloudJSON(schema, systemInstruction, prompt, onStatus, { timeout, budget })
-  } catch (err) {
-    const left = budget - (Date.now() - start) - 2500
-    if (err?.quota || !isTemporary(err) || left < 8000) throw err
-    onStatus(msg('Gemini is busy. Trying again...'))
-    await new Promise((resolve) => setTimeout(resolve, 2500))
-    return askCloudJSON(schema, systemInstruction, prompt, onStatus, { timeout, budget: left })
+export function askCloudWithRetry(schema, systemInstruction, prompt, onStatus = () => {}, { timeout = 15000, budget = 30000 } = {}) {
+  async function attempt() {
+    const start = Date.now()
+    try {
+      return await askCloudJSON(schema, systemInstruction, prompt, onStatus, { timeout, budget })
+    } catch (err) {
+      const left = budget - (Date.now() - start) - 2500
+      if (err?.quota || !isTemporary(err) || left < 8000) throw err
+      onStatus(msg('Gemini is busy. Trying again...'))
+      await new Promise((resolve) => setTimeout(resolve, 2500))
+      return askCloudJSON(schema, systemInstruction, prompt, onStatus, { timeout, budget: left })
+    }
   }
+  return withDeadline(attempt(), budget + 2000)
 }
 
 // A short message people can act on, instead of the technical error.
@@ -110,7 +123,7 @@ export function friendlyError(err) {
   if (err?.quota) return err
   if (isTemporary(err)) return new Error(msg('Gemini is busy right now. Please try again in a minute'))
   // The page was not allowed to use Gemini (App Check or the API key said no).
-  if (/app check|40[13]|permission|api key/i.test(err?.message ?? '')) {
+  if (/app check|\b40[13]\b|permission|api key/i.test(err?.message ?? '')) {
     return new Error(msg('Katty cannot reach Gemini from here right now. Please try again later'))
   }
   return err
@@ -130,9 +143,28 @@ const NUMBER_RUN = /\+?\p{Nd}(?:[\p{Nd}\s().\/\p{Pd}]*\p{Nd})?/gu
 const PHONE_WORD =
   /(?<!\p{L})(?:call|phone|telephone|tel|ring|dial|number|appel\p{L}*|téléphon\p{L}*|numéro|llam\p{L}*|tel[eé]fono|número|lig\p{L}*|telefon\p{L}*|ring\p{L}*|nummer|номер|звон\p{L}*|позвон\p{L}*|телефон\p{L}*)|اتصل|هاتف|رقم|فون|کال|نمبر|फ़ोन|फोन|कॉल|नंबर|ফোন|কল|নম্বর|电话|致电|拨打|号码/iu
 
+// "Call 08-12-3456": a number right after a word like "call" is a phone number,
+// even when it looks like a date.
+const PHONE_CUE = new RegExp(`(?:${PHONE_WORD.source})[\\s:.\\p{Pd}]{0,3}$`, 'iu')
+
+// Could this be a real date? 12.34.5678 cannot. Only checked for 0-9 digits;
+// dates in other digits are kept as they are.
+function couldBeDate(text) {
+  if (!/^[0-9./-]+$/.test(text)) return true
+  const parts = text.split(/[-./]/)
+  const [a, b, c] = parts.map(Number)
+  if (parts[0].length === 4) return b >= 1 && b <= 12 && c >= 1 && c <= 31
+  const year = parts[2].length === 2 || parts[2].length === 4
+  return year && a >= 1 && b >= 1 && ((a <= 31 && b <= 12) || (a <= 12 && b <= 31))
+}
+
 export function stripPhoneNumbers(text) {
   const dates = []
-  const kept = text.replace(DATE, (date) => `${dates.push(date) - 1}`)
+  const kept = text.replace(DATE, (date, offset, whole) => {
+    const before = whole.slice(Math.max(0, offset - 24), offset)
+    if (PHONE_CUE.test(before) || !couldBeDate(date)) return date
+    return `${dates.push(date) - 1}`
+  })
   return kept
     .replace(NUMBER_RUN, (run, offset) => {
       const digits = (run.match(/\p{Nd}/gu) ?? []).length
@@ -168,6 +200,16 @@ const LEGAL_WORDS = new RegExp(
     // Swedish
     'överklag', 'avslag', 'utvisning', 'avvisning', 'domstol', 'advokat', 'jurist', 'polis', 'böter',
     'kronofogd', 'vräkning', 'förvar',
+    // German
+    'abgelehnt', 'ablehnung', 'widerspruch', 'einspruch', 'klage', 'gericht', 'anwalt', 'abschiebung',
+    'ausweisung', 'bußgeld', 'bussgeld', 'strafe', 'polizei', 'schulden', 'inkasso', 'räumung', 'festgenommen',
+    // Turkish
+    'itiraz', 'reddedil', 'sınır dışı', 'mahkeme', 'avukat', 'ceza', 'borç', 'tahliye', 'gözaltı', 'tutuklan',
+    // Polish
+    'odwołan', 'odmow', 'odrzuc', 'wydalen', 'sąd', 'adwokat', 'prawnik', 'policj', 'grzywn', 'dług',
+    'eksmisj', 'zatrzyma',
+    // Somali
+    'racfaan', 'la diiday', 'masaafur', 'tarxiil', 'maxkamad', 'qareen', 'booliis', 'ganaax', 'deyn', 'xabsi',
   ]
     .map((word) => `(?<!\\p{L})${word}`)
     .concat([
@@ -185,6 +227,16 @@ const LEGAL_WORDS = new RegExp(
       // Chinese
       '上诉', '申诉', '拒绝', '被拒', '驳回', '遣返', '驱逐', '法院', '法庭', '律师', '警察', '罚款', '罚单',
       '债务', '逮捕', '拘留',
+      // Ukrainian
+      'оскарж', 'відмов', 'поліці', 'борг', 'висел', 'затрим', 'арешт',
+      // Persian and Dari
+      'اعتراض', 'رد شد', 'رد شده', 'دیپورت', 'اخراج', 'دادگاه', 'محکمه', 'پلیس', 'جریمه', 'بدهی', 'بازداشت',
+      // Pashto
+      'ایستل', 'رد شو', 'رد کړ', 'توقیف',
+      // Kurdish (Sorani)
+      'تانەدان', 'ڕەتکرایەوە', 'دیپۆرت', 'دادگا', 'پارێزەر', 'پۆلیس', 'سزا', 'قەرز',
+      // Tigrinya
+      'ይግባይ', 'ተነጺጉ', 'ቤት ፍርዲ', 'ጠበቓ', 'ፖሊስ', 'መቕጻዕቲ', 'ዕዳ',
     ])
     .join('|'),
   'iu',

@@ -147,7 +147,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
       <div className="roles">
         <label>
           <span className="small muted">{t('Sign with your name')}</span>
-          <select value={selfChoice} onChange={(e) => setSelfChoice(e.target.value)}>
+          <select value={selfChoice} onChange={(e) => setSelfChoice(e.target.value)} translate="no">
             <option value="" disabled>
               {t('Choose your name...')}
             </option>
@@ -161,7 +161,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
         </label>
         <label>
           <span className="small muted">{t('Case number to mention')}</span>
-          <select value={caseLabel} onChange={(e) => setCaseLabel(e.target.value)}>
+          <select value={caseLabel} onChange={(e) => setCaseLabel(e.target.value)} translate="no">
             {caseLabels.map((label) => (
               <option key={label} value={label}>
                 {labelMap[label]}
