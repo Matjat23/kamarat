@@ -1,5 +1,5 @@
 // Step 3: the reviewed text is explained as soon as this screen opens (the
-// person already chose to send it). While waiting, Kamarat shows what it is
+// person already chose to send it). While waiting, Katty shows what it is
 // doing. Then the letter screen takes over.
 import { useEffect, useRef, useState } from 'react'
 import { explainNotice } from '../explain'
@@ -135,7 +135,7 @@ export default function ExplainStep({ shared, labelMap, details, language, count
       setSavedId(id)
       setSaveError('')
     } else {
-      setSaveError(t('Kamarat could not save on this device. The browser may be in private mode or out of space.'))
+      setSaveError(t('Katty could not save on this device. The browser may be in private mode or out of space.'))
     }
   }
 
@@ -149,7 +149,7 @@ export default function ExplainStep({ shared, labelMap, details, language, count
     const next = done.includes(index) ? done.filter((i) => i !== index) : [...done, index]
     setDone(next)
     if (savedId && !updatePaper(savedId, { done: next })) {
-      setSaveError(t('Kamarat could not update My papers on this device.'))
+      setSaveError(t('Katty could not update My papers on this device.'))
     }
   }
 

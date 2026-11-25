@@ -1,5 +1,5 @@
 // Gemini's free tier has a daily request limit per model. When a model says the
-// day's limit is used up, Kamarat stops asking it until the limit resets
+// day's limit is used up, Katty stops asking it until the limit resets
 // (midnight US Pacific time) instead of failing on every try.
 
 const KEY = 'kamarat.quota.v1'
@@ -7,7 +7,7 @@ const KEY = 'kamarat.quota.v1'
 export class QuotaError extends Error {
   constructor() {
     super(
-      "Kamarat has used today's free Gemini requests. They reset every day at midnight US Pacific time. Please try again later",
+      "Katty has used today's free Gemini requests. They reset every day at midnight US Pacific time. Please try again later",
     )
     this.quota = true
   }
@@ -39,7 +39,7 @@ export function markUsedUp(model) {
   try {
     localStorage.setItem(KEY, JSON.stringify({ day: quotaDay(), models }))
   } catch {
-    // Private mode: Kamarat just tries again next time.
+    // Private mode: Katty just tries again next time.
   }
 }
 

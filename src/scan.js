@@ -49,7 +49,7 @@ export async function readFile(file, onProgress = () => {}, languages = ['eng'])
     return readPdf(file, onProgress, languages)
   }
   if (!file.type.startsWith('image/')) {
-    throw new Error(t('Kamarat can read photos (JPG, PNG) and PDF files.'))
+    throw new Error(t('Katty can read photos (JPG, PNG) and PDF files.'))
   }
   const reader = await makeImageReader(onProgress, languages)
   try {

@@ -1,4 +1,4 @@
-// Official pages Kamarat may link to. Every link was opened and checked by hand
+// Official pages Katty may link to. Every link was opened and checked by hand
 // on 2026-11-24. Gemini can only pick an id from this list; it never writes a URL.
 // To add a country, add its pages here.
 

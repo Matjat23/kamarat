@@ -4,7 +4,7 @@
 // - The AI's level only counts if its quote is really in the notice.
 //   Otherwise a calm level becomes UNSURE (a serious one is never lowered).
 // - A deadline that has passed or is less than a week away is always URGENT.
-// - Something still to do, or a deadline Kamarat cannot work out yet, means
+// - Something still to do, or a deadline Katty cannot work out yet, means
 //   it is not "just information".
 import { t, msg } from './i18n'
 
@@ -21,7 +21,7 @@ const WORRY_TEXT = {
   },
   UNSURE: {
     short: msg('Read carefully'),
-    title: msg("Kamarat isn't sure how serious this is."),
+    title: msg("Katty isn't sure how serious this is."),
     help: msg('Read the letter carefully. If you are unsure, ask the sender or someone you trust.'),
   },
   URGENT: {
@@ -84,7 +84,7 @@ export function assessWorry(worry, actions) {
 
   if (aiLevel && !trusted && RANK[aiLevel] < RANK.UNSURE) {
     level = 'UNSURE'
-    raised = t('Kamarat could not find the sentence this was based on, so it is being careful.')
+    raised = t('Katty could not find the sentence this was based on, so it is being careful.')
   }
 
   const open = actions.filter((a) => a.group !== 'CHECK' && !a.done)
@@ -93,25 +93,25 @@ export function assessWorry(worry, actions) {
 
   if (soonest !== null && soonest < 0 && RANK[level] < RANK.URGENT) {
     level = 'URGENT'
-    raised = t('Kamarat raised this because a deadline has already passed.')
+    raised = t('Katty raised this because a deadline has already passed.')
   } else if (soonest !== null && soonest <= 7 && RANK[level] < RANK.URGENT) {
     level = 'URGENT'
-    raised = t('Kamarat raised this because a deadline is less than a week away.')
+    raised = t('Katty raised this because a deadline is less than a week away.')
   } else if (level === 'INFO') {
     const unknownDate = open.some((a) => a.info && !a.info.date)
     const mustDo = open.some((a) => a.group === 'MUST')
     if (unknownDate || mustDo) {
       level = 'ACTION'
       raised = unknownDate
-        ? t('Kamarat raised this because there is a deadline it cannot work out yet.')
-        : t('Kamarat raised this because the letter asks you to do something.')
+        ? t('Katty raised this because there is a deadline it cannot work out yet.')
+        : t('Katty raised this because the letter asks you to do something.')
     }
   }
 
-  // Points Kamarat could not match to the letter: never call it "just information".
+  // Points Katty could not match to the letter: never call it "just information".
   if (level === 'INFO' && actions.some((a) => a.group === 'CHECK')) {
     level = 'UNSURE'
-    raised = t('Kamarat could not check some points in this letter, so it is being careful.')
+    raised = t('Katty could not check some points in this letter, so it is being careful.')
   }
 
   return {

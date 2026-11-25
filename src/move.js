@@ -69,7 +69,7 @@ const SCHEMA = {
   required: ['steps'],
 }
 
-const SYSTEM_INSTRUCTION = `You are Kamarat, a calm and practical friend for people who move to a new country.
+const SYSTEM_INSTRUCTION = `You are Katty, a calm and practical friend for people who move to a new country.
 
 Make a checklist of the official setup steps a newcomer needs in the destination country, in the order they usually happen: registering where you live, the personal or tax number, residence documents, health care, a bank account, work or study registration, language courses, and similar steps that apply to the person's reason for moving.
 
@@ -231,7 +231,7 @@ export async function makeMovePlan({ to, from, citizenship, purpose, language, o
   const raw = result.response.text()
   const data = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1))
   const steps = (Array.isArray(data.steps) ? data.steps : []).map(cleanStep).filter(Boolean)
-  if (steps.length === 0) throw new Error(msg('Kamarat could not make a list this time. Please try again'))
+  if (steps.length === 0) throw new Error(msg('Katty could not make a list this time. Please try again'))
   steps.sort((a, b) => PHASES.indexOf(a.phase) - PHASES.indexOf(b.phase))
   return { to, from: from || '', citizenship: citizenship || '', purpose, language, createdAt: new Date().toISOString(), steps }
 }

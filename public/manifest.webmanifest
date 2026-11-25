@@ -1,7 +1,7 @@
 {
-  "name": "Kamarat: A friend who knows the system",
-  "short_name": "Kamarat",
-  "description": "Understand official notices in your language, without giving away who you are.",
+  "name": "Katty, your buddy in a new country",
+  "short_name": "Katty",
+  "description": "Set up in a new country, ask questions and understand official letters, in your language, without giving away who you are.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

@@ -46,7 +46,7 @@ export function SavedLetter({ id, language, country, onBack }) {
   }
 
   function update(patch) {
-    if (!updatePaper(paper.id, patch)) setError(t('Kamarat could not update My papers on this device.'))
+    if (!updatePaper(paper.id, patch)) setError(t('Katty could not update My papers on this device.'))
     setPaper(listPapers().find((p) => p.id === id) ?? null)
   }
 
@@ -76,7 +76,7 @@ export function SavedLetter({ id, language, country, onBack }) {
         sites: result.sites,
       })
     } catch (err) {
-      setError(`${t('Kamarat could not explain it again:')} ${err.message}.`)
+      setError(`${t('Katty could not explain it again:')} ${err.message}.`)
     }
     setExplaining(false)
   }
@@ -150,7 +150,7 @@ export default function MyPapers({ onOpen, onNew }) {
         <section className="home-card empty">
           <p><strong>{t('No letters kept yet.')}</strong></p>
           <p className="muted small">
-            {t('When Kamarat has explained a letter, tap "Keep in My papers" and it will be here with its deadlines.')}
+            {t('When Katty has explained a letter, tap "Keep in My papers" and it will be here with its deadlines.')}
           </p>
           <button className="secondary" onClick={onNew}>{t('Explain a letter')}</button>
         </section>

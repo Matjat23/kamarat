@@ -1,5 +1,5 @@
 // Step 2: check what is private, then send, in one decision.
-// The person sees the details Kamarat found, can show or hide each one, hide
+// The person sees the details Katty found, can show or hide each one, hide
 // more text, see exactly what will be sent, pick the language, and send.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildRedaction } from '../privacy'
@@ -119,7 +119,7 @@ export default function CheckLetter({
       <p className="lead-small">
         {detection.mode === 'ai'
           ? t('Gemini Nano found these personal details on your device. They stay here. Hide anything it missed.')
-          : t('There is no on-device AI here, so Kamarat looked for personal details with simple rules. They stay on your device. Rules can miss things: read "What will be sent" and hide anything about you.')}
+          : t('There is no on-device AI here, so Katty looked for personal details with simple rules. They stay on your device. Rules can miss things: read "What will be sent" and hide anything about you.')}
       </p>
       <span className="count-pill" role="status">
         <LockIcon width={16} height={16} /> {t('{count} hidden', { count: hiddenCount })}
@@ -127,7 +127,7 @@ export default function CheckLetter({
       </span>
       {noCapitals && (
         <p className="notice notice-warn small" role="alert">
-          {t('This letter uses a script without capital letters, so Kamarat cannot find names in it here. Look for names yourself and hide them below.')}
+          {t('This letter uses a script without capital letters, so Katty cannot find names in it here. Look for names yourself and hide them below.')}
         </p>
       )}
       {detection.lost?.length > 0 && (

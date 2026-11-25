@@ -1,8 +1,8 @@
 // Choosing a language and a country: once on the first visit, and later on the
 // settings screen. Both lists can be searched by the name in the chosen
-// language or in English, and Kamarat's guess from the browser comes first.
+// language or in English, and Katty's guess from the browser comes first.
 // Country names come from the browser in the chosen language, so they work
-// even before Kamarat's own texts are translated.
+// even before Katty's own texts are translated.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { LANGUAGES } from '../explain'
 import { countryList, countryName, guessCountry } from '../countries'
@@ -134,7 +134,7 @@ export function CountryPicker({ value, onChange, locale = 'en' }) {
   )
 }
 
-// While Kamarat's own texts are being translated, or if that failed.
+// While Katty's own texts are being translated, or if that failed.
 function TranslationNote({ status, onRetry }) {
   if (status === 'loading') return <p className="small muted setup-note" role="status">…</p>
   if (status === 'failed') {
@@ -167,7 +167,7 @@ export default function Onboarding({ language, country, onLanguage, onCountry, o
       {step === 1 ? (
         <>
           <h1 className="flow-title" tabIndex={-1} ref={headingRef} data-step-heading>{t('Which language do you speak?')}</h1>
-          <p className="muted">{t('Kamarat helps you in this language: your move, your questions and your letters.')}</p>
+          <p className="muted">{t('Katty helps you in this language: your move, your questions and your letters.')}</p>
           <LanguagePicker value={language} onChange={onLanguage} />
           <TranslationNote status={uiStatus} onRetry={onRetry} />
           <button className="primary big wide" onClick={() => setStep(2)}>
@@ -177,7 +177,7 @@ export default function Onboarding({ language, country, onLanguage, onCountry, o
       ) : (
         <>
           <h1 className="flow-title" tabIndex={-1} ref={headingRef} data-step-heading>{t('Where do you live now?')}</h1>
-          <p className="muted">{t('So Kamarat can find the right official websites and count working days the right way.')}</p>
+          <p className="muted">{t('So Katty can find the right official websites and count working days the right way.')}</p>
           <CountryPicker value={country} onChange={onCountry} locale={locale} />
           <p className="small muted setup-promise">
             <LockIcon width={16} height={16} /> {t('Kept letters are saved only on this device. No account needed.')}

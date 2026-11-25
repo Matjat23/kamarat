@@ -1,4 +1,4 @@
-"""Collect Kamarat's interface texts into src/ui-strings.json.
+"""Collect Katty's interface texts into src/ui-strings.json.
 
 Every text shown by the app is written in English inside t('...') (or msg('...')
 for texts kept in data, like the worry levels). This script finds them all, so

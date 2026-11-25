@@ -1,4 +1,4 @@
-// "My move": tell Kamarat where you are moving and why, and get the setup steps
+// "My move": tell Katty where you are moving and why, and get the setup steps
 // for the new country in one list you can tick off. Kept only on this device.
 // When Gemini is busy, an example list written by hand shows how it works.
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
@@ -55,7 +55,7 @@ function MoveSetup({ country, language, onMade, onExample }) {
   return (
     <section className="card move-setup">
       <h1 className="flow-title" tabIndex={-1} data-step-heading>{t('My move')}</h1>
-      <p className="lead">{t('Tell Kamarat where you are moving, and get your setup steps in one list you can tick off.')}</p>
+      <p className="lead">{t('Tell Katty where you are moving, and get your setup steps in one list you can tick off.')}</p>
 
       <div className="move-field">
         <label htmlFor={`${uid}-to`}>{t('Where are you moving to, or where do you live now?')}</label>
@@ -273,11 +273,11 @@ export default function MyMove({ country, language, onAsk }) {
         </form>
 
         <p className="small muted">
-          {t('Kamarat made this list with AI. Check each step on the official website before you rely on it. Kamarat only links to official websites and well-known help organisations it has checked.')}
+          {t('Katty made this list with AI. Check each step on the official website before you rely on it. Katty only links to official websites and well-known help organisations it has checked.')}
         </p>
         <div className="buttons">
           <button className="secondary" onClick={() => onAsk('')}>
-            <ChatIcon width={18} height={18} /> {t('Ask Kamarat')}
+            <ChatIcon width={18} height={18} /> {t('Ask Katty')}
           </button>
           <button className="ghost" onClick={startOver}>{t('Make a new list')}</button>
         </div>

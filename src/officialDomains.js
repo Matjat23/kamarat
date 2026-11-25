@@ -1,4 +1,4 @@
-// Is this web address an official public website? Kamarat only shows links that
+// Is this web address an official public website? Katty only shows links that
 // pass this check, wherever they came from.
 //
 // 1. Government web zones, where only public bodies can get an address:

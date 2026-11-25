@@ -1,13 +1,13 @@
-// "Ask Kamarat about this notice": a short chat under the next steps.
+// "Ask Katty about this notice": a short chat under the next steps.
 //
 // - A question you type is checked on this device first: details already
 //   hidden in the notice get the same label, numbers and emails are hidden,
 //   and Gemini Nano looks for names and other details when it can. Then you
 //   always see exactly what will be sent and choose to send it. The suggested
-//   questions are Kamarat's own text, so they are sent with one tap.
+//   questions are Katty's own text, so they are sent with one tap.
 // - Answers come only from the notice. Each one shows what it is based on, and
 //   the code checks that quoted sentences are really in the notice.
-// - When the notice does not say, Kamarat suggests asking the sender and can
+// - When the notice does not say, Katty suggests asking the sender and can
 //   start that reply for you.
 // - The chat is not saved anywhere.
 import { useId, useRef, useState } from 'react'
@@ -42,7 +42,7 @@ function Answer({ turn, shared, language, speakingId, onListen, onAskSender }) {
       )}
       {turn.basis === 'NOTICE' && !turn.quoteFound && (
         <p className="small warning-text">
-          {t('Kamarat could not find the sentence this answer is based on in your letter. Check your letter before you rely on it.')}
+          {t('Katty could not find the sentence this answer is based on in your letter. Check your letter before you rely on it.')}
         </p>
       )}
       {turn.basis === 'NOT_IN_NOTICE' && (
@@ -85,7 +85,7 @@ function Answer({ turn, shared, language, speakingId, onListen, onAskSender }) {
   )
 }
 
-export default function AskKamarat({ shared, labelMap, details, language, onAskSender }) {
+export default function AskKatty({ shared, labelMap, details, language, onAskSender }) {
   const [question, setQuestion] = useState('')
   const [turns, setTurns] = useState([])
   const [review, setReview] = useState(null)
@@ -125,7 +125,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
     setReview({ masked: full.masked, namesChecked, found: full.masked !== base.masked })
   }
 
-  // A suggested question is Kamarat's own text: nothing personal to check.
+  // A suggested question is Katty's own text: nothing personal to check.
   function askSuggested(text) {
     if (busy || left <= 0) return
     submit(text, false)
@@ -181,7 +181,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
 
   return (
     <div className="ask">
-      <p className="tab-intro">{t('Ask anything about this letter. Answers come only from your letter, and Kamarat tells you when it does not say.')}</p>
+      <p className="tab-intro">{t('Ask anything about this letter. Answers come only from your letter, and Katty tells you when it does not say.')}</p>
 
       {turns.length > 0 && (
         <ol className="chat" role="log" aria-live="polite">
@@ -196,7 +196,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
                   <p className="small muted" role="status"><Dots /> {turn.statusText}</p>
                 )}
                 {turn.status === 'error' && (
-                  <p className="small warning-text">{t('Kamarat could not answer:')} {t(turn.error)}.</p>
+                  <p className="small warning-text">{t('Katty could not answer:')} {t(turn.error)}.</p>
                 )}
                 {turn.status === 'done' && (
                   <Answer
@@ -251,7 +251,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
             translate="no"
           />
           <p id={`${uid}-help`} className="small muted">
-            {t('Names and numbers from your letter are hidden on your device before sending. Kamarat looks for new names when your device can. You see your question before it is sent.')}{' '}
+            {t('Names and numbers from your letter are hidden on your device before sending. Katty looks for new names when your device can. You see your question before it is sent.')}{' '}
             {t('{left} of {max} questions left for this letter.', { left, max: MAX_QUESTIONS })}
           </p>
           {preview && preview !== question.trim() && (

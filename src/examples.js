@@ -1,4 +1,4 @@
-// Example notices for trying Kamarat. Every person, number and address is made up.
+// Example notices for trying Katty. Every person, number and address is made up.
 
 export const EXAMPLES = [
   {

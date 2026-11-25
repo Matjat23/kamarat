@@ -1,4 +1,4 @@
-// Firebase setup for Kamarat: the app, App Check and the two AI models.
+// Firebase setup for Katty: the app, App Check and the two AI models.
 import { initializeApp } from 'firebase/app'
 import {
   initializeAppCheck,

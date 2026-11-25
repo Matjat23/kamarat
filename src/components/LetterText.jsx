@@ -1,4 +1,4 @@
-// The "Letter" tab: the text Kamarat sent, with hidden details as black bars.
+// The "Letter" tab: the text Katty sent, with hidden details as black bars.
 // Tap any word, or type it, for a short plain explanation. When a step's
 // "From your letter" link is used, the sentence is highlighted here.
 import { useEffect, useId, useRef, useState } from 'react'
@@ -62,7 +62,7 @@ export default function LetterText({ shared, language, highlight }) {
       if (request !== latest.current) return
       setHelp({
         word,
-        error: err.quota ? `${err.message}.` : t('Kamarat could not explain this word right now. Try again in a minute.'),
+        error: err.quota ? `${err.message}.` : t('Katty could not explain this word right now. Try again in a minute.'),
       })
     }
   }
@@ -114,10 +114,10 @@ export default function LetterText({ shared, language, highlight }) {
   return (
     <div className="letter-tab">
       <p className="small muted">
-        {t('This is exactly what Kamarat sent. Black bars are details that stayed on your device. Tap any word to have it explained in {language}.', { language })}
+        {t('This is exactly what Katty sent. Black bars are details that stayed on your device. Tap any word to have it explained in {language}.', { language })}
       </p>
       {highlight && !range && (
-        <p className="small warning-text">{t('Kamarat could not find this sentence in your letter.')}</p>
+        <p className="small warning-text">{t('Katty could not find this sentence in your letter.')}</p>
       )}
 
       <div className="word-text" dir="auto" translate="no">
@@ -166,8 +166,8 @@ export default function LetterText({ shared, language, highlight }) {
         <summary className="small">{t('What is sent when you look up a word')}</summary>
         <p className="small muted">
           {onDevice
-            ? t('Kamarat gives {what} to Gemini Nano on your device. If Nano is not ready, cloud Gemini answers instead.', { what })
-            : t('For {language}, word help uses cloud Gemini. Kamarat sends {what}.', { language, what })}{' '}
+            ? t('Katty gives {what} to Gemini Nano on your device. If Nano is not ready, cloud Gemini answers instead.', { what })
+            : t('For {language}, word help uses cloud Gemini. Katty sends {what}.', { language, what })}{' '}
           {t('It always comes from the text you approved.')}
         </p>
         <label className="check-line small">

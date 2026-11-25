@@ -1,11 +1,11 @@
-// "Ask Kamarat about this notice": follow-up questions, answered only from the
+// "Ask Katty about this notice": follow-up questions, answered only from the
 // approved notice.
 //
 // Same rule as everywhere else: the AI answers, the code checks.
 // - The question is masked on the device before it is sent (see maskNote).
 // - Every answer says what it is based on. If it is based on the notice, it
 //   quotes the sentence and the code checks that the sentence is really there.
-// - If the notice does not answer the question, Kamarat says so and suggests
+// - If the notice does not answer the question, Katty says so and suggests
 //   asking the sender, instead of guessing from general knowledge.
 // - An official page can be suggested, but only from the checked list, and the
 //   answer may not claim what the page says.
@@ -59,12 +59,12 @@ const SOURCE_MENU = SOURCES.map(
   (s) => `- ${s.id}: ${s.agency} (${s.country}), "${s.title}". Topics: ${s.topics.join(', ')}`,
 ).join('\n')
 
-const SYSTEM_INSTRUCTION = `You are Kamarat, a calm and honest friend. The person received an official notice and asks you follow-up questions about it.
+const SYSTEM_INSTRUCTION = `You are Katty, a calm and honest friend. The person received an official notice and asks you follow-up questions about it.
 
 Rules:
 - Answer only from the notice. Do not use outside knowledge about laws, fees, processing times or what usually happens. If the notice does not answer the question, say so plainly and kindly, choose NOT_IN_NOTICE, and suggest in askSender what to ask the sender.
 - With NOTICE, copy the exact sentence your answer is based on into quote, character for character, in the original language of the notice.
-- Never calculate dates. If asked about a deadline, say what the notice says and quote it. Kamarat shows the worked-out dates elsewhere on the page.
+- Never calculate dates. If asked about a deadline, say what the notice says and quote it. Katty shows the worked-out dates elsewhere on the page.
 - You may suggest one official page from the given list if it is about the topic of the question. Do not say what the page contains; only that it is about the topic.
 - Labels like [NAME_1], [ID_1], [ADDRESS_1], [CASE_1], [PHONE_1], [EMAIL_1], [HIDDEN_1] and [NOTE_1] stand for personal details the person keeps private. Never guess what they hide.
 - Keep it short and warm. Never make the notice sound more or less serious than it is.

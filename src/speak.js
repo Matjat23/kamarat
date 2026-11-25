@@ -1,6 +1,6 @@
 // Reading the explanation aloud with the voices built into the device.
 // Only voices that run on the device are used. Some browsers also offer online
-// voices, which send the text to a speech server, so Kamarat skips those.
+// voices, which send the text to a speech server, so Katty skips those.
 
 export function canSpeak() {
   return typeof window !== 'undefined' && 'speechSynthesis' in window
@@ -60,7 +60,7 @@ export function stopSpeaking() {
   if (canSpeak()) window.speechSynthesis.cancel()
 }
 
-// A few fixed sentences for the spoken summary, in the languages Kamarat can
+// A few fixed sentences for the spoken summary, in the languages Katty can
 // say them in correctly. Other languages hear only the AI's own text and dates.
 const PHRASES = {
   en: { by: (d) => `By ${d}.`, check: 'Check this date in your letter.', unknown: 'The date is not known yet.' },

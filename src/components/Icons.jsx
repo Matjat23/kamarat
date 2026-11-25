@@ -1,4 +1,4 @@
-// Small line icons and the Kamarat logo, drawn as SVG so no icon package is needed.
+// Small line icons and the Katty logo, drawn as SVG so no icon package is needed.
 
 const base = {
   width: 20,

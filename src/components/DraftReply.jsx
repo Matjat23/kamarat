@@ -2,7 +2,7 @@
 // fills your real details back in. Shown under the next steps.
 //
 // Safety rules here:
-// - Kamarat never guesses who you are: you choose your own name for the signature.
+// - Katty never guesses who you are: you choose your own name for the signature.
 // - Your own message is checked on the device, and you see exactly what Gemini
 //   will get before it is sent.
 // - If you edit the reply afterwards, the translation is marked as out of date.
@@ -125,7 +125,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
 
   return (
     <div className="reply">
-      <p className="tab-intro">{t('Kamarat writes the reply with labels, and your real name and case number are filled in on this device.')}</p>
+      <p className="tab-intro">{t('Katty writes the reply with labels, and your real name and case number are filled in on this device.')}</p>
 
       <fieldset className="intents">
         <legend className="visually-hidden">{t('What do you want to say?')}</legend>
@@ -192,7 +192,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
         }
       />
       <p id={`${uid}-note-help`} className="small muted">
-        {t('Avoid names and health details. Kamarat adds your name and case number for you, on this device.')}
+        {t('Avoid names and health details. Katty adds your name and case number for you, on this device.')}
       </p>
       {note.trim() && state.phase !== 'confirm' && (
         <div className="review-note">
@@ -273,7 +273,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
               {open.fillIns.length > 0 &&
                 `${t('Replace the [FILL IN: ...] parts with your own words.')} `}
               {open.unknownLabels.length > 0 &&
-                t('Check {labels}: Kamarat did not fill these in on purpose. Replace or remove them.', {
+                t('Check {labels}: Katty did not fill these in on purpose. Replace or remove them.', {
                   labels: [...new Set(open.unknownLabels)].join(', '),
                 })}
             </p>

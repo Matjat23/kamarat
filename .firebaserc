@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "kamarat-hackathon"
-  }
+  },
+  "targets": {
+    "kamarat-hackathon": {
+      "hosting": {
+        "katty": [
+          "katty-buddy"
+        ],
+        "main": [
+          "kamarat-hackathon"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

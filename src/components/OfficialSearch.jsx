@@ -7,7 +7,7 @@ import { languageProps } from '../explain'
 import { LandmarkIcon, ArrowIcon, Dots } from './Icons'
 
 // Google's search suggestions, shown as Google provides them. A shadow root
-// keeps their styles apart from Kamarat's.
+// keeps their styles apart from Katty's.
 function SearchSuggestions({ html }) {
   const ref = useRef(null)
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function OfficialSearch({ letter, steps, country }) {
       console.warn('Official page search failed:', err.message)
       setState({
         phase: 'error',
-        message: err.quota ? `${err.message}.` : 'Kamarat could not search right now. Try again in a minute.',
+        message: err.quota ? `${err.message}.` : 'Katty could not search right now. Try again in a minute.',
       })
     }
   }
@@ -57,7 +57,7 @@ export default function OfficialSearch({ letter, steps, country }) {
             )}
           </button>
           <p className="small muted">
-            Kamarat sends a short summary of your letter, not the letter, to Google Search, and only shows
+            Katty sends a short summary of your letter, not the letter, to Google Search, and only shows
             government websites.
           </p>
         </>
@@ -90,7 +90,7 @@ export default function OfficialSearch({ letter, steps, country }) {
           {state.dropped > 0 && (
             <p className="small muted">
               {state.dropped} other {state.dropped === 1 ? 'result was' : 'results were'} not on a government
-              website, so Kamarat left {state.dropped === 1 ? 'it' : 'them'} out.
+              website, so Katty left {state.dropped === 1 ? 'it' : 'them'} out.
             </p>
           )}
           {state.suggestions && <SearchSuggestions html={state.suggestions} />}

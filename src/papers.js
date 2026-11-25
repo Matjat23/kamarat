@@ -160,7 +160,7 @@ export function paperActions(paper) {
 }
 
 // Open steps across every saved paper: the ones with a known date (soonest
-// first) and the ones whose date Kamarat cannot work out yet.
+// first) and the ones whose date Katty cannot work out yet.
 export function upcomingDeadlines(papers) {
   const dated = []
   const unknown = []

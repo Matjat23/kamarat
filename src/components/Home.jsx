@@ -28,7 +28,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
 
   const how = [
     { icon: CameraIcon, title: t('Add your letter'), text: t('Take a photo, upload a PDF or paste the text.') },
-    { icon: LockIcon, title: t('Check what is private'), text: t('Kamarat hides your personal details on your device, and you see exactly what is sent.') },
+    { icon: LockIcon, title: t('Check what is private'), text: t('Katty hides your personal details on your device, and you see exactly what is sent.') },
     { icon: CheckIcon, title: t('Know what to do'), text: t('Clear steps, dates and answers, in your language.') },
   ]
 
@@ -94,7 +94,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
           <button className="home-path" onClick={onAsk}>
             <ChatIcon className="path-icon" width={28} height={28} />
             <span>
-              <strong>{t('Ask Kamarat')}</strong>
+              <strong>{t('Ask Katty')}</strong>
               <span className="small muted">{t('Questions about your new country, and who can help.')}</span>
             </span>
             <ArrowIcon className="arrow-forward" width={20} height={20} />
@@ -134,7 +134,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
                   <span className="coming-when">{t('Date not known')}</span>
                   <span className="coming-body">
                     <strong {...languageProps(unknown[0].paper.language)}>{unknown[0].action.title}</strong>
-                    <span className="small muted">{t('Tell Kamarat when you got the letter')}</span>
+                    <span className="small muted">{t('Tell Katty when you got the letter')}</span>
                   </span>
                   <ArrowIcon className="arrow-forward" width={18} height={18} />
                 </button>
@@ -197,7 +197,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
       )}
 
       <p className="small muted home-promise">
-        <LockIcon width={16} height={16} /> {t('No account needed. Kamarat explains letters; it is not legal advice.')}
+        <LockIcon width={16} height={16} /> {t('No account needed. Katty explains letters; it is not legal advice.')}
       </p>
       </div>
     </div>

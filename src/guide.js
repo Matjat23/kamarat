@@ -1,9 +1,9 @@
-// "Ask Kamarat": a guide for moving to and settling in a new country, not tied
+// "Ask Katty": a guide for moving to and settling in a new country, not tied
 // to one letter.
 //
 // - The question is masked on this device before it is sent (see maskNote), the
 //   same way as questions about a letter.
-// - Kamarat points to who can help: the official body and its website. The code
+// - Katty points to who can help: the official body and its website. The code
 //   keeps a website only when it is an official site or a well-known non-profit.
 // - No phone numbers, street addresses, fees or time limits: the AI is told so,
 //   and the code also takes out phone numbers and marks answers that had
@@ -11,7 +11,7 @@
 // - Legal problems (an appeal, a refusal, a fine) are marked, and the screen
 //   points to free legal advice. The AI marks them, and the code also looks
 //   for legal words in the question, in case the AI misses one.
-// - When the question is about a personal letter, Kamarat suggests adding the
+// - When the question is about a personal letter, Katty suggests adding the
 //   letter, so the answer can come from the letter itself.
 
 import { countryNameEnglish } from './countries'
@@ -64,13 +64,13 @@ const SCHEMA = {
   required: ['answer', 'contacts', 'aboutLetter', 'legal', 'followUps'],
 }
 
-const SYSTEM_INSTRUCTION = `You are Kamarat, a calm and honest friend for people who are moving to, or have just moved to, a new country. You help them understand how things work there and who to contact.
+const SYSTEM_INSTRUCTION = `You are Katty, a calm and honest friend for people who are moving to, or have just moved to, a new country. You help them understand how things work there and who to contact.
 
 Rules:
 - Answer for the person's country. Give general, stable guidance: what the step is, the usual order, and which official body handles it.
 - For contacts, name the authority, public body or well-known non-profit that can help, with the main domain of its official website. Leave the website empty if you are not sure of the exact domain.
 - Never give phone numbers, street addresses, opening hours, fees, processing times or legal deadlines. Say they are on the official website.
-- If the question is about a specific letter or document the person received, set aboutLetter to true and say briefly that Kamarat can read the letter for them.
+- If the question is about a specific letter or document the person received, set aboutLetter to true and say briefly that Katty can read the letter for them.
 - You are not a lawyer. For legal problems, set legal to true, do not say how long the person has or what will happen, and say where to get free legal advice instead.
 - Never assume the person's citizenship from where they live or come from. If the answer depends on it, say so.
 - Labels like [NOTE_1] stand for personal details the person keeps private. Never guess what they hide.

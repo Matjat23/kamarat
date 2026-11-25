@@ -1,4 +1,4 @@
-// Where the person lives. Kamarat guesses it from the browser's time zone and
+// Where the person lives. Katty guesses it from the browser's time zone and
 // language, and the person can change it. It is stored only in this browser.
 // The country is used for official pages, for which days are the weekend when
 // counting business days, and as context when a letter is explained.

@@ -1,4 +1,4 @@
-// Kamarat: understand an official letter without giving away who you are.
+// Katty: understand an official letter without giving away who you are.
 //
 // Screens (the address bar shows where you are, so the back button works):
 //   #/            Home
@@ -65,7 +65,7 @@ const SETUP_KEY = 'kamarat.setup.v1'
 function setupWasDone() {
   try {
     if (localStorage.getItem(SETUP_KEY) !== 'done') return false
-    // Kamarat used to offer more languages. If the saved one is no longer
+    // Katty used to offer more languages. If the saved one is no longer
     // offered, ask again instead of quietly switching to English.
     const saved = localStorage.getItem(LANGUAGE_KEY)
     return !saved || LANGUAGES.some((l) => l.name === saved)
@@ -74,7 +74,7 @@ function setupWasDone() {
   }
 }
 
-// The language saved last time, or the browser's own language if Kamarat has it.
+// The language saved last time, or the browser's own language if Katty has it.
 function startLanguage() {
   try {
     const saved = localStorage.getItem(LANGUAGE_KEY)
@@ -90,7 +90,7 @@ function startLanguage() {
   return 'English'
 }
 
-// How many screens back inside Kamarat the browser can go.
+// How many screens back inside Katty the browser can go.
 const historyIndex = () => window.history.state?.kamarat ?? 0
 
 function Expired({ onAdd, onHome }) {
@@ -98,7 +98,7 @@ function Expired({ onAdd, onHome }) {
     <section className="card">
       <h1 className="flow-title" tabIndex={-1} data-step-heading>{t('Your letter is not here any more')}</h1>
       <p>
-        {t('For your privacy, Kamarat does not keep the text of your letter or your hidden details when the page is reloaded or closed. Letters you kept are still in My papers.')}
+        {t('For your privacy, Katty does not keep the text of your letter or your hidden details when the page is reloaded or closed. Letters you kept are still in My papers.')}
       </p>
       <div className="buttons">
         <button className="primary" onClick={onAdd}>{t('Add a letter')}</button>
@@ -121,7 +121,7 @@ export default function App() {
     }
     return name
   })
-  // Whether Kamarat's own texts are being translated, or could not be.
+  // Whether Katty's own texts are being translated, or could not be.
   const [uiStatus, setUiStatus] = useState({ code: 'en', state: 'ready' })
   const [uiRetry, setUiRetry] = useState(0)
   const [toastClosed, setToastClosed] = useState(false)
@@ -168,7 +168,7 @@ export default function App() {
     }
   }
 
-  // Kamarat's own texts follow the chosen language. Arabic, Persian, Urdu and
+  // Katty's own texts follow the chosen language. Arabic, Persian, Urdu and
   // the other right-to-left languages also turn the layout around.
   useEffect(() => {
     const lang = LANGUAGES.find((l) => l.name === language) ?? LANGUAGES[0]
@@ -205,7 +205,7 @@ export default function App() {
     try {
       localStorage.setItem(SETUP_KEY, 'done')
       // Save the language shown as chosen, also when the person kept the one
-      // Kamarat picked for them, so setup is not asked again next time.
+      // Katty picked for them, so setup is not asked again next time.
       localStorage.setItem(LANGUAGE_KEY, language)
     } catch {
       // private mode: asked again next time
@@ -234,7 +234,7 @@ export default function App() {
     setRoute(readRoute())
   }
 
-  // Like the browser's back button when there is a Kamarat screen to go back
+  // Like the browser's back button when there is a Katty screen to go back
   // to; otherwise it goes to the given screen.
   function goBack(fallback) {
     if (historyIndex() > 0) window.history.back()
@@ -470,11 +470,11 @@ export default function App() {
   const activeNav = inFlow || view === 'letter' ? 'new' : view
   const footerLinks = [
     {
-      title: 'Kamarat',
+      title: 'Katty',
       links: [
         { label: t('Home'), onClick: () => go('') },
         { label: t('My move'), onClick: () => go('move') },
-        { label: t('Ask Kamarat'), onClick: () => openGuide() },
+        { label: t('Ask Katty'), onClick: () => openGuide() },
         { label: t('Add a letter'), onClick: newLetter },
         { label: t('My papers'), onClick: () => go('papers') },
       ],
@@ -491,9 +491,9 @@ export default function App() {
   return (
     <div className={`app ${inFlow ? 'in-flow' : ''}`}>
       <header className="top" inert={menuOpen}>
-        <button className="brand" onClick={() => go('')} aria-label={t('Kamarat home')}>
+        <button className="brand" onClick={() => go('')} aria-label={t('Katty home')}>
           <Logo size={38} />
-          <span className="wordmark">Kamarat</span>
+          <span className="wordmark">Katty</span>
         </button>
         <input
           ref={scanInput}
@@ -541,7 +541,7 @@ export default function App() {
 
         {/* Translating the screens: a small message at the bottom, never a banner. */}
         {uiStatus.state === 'loading' && (
-          <p className="toast" role="status">Translating Kamarat into {language}...</p>
+          <p className="toast" role="status">Translating Katty into {language}...</p>
         )}
         {uiStatus.state === 'failed' && !toastClosed && (
           <p className="toast toast-warn" role="status">
@@ -671,10 +671,10 @@ export default function App() {
         <div className="footer-bottom">
           <span className="footer-brand">
             <Logo size={34} />
-            <span className="wordmark">Kamarat</span>
+            <span className="wordmark">Katty</span>
           </span>
           <p className="footer-note">
-            {t('Kamarat explains letters. It is not legal advice. Built with Gemini Nano on your device and Gemini in the cloud, through Firebase AI Logic.')}
+            {t('Katty explains letters. It is not legal advice. Built with Gemini Nano on your device and Gemini in the cloud, through Firebase AI Logic.')}
           </p>
           <button className="footer-language" onClick={() => go('settings')}>
             <GlobeIcon width={22} height={22} /> {language}

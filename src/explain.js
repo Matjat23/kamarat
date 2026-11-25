@@ -17,7 +17,7 @@ import { countryNameEnglish, weekendDays, weekendText, dayNames } from './countr
 import { hostOf, isOfficialDomain } from './officialDomains'
 import { t, dateLocale } from './i18n'
 
-// Languages Kamarat can answer in. Each one is shown in its own script, so
+// Languages Katty can answer in. Each one is shown in its own script, so
 // people can find theirs. English first, then by English name. The screens of
 // the most used ones ship with the app (public/i18n); the others are
 // translated by Gemini the first time and kept in the browser.
@@ -199,7 +199,7 @@ const SOURCE_MENU = SOURCES.map(
   (s) => `- ${s.id}: ${s.agency} (${s.country}), "${s.title}". Topics: ${s.topics.join(', ')}`,
 ).join('\n')
 
-const SYSTEM_INSTRUCTION = `You are Kamarat, a calm and honest friend for people who received an official notice in a system they do not know well, for example newcomers, students and workers in a new country. You talk like a kind friend who has been through it: warm, plain and reassuring, but never hiding a real risk.
+const SYSTEM_INSTRUCTION = `You are Katty, a calm and honest friend for people who received an official notice in a system they do not know well, for example newcomers, students and workers in a new country. You talk like a kind friend who has been through it: warm, plain and reassuring, but never hiding a real risk.
 
 Rules:
 - Start by judging how worried the person should be. Do not make routine letters sound scary, and do not make serious letters sound harmless.
@@ -226,9 +226,9 @@ export async function explainNotice(sharedText, language, onStatus = () => {}, c
     const deviceLanguage = code === 'en' ? 'English' : language
     const why = err.quota ? "Today's free cloud Gemini requests are used up" : 'Cloud Gemini did not answer'
     if (deviceLanguage !== language) {
-      note = `${why}, so Kamarat finished the explanation on your device. On-device AI cannot write ${language} yet, so this is in English.`
+      note = `${why}, so Katty finished the explanation on your device. On-device AI cannot write ${language} yet, so this is in English.`
     } else {
-      note = `${why}, so Kamarat finished the explanation on your device instead.`
+      note = `${why}, so Katty finished the explanation on your device instead.`
     }
     onStatus(
       err.quota
@@ -473,7 +473,7 @@ function spanText(amount, unit) {
   return t('{amount} days', { amount })
 }
 
-// Returns what Kamarat can honestly say about a deadline.
+// Returns what Katty can honestly say about a deadline.
 // needs: 'received' when the person must tell us when they got the notice.
 export function resolveDeadline(deadline, { noticeDate, receivedDate, quote, country = '' }) {
   const weekend = weekendDays(country)
@@ -515,7 +515,7 @@ export function resolveDeadline(deadline, { noticeDate, receivedDate, quote, cou
   }
 
   return {
-    text: t('{span} after: {event}. Kamarat cannot work out this date for you.', {
+    text: t('{span} after: {event}. Katty cannot work out this date for you.', {
       span,
       event: deadline.event || t('something the letter describes'),
     }),

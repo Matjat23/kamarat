@@ -1,9 +1,9 @@
-// "Ask Kamarat": questions about moving to and living in the new country.
+// "Ask Katty": questions about moving to and living in the new country.
 //
 // - A question you type is checked on this device first: numbers and emails
 //   are hidden, and Gemini Nano looks for names and other details when it is
 //   available. Then you always see exactly what will be sent and choose to
-//   send it. Kamarat's own suggested questions have nothing personal in them,
+//   send it. Katty's own suggested questions have nothing personal in them,
 //   so they are sent with one tap.
 // - The country the answers are about is shown at the top. The choice is
 //   remembered, and changing it starts a new chat, so answers about two
@@ -47,7 +47,7 @@ function saveAskCountry(code) {
   }
 }
 
-// A web search for the organisation in that country. Not checked by Kamarat,
+// A web search for the organisation in that country. Not checked by Katty,
 // and the link says so.
 const searchLink = (name, place) => `https://www.google.com/search?q=${encodeURIComponent(`${name} ${place}`)}`
 
@@ -57,7 +57,7 @@ function GuideAnswer({ turn, language, place, onAsk, onAddLetter }) {
     <>
       {turn.legal && (
         <p className="notice notice-warn guide-legal">
-          {t('This sounds like a legal question. Kamarat cannot give legal advice. Before you act, ask a free legal advice service or a lawyer.')}
+          {t('This sounds like a legal question. Katty cannot give legal advice. Before you act, ask a free legal advice service or a lawyer.')}
         </p>
       )}
 
@@ -106,7 +106,7 @@ function GuideAnswer({ turn, language, place, onAsk, onAddLetter }) {
 
       {turn.aboutLetter && (
         <button className="secondary small-btn" onClick={onAddLetter}>
-          <CameraIcon width={16} height={16} /> {t('Let Kamarat read the letter')}
+          <CameraIcon width={16} height={16} /> {t('Let Katty read the letter')}
         </button>
       )}
 
@@ -168,7 +168,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
     setReview({ masked: full.masked, namesChecked, found: full.masked !== base.masked })
   }
 
-  // Kamarat's own questions (suggestions and follow-ups) go straight away.
+  // Katty's own questions (suggestions and follow-ups) go straight away.
   function askSuggested(text) {
     if (!where || busy || left <= 0) return
     submit(text, false)
@@ -232,9 +232,9 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
   return (
     <div className="guide">
       <section className="move-head">
-        <h1 className="flow-title" tabIndex={-1} data-step-heading>{t('Ask Kamarat')}</h1>
+        <h1 className="flow-title" tabIndex={-1} data-step-heading>{t('Ask Katty')}</h1>
         <p className="lead">
-          {t('Questions about moving to and living in a new country. Kamarat tells you who can help and where to find them.')}
+          {t('Questions about moving to and living in a new country. Katty tells you who can help and where to find them.')}
         </p>
         <div className="move-field guide-where">
           <label htmlFor={`${uid}-where`}>{t('The answers are about')}</label>
@@ -267,7 +267,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
                   {turn.status === 'loading' && <p className="small muted" role="status"><Dots /> {turn.statusText}</p>}
                   {turn.status === 'error' && (
                     <>
-                      <p className="small warning-text">{t('Kamarat could not answer:')} {t(turn.error)}.</p>
+                      <p className="small warning-text">{t('Katty could not answer:')} {t(turn.error)}.</p>
                       <button className="secondary small-btn" onClick={() => retry(turn)} disabled={busy}>{t('Try again')}</button>
                     </>
                   )}
@@ -314,7 +314,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
               translate="no"
             />
             <p id={`${uid}-help`} className="small muted">
-              {t('Kamarat hides numbers and emails on your device, and looks for names when your device can. You see your question before it is sent.')}
+              {t('Katty hides numbers and emails on your device, and looks for names when your device can. You see your question before it is sent.')}
             </p>
             {preview && preview !== question.trim() && (
               <div className="review-note">
@@ -333,7 +333,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
         {turns.length > 0 && (
           <button className="secondary guide-new" onClick={newChat} disabled={checking}>{t('New chat')}</button>
         )}
-        <p className="small muted">{t('Kamarat is not a lawyer. Check important things with the official body.')}</p>
+        <p className="small muted">{t('Katty is not a lawyer. Check important things with the official body.')}</p>
       </div>
     </div>
   )

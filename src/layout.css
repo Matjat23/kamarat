@@ -1,4 +1,4 @@
-/* Kamarat layout: home, navigation, the new-letter flow and the letter screen.
+/* Katty layout: home, navigation, the new-letter flow and the letter screen.
    Loaded after App.css, so it wins where both style the same thing. */
 [hidden] {
   display: none !important;

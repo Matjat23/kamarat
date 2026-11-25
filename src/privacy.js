@@ -48,7 +48,7 @@ export async function detectWithAI(model, text) {
     DETECT_PROMPT.replace('{LETTER}', text),
   )
   const items = parseDetailList(result.response.text())
-  if (items === null) throw new Error('On-device detection returned an answer Kamarat could not read')
+  if (items === null) throw new Error('On-device detection returned an answer Katty could not read')
   return { items, source: result.response.inferenceSource }
 }
 

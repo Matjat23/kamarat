@@ -57,7 +57,7 @@ export default function SiteMenu({ open, onClose, active, papersCount, language,
   const links = [
     { id: 'home', label: t('Home'), action: onHome },
     { id: 'move', label: t('My move'), action: onMove },
-    { id: 'ask', label: t('Ask Kamarat'), action: onAsk },
+    { id: 'ask', label: t('Ask Katty'), action: onAsk },
     { id: 'new', label: t('Add a letter'), action: onNew },
     { id: 'papers', label: t('My papers'), action: onPapers, count: papersCount },
     { id: 'settings', label: t('Language and country'), action: onSettings },
@@ -68,7 +68,7 @@ export default function SiteMenu({ open, onClose, active, papersCount, language,
       <div className="site-menu-top">
         <span className="site-menu-brand">
           <Logo size={34} />
-          <span className="wordmark">Kamarat</span>
+          <span className="wordmark">Katty</span>
         </span>
         <button className="menu-toggle menu-close" onClick={onClose}>
           <CloseIcon width={30} height={30} />

@@ -1,4 +1,4 @@
-/* Kamarat interface. Colours and fonts live in index.css. */
+/* Katty interface. Colours and fonts live in index.css. */
 
 .app {
   max-width: 980px;
@@ -2074,7 +2074,7 @@ button.word.word-active {
   }
 }
 
-/* Ask Kamarat about this notice */
+/* Ask Katty about this notice */
 .chat {
   list-style: none;
   margin: 0;

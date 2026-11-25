@@ -1,13 +1,13 @@
-"""Score Kamarat's privacy check against the made-up test notices.
+"""Score Katty's privacy check against the made-up test notices.
 
 1. python tools/make_test_notices.py
-2. Open Kamarat with ?eval at the end of the address (for example
+2. Open Katty with ?eval at the end of the address (for example
    http://localhost:5173/?eval) and press "Run the test". On a computer with
    Gemini Nano it uses on-device AI plus the pattern check; elsewhere only the
    pattern check. Download results.json.
 3. python tools/score.py results.json
 
-What is scored is the text Kamarat would send (the payload), not the list of
+What is scored is the text Katty would send (the payload), not the list of
 details it found. A detail counts as protected when no part of it is left in
 the payload: every comma-separated part, and for names every word of three
 letters or more. Matching ignores letter case, spaces and commas.
@@ -95,7 +95,7 @@ def main():
     if unknown:
         sys.exit(f"Results for notices that are not in {args.notices}: {', '.join(unknown)}")
     if any("payload" not in r for r in runs):
-        sys.exit("This results.json has no payload. Run the test again with the current version of Kamarat.")
+        sys.exit("This results.json has no payload. Run the test again with the current version of Katty.")
 
     per_type = defaultdict(lambda: [0, 0])
     leaks, extra, ratios = [], [], []
@@ -122,7 +122,7 @@ def main():
     average_kept = sum(r for r, _ in ratios) / len(ratios)
     lowest_kept, lowest_id = min(ratios)
     lines = [
-        "# Kamarat privacy check: test results",
+        "# Katty privacy check: test results",
         "",
         f"Test notices: {len(runs)} (all made up). Mode: " + ", ".join(f"{k} ({v})" for k, v in modes.items()),
         f"Browser: {results.get('browser', 'unknown')}",

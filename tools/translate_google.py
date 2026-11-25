@@ -1,10 +1,10 @@
-"""Translate Kamarat's screens with Google Cloud Translation, once, and ship
+"""Translate Katty's screens with Google Cloud Translation, once, and ship
 the result as public/i18n/<code>.json (the same files as the hand-checked
 translations).
 
 Only languages that have no file yet are translated, so the hand-checked
 ones are never replaced. Placeholders like {country}, labels like [NAME_1]
-and names like Kamarat and Gemini are kept as they are. A text whose
+and names like Katty and Gemini are kept as they are. A text whose
 placeholders do not come back exactly stays in English.
 
 The key is read from GOOGLE_TRANSLATE_API_KEY, in the environment or in
@@ -29,11 +29,11 @@ ROOT = Path(__file__).resolve().parent.parent
 API = 'https://translation.googleapis.com/language/translate/v2'
 BATCH = 100  # the API takes up to 128 texts per request
 
-# Kamarat's language codes that Google writes differently.
+# Katty's language codes that Google writes differently.
 GOOGLE_CODE = {'nb': 'no', 'kmr': 'ku'}
 
 # Kept exactly as they are: placeholders, labels and names.
-KEEP = re.compile(r'\{\w+\}|\[[A-Z][A-Z ]*(?:_\d+)?(?::[^\]]*)?\]|Gemini Nano|Gemini|Kamarat|BankID|Firebase AI Logic|Google|Chrome|PDF|SFI|1177')
+KEEP = re.compile(r'\{\w+\}|\[[A-Z][A-Z ]*(?:_\d+)?(?::[^\]]*)?\]|Gemini Nano|Gemini|Katty|BankID|Firebase AI Logic|Google|Chrome|PDF|SFI|1177')
 NO_TRANSLATE = re.compile(r'<span translate="no">(.*?)</span>', re.S)
 
 

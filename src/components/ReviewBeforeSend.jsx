@@ -7,11 +7,11 @@ import { t } from '../i18n'
 export default function ReviewBeforeSend({ review, onEdit, onSend }) {
   let head
   if (!review.namesChecked) {
-    head = t('On this device Kamarat cannot spot names. Check that there are no names or other personal details, then send. This is exactly what will be sent:')
+    head = t('On this device Katty cannot spot names. Check that there are no names or other personal details, then send. This is exactly what will be sent:')
   } else if (review.found) {
-    head = t('Kamarat found more personal details and hid them. This is exactly what will be sent:')
+    head = t('Katty found more personal details and hid them. This is exactly what will be sent:')
   } else {
-    head = t('Kamarat looked for names on your device and found none. Check it yourself too. This is exactly what will be sent:')
+    head = t('Katty looked for names on your device and found none. Check it yourself too. This is exactly what will be sent:')
   }
   return (
     <div className="review-note review-final" role="status">

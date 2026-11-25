@@ -1,5 +1,5 @@
 // Developer page, opened with ?translations while running `npm run dev`.
-// Translates Kamarat's screens into the chosen languages with Gemini and saves
+// Translates Katty's screens into the chosen languages with Gemini and saves
 // each one into public/i18n, so the app can use it without asking Gemini.
 // Check a translation before relying on it, especially in languages you know.
 import { useState } from 'react'
@@ -42,7 +42,7 @@ export default function TranslationsPage() {
 
   return (
     <section className="card">
-      <h2>Translate Kamarat's screens</h2>
+      <h2>Translate Katty's screens</h2>
       <div className="home-examples">
         {LANGUAGES.filter((l) => l.code !== 'en').map((l) => (
           <label key={l.code} className="check-line small">

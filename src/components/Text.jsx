@@ -1,7 +1,7 @@
 // Small pieces for showing letter text: hidden details as black bars, and a
 // quoted sentence shown in its place in the letter.
 //
-// Letter text is marked translate="no" everywhere: Kamarat translates its own
+// Letter text is marked translate="no" everywhere: Katty translates its own
 // screens, and a browser's "Translate this page" would otherwise send the
 // letter to a translation service.
 import { occurrences } from '../privacy'
@@ -33,7 +33,7 @@ export function findQuote(shared, quote) {
 // A short piece of the letter around the quote, with the quote marked.
 export function QuoteInNotice({ shared, quote }) {
   const match = findQuote(shared, quote)
-  if (!match) return <p className="small muted">{t('Kamarat could not find this sentence in your letter.')}</p>
+  if (!match) return <p className="small muted">{t('Katty could not find this sentence in your letter.')}</p>
   const start = Math.max(0, shared.lastIndexOf('\n\n', match.start - 1) + 1)
   const endBreak = shared.indexOf('\n\n', match.end)
   const end = endBreak === -1 ? shared.length : endBreak

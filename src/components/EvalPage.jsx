@@ -1,4 +1,4 @@
-// Test bench, opened with ?eval in the address. Runs Kamarat's real privacy
+// Test bench, opened with ?eval in the address. Runs Katty's real privacy
 // check (on-device AI when available, plus the pattern check) on the made-up
 // notices from tools/make_test_notices.py, builds the exact text that would be
 // sent, and offers results.json for tools/score.py. Nothing is sent anywhere.
@@ -83,7 +83,7 @@ export default function EvalPage() {
       <div className="card-head">
         <div>
           <span className="eyebrow">For testing</span>
-          <h2>Kamarat test bench</h2>
+          <h2>Katty test bench</h2>
         </div>
       </div>
       <p className="muted">

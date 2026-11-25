@@ -29,7 +29,7 @@ export function makeDeadlineFile({ title, date, details }) {
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Kamarat//Deadline//EN',
+    'PRODID:-//Katty//Deadline//EN',
     'CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
     `UID:${crypto.randomUUID()}@kamarat`,

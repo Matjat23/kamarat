@@ -1,8 +1,8 @@
-"""Make fake official notices for testing Kamarat's privacy check.
+"""Make fake official notices for testing Katty's privacy check.
 
 Every notice is made up, and for each one we know exactly which personal
 details it contains. tools/score.py checks that none of them is left in the
-text Kamarat would send.
+text Katty would send.
 
 Most notices come from four templates with random people. A few are written by
 hand with other layouts (names inside sentences, titles, capitals, addresses on

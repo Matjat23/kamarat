@@ -1,4 +1,4 @@
-// Small helpers about the device Kamarat runs on.
+// Small helpers about the device Katty runs on.
 
 import { t } from './i18n'
 

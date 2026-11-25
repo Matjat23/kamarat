@@ -1,4 +1,4 @@
-// Kamarat's own texts (buttons, headings, help) in the person's language.
+// Katty's own texts (buttons, headings, help) in the person's language.
 //
 // Every text is written in English and wrapped in t(), for example
 // t('My papers') or t('In {days} days', { days }). tools/extract_strings.py
@@ -7,7 +7,7 @@
 // For another language, Gemini translates that list once, and the result is
 // kept in this browser. Only these app texts are sent, never a letter or
 // anything typed by the person. Until the translation is ready, or if it
-// fails, Kamarat shows English.
+// fails, Katty shows English.
 import STRINGS from './ui-strings.json'
 import { askCloudJSON, isTemporary } from './explain'
 
@@ -68,7 +68,7 @@ const SCHEMA = {
   },
 }
 
-const SYSTEM = `You translate the interface of Kamarat, a calm, friendly web app that helps newcomers understand official letters. Translate each English text into the requested language. Use plain, warm, everyday words that a person new to the country understands. Keep it short, like app buttons and headings. Keep words in curly braces, like {days}, exactly as they are. Keep "Kamarat", "Gemini", "Gemini Nano", "Google" and "Firebase" unchanged. Answer with a JSON array of objects { "i": number, "text": translation }, one for every text, using the same number "i" as the English text.`
+const SYSTEM = `You translate the interface of Katty, a calm, friendly web app that helps newcomers understand official letters. Translate each English text into the requested language. Use plain, warm, everyday words that a person new to the country understands. Keep it short, like app buttons and headings. Keep words in curly braces, like {days}, exactly as they are. Keep "Katty", "Gemini", "Gemini Nano", "Google" and "Firebase" unchanged. Answer with a JSON array of objects { "i": number, "text": translation }, one for every text, using the same number "i" as the English text.`
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 

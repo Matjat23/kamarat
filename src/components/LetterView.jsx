@@ -11,7 +11,7 @@ import { WORRY, assessWorry, daysUntil, whenText } from '../worry'
 import { t, msg, dateLocale, uiLanguageCode } from '../i18n'
 import { downloadDeadline } from '../calendar'
 import { speak, stopSpeaking, canSpeak, spokenPhrases, spokenDate } from '../speak'
-import AskKamarat from './AskKamarat'
+import AskKatty from './AskKatty'
 import DraftReply from './DraftReply'
 import LetterText from './LetterText'
 import OfficialSearch from './OfficialSearch'
@@ -61,7 +61,7 @@ function addToCalendar(action, sender) {
   downloadDeadline({
     title: action.title,
     date: action.info.date,
-    details: `${action.explanation}\n\n${t('From {sender}', { sender })}: "${action.quote}"\n\n${action.info.basis}\n${t('Made with Kamarat. Always check the original letter.')}`,
+    details: `${action.explanation}\n\n${t('From {sender}', { sender })}: "${action.quote}"\n\n${action.info.basis}\n${t('Made with Katty. Always check the original letter.')}`,
   })
 }
 
@@ -116,7 +116,7 @@ function StepRow({ action, sender, langProps, open, onOpen, onToggleDone, onShow
             </p>
           )}
           {info?.unchecked && (
-            <p className="small warning-text">{t('Kamarat could not match this date to your letter. Check it before you rely on it.')}</p>
+            <p className="small warning-text">{t('Katty could not match this date to your letter. Check it before you rely on it.')}</p>
           )}
           {info && !info.date && <p className="small muted">{info.text}</p>}
           <div className="step-links">
@@ -211,7 +211,7 @@ export default function LetterView({
   }
 
   // Reads the answer aloud with an on-device voice. Fixed sentences are only
-  // spoken in languages Kamarat has them in.
+  // spoken in languages Katty has them in.
   async function listen() {
     if (speaking) {
       stopSpeaking()
@@ -375,11 +375,11 @@ export default function LetterView({
           </div>
         )}
         {todo.length === 0 && toCheck.length === 0 && (
-          <p className="muted">{t('Kamarat found nothing you need to do for this letter.')}</p>
+          <p className="muted">{t('Katty found nothing you need to do for this letter.')}</p>
         )}
         {todo.length === 0 && toCheck.length > 0 && (
           <p className="notice notice-warn" role="status">
-            {t('Kamarat could not check what this letter asks of you. The points below could not be matched to your letter, so read it before you act. The Letter tab shows the full text.')}
+            {t('Katty could not check what this letter asks of you. The points below could not be matched to your letter, so read it before you act. The Letter tab shows the full text.')}
           </p>
         )}
         {GROUPS.map((group) => {
@@ -414,7 +414,7 @@ export default function LetterView({
               {t('Points to check: {count}', { count: toCheck.length })}
             </summary>
             <p className="small muted">
-              {t('Kamarat could not find the sentence in your letter that these are based on. Read your letter before acting on them.')}
+              {t('Katty could not find the sentence in your letter that these are based on. Read your letter before acting on them.')}
             </p>
             <ul>
               {toCheck.map((a) => (
@@ -459,7 +459,7 @@ export default function LetterView({
             </div>
           )}
           {letter.pages.length === 0 && !(letter.sites ?? []).length && (
-            <p className="small muted">{t('Kamarat found no official pages it could check for this letter.')}</p>
+            <p className="small muted">{t('Katty found no official pages it could check for this letter.')}</p>
           )}
           {/* Searching the web needs the paid Gemini plan, so it is switched on
               with VITE_WEB_SEARCH=on once that plan is in place. */}
@@ -470,7 +470,7 @@ export default function LetterView({
       </div>
 
       <div id={`${uid}-panel-ask`} role="tabpanel" aria-labelledby={`${uid}-tab-ask`} hidden={tab !== 'ask'} className="tab-panel">
-        <AskKamarat
+        <AskKatty
           shared={letter.shared}
           labelMap={labelMap}
           details={details}
