@@ -125,7 +125,8 @@ function GuideAnswer({ turn, language, place, onAsk, onAddLetter }) {
   )
 }
 
-export default function AskGuide({ country, language, startQuestion, onAddLetter }) {
+// compact: shown inside the floating chat panel, which has its own title.
+export default function AskGuide({ country, language, startQuestion, onAddLetter, compact = false }) {
   const uid = useId()
   // Country names follow the screen language, once its translation has loaded.
   const screenLanguage = uiLanguageCode()
@@ -230,12 +231,16 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
   const place = where ? countryName(where) : ''
 
   return (
-    <div className="guide">
+    <div className={`guide ${compact ? 'guide-compact' : ''}`}>
       <section className="move-head">
-        <h1 className="flow-title" tabIndex={-1} data-step-heading>{t('Ask Katty')}</h1>
-        <p className="lead">
-          {t('Questions about moving to and living in a new country. Katty tells you who can help and where to find them.')}
-        </p>
+        {!compact && (
+          <>
+            <h1 className="flow-title" tabIndex={-1} data-step-heading>{t('Ask Katty')}</h1>
+            <p className="lead">
+              {t('Questions about moving to and living in a new country. Katty tells you who can help and where to find them.')}
+            </p>
+          </>
+        )}
         <div className="move-field guide-where">
           <label htmlFor={`${uid}-where`}>{t('The answers are about')}</label>
           <select

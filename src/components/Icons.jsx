@@ -202,6 +202,18 @@ export function ListIcon(props) {
   )
 }
 
+// Katty's smile in a speech bubble, for the chat button.
+export function ChatFaceIcon(props) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" {...props}>
+      <path d="M8 6h16a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H15l-6 5v-5H8a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4z" fill="#ffffff" />
+      <circle cx="12.5" cy="13.5" r="1.6" fill="#173d33" />
+      <circle cx="19.5" cy="13.5" r="1.6" fill="#173d33" />
+      <path d="M11.5 17q4.5 3.8 9 0" stroke="#173d33" strokeWidth="2" fill="none" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function MoreIcon(props) {
   return (
     <svg {...base} {...props}>

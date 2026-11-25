@@ -36,6 +36,7 @@ import { listPapers, PAPERS_CHANGED } from './papers'
 import { Logo, GlobeIcon, MenuIcon, HomeIcon, ListIcon, ChatIcon, MoreIcon } from './components/Icons'
 import SiteMenu from './components/SiteMenu'
 import More from './components/More'
+import ChatLauncher from './components/ChatLauncher'
 import MyMove from './components/MyMove'
 import AskGuide from './components/AskGuide'
 import { loadMovePlan, MOVE_CHANGED } from './move'
@@ -719,6 +720,15 @@ export default function App() {
           </button>
         </div>
       </footer>
+
+      {/* Computers: a chat button in the corner. Hidden on the Ask page, while
+          a letter is open (it has its own Ask tab) and while the menu is open. */}
+      <ChatLauncher
+        country={country}
+        language={language}
+        onAddLetter={newLetter}
+        hidden={view === 'ask' || inFlow || view === 'letter' || menuOpen}
+      />
     </div>
   )
 }
