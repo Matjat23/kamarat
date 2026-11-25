@@ -91,12 +91,18 @@ export function languageLabel(language) {
   return language.native === language.name ? language.native : `${language.native} (${language.name})`
 }
 
+const findLanguage = (name) => LANGUAGES.find((l) => l.name === name) ?? RETIRED_LANGUAGES.find((l) => l.name === name)
+
 // lang and dir attributes for text written in the chosen language, so screen
 // readers pronounce it right and Arabic and Persian read right to left.
 export function languageProps(language) {
-  const found = LANGUAGES.find((l) => l.name === language) ?? RETIRED_LANGUAGES.find((l) => l.name === language)
+  const found = findLanguage(language)
   return found ? { lang: found.code, dir: found.rtl ? 'rtl' : 'ltr' } : {}
 }
+
+// The language code for a language name, also for languages no longer offered
+// (a letter saved in Persian is still read aloud with a Persian voice).
+export const languageCode = (language) => findLanguage(language)?.code ?? 'en'
 
 const SCHEMA = {
   type: 'object',
@@ -308,15 +314,20 @@ export function isTemporary(err) {
 }
 
 // One try on the main model, then one on the backup model. A model whose daily
-// free limit is used up is skipped until the limit resets.
-export async function askCloudJSON(schema, systemInstruction, prompt, onStatus = () => {}) {
+// free limit is used up is skipped until the limit resets. timeout is the time
+// one model gets; budget is the time for everything, so a busy Gemini fails in
+// seconds, not minutes.
+export async function askCloudJSON(schema, systemInstruction, prompt, onStatus = () => {}, { timeout = 25000, budget = Infinity } = {}) {
   const models = usableModels(EXPLAIN_MODELS)
   if (models.length === 0) throw new QuotaError()
+  const start = Date.now()
   let lastError
   for (const [index, modelName] of models.entries()) {
+    const left = budget - (Date.now() - start)
+    if (index > 0 && left < 5000) break
     if (index > 0) onStatus('Gemini is busy. Trying a backup model...')
     try {
-      return await getExplainModel(schema, systemInstruction, modelName).generateContent(prompt)
+      return await getExplainModel(schema, systemInstruction, modelName, Math.min(timeout, left)).generateContent(prompt)
     } catch (err) {
       lastError = err
       if (isDailyLimit(err)) {

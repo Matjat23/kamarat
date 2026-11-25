@@ -1,13 +1,18 @@
 // "Ask Kamarat": questions about moving to and living in the new country.
 //
-// - The question is checked on this device first: numbers and emails are
-//   hidden, and Gemini Nano looks for names and other details when it is
-//   available. When it is not, the device cannot spot names, so you always see
-//   exactly what will be sent and choose to send it.
-// - The country the answers are about is shown at the top and can be changed.
+// - A question you type is checked on this device first: numbers and emails
+//   are hidden, and Gemini Nano looks for names and other details when it is
+//   available. Then you always see exactly what will be sent and choose to
+//   send it. Kamarat's own suggested questions have nothing personal in them,
+//   so they are sent with one tap.
+// - The country the answers are about is shown at the top. The choice is
+//   remembered, and changing it starts a new chat, so answers about two
+//   countries are never mixed.
 // - Answers name who can help, with a link only when it is an official site or
-//   a well-known non-profit. Answers with numbers in them, and legal problems,
-//   get a note to check with the official body or get free legal advice.
+//   a well-known non-profit, and say which of the two it is. Otherwise there is
+//   a web search link, clearly marked as a search.
+// - Answers that had numbers in them get a note to check them. Legal problems
+//   get a note about free legal advice, shown before the answer.
 // - The chat is not saved anywhere. "New chat" starts again.
 import { useId, useMemo, useRef, useState } from 'react'
 import { askGuide, GUIDE_QUESTIONS, MAX_GUIDE_QUESTIONS } from '../guide'
@@ -15,25 +20,49 @@ import { loadMovePlan } from '../move'
 import { maskNote } from '../reply'
 import { detectWithAI } from '../privacy'
 import { languageProps } from '../explain'
-import { countryList } from '../countries'
+import { countryList, countryName } from '../countries'
+import { isOfficialDomain } from '../officialDomains'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { SharedText } from './Text'
+import ReviewBeforeSend from './ReviewBeforeSend'
 import { t } from '../i18n'
 import { CloudIcon, LandmarkIcon, ArrowIcon, CameraIcon, Dots } from './Icons'
 
-const searchLink = (name) => `https://www.google.com/search?q=${encodeURIComponent(name)}`
+const COUNTRY_KEY = 'kamarat.ask.country.v1'
 
-function GuideAnswer({ turn, language, onAsk, onAddLetter }) {
+function savedAskCountry() {
+  try {
+    const code = localStorage.getItem(COUNTRY_KEY) ?? ''
+    return /^[A-Z]{2}$/.test(code) ? code : ''
+  } catch {
+    return ''
+  }
+}
+
+function saveAskCountry(code) {
+  try {
+    localStorage.setItem(COUNTRY_KEY, code)
+  } catch {
+    // private mode: remembered until the page closes
+  }
+}
+
+// A web search for the organisation in that country. Not checked by Kamarat,
+// and the link says so.
+const searchLink = (name, place) => `https://www.google.com/search?q=${encodeURIComponent(`${name} ${place}`)}`
+
+function GuideAnswer({ turn, language, place, onAsk, onAddLetter }) {
   const langProps = languageProps(language)
   return (
     <>
-      <p className="bubble-text" {...langProps}>{turn.answer}</p>
-
       {turn.legal && (
         <p className="notice notice-warn guide-legal">
           {t('This sounds like a legal question. Kamarat cannot give legal advice. Before you act, ask a free legal advice service or a lawyer.')}
         </p>
       )}
+
+      <p className="bubble-text" {...langProps}>{turn.answer}</p>
+
       {turn.hasNumbers && !turn.legal && (
         <p className="small muted">{t('Numbers like fees, dates and time limits can change. Check them on the official website.')}</p>
       )}
@@ -50,7 +79,9 @@ function GuideAnswer({ turn, language, onAsk, onAddLetter }) {
                     <span>
                       <strong className="small">{c.organisation}</strong>
                       <span className="small muted" {...langProps}>{c.why}</span>
-                      <span className="small">{c.website}</span>
+                      <span className="small">
+                        {c.website} · {isOfficialDomain(c.website) ? t('Official website') : t('Help organisation')}
+                      </span>
                     </span>
                     <ArrowIcon width={16} height={16} />
                   </a>
@@ -60,8 +91,8 @@ function GuideAnswer({ turn, language, onAsk, onAddLetter }) {
                     <span>
                       <strong className="small">{c.organisation}</strong>
                       <span className="small muted" {...langProps}>{c.why}</span>
-                      <a className="small" href={searchLink(c.organisation)} target="_blank" rel="noopener noreferrer">
-                        {t('Search for them')}
+                      <a className="small" href={searchLink(c.organisation, place)} target="_blank" rel="noopener noreferrer">
+                        {t('Search the web for them')}
                       </a>
                     </span>
                   </span>
@@ -98,23 +129,26 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
   const uid = useId()
   const countries = useMemo(() => countryList(), [])
   const plan = useMemo(() => loadMovePlan(), [])
-  const [where, setWhere] = useState(plan?.to || country || '')
+  const [where, setWhere] = useState(() => savedAskCountry() || plan?.to || country || '')
   const [question, setQuestion] = useState(startQuestion || '')
   const [turns, setTurns] = useState([])
-  const [confirm, setConfirm] = useState(null)
+  const [review, setReview] = useState(null)
   const [checking, setChecking] = useState(false)
   const nextId = useRef(1)
-  // The move list's origin and reason only apply when the chat is about the
-  // same country as the list.
+  const input = useRef(null)
+  // The move list's origin, citizenship and reason only apply when the chat is
+  // about the same country as the list.
   const planHere = plan && plan.to === where ? plan : null
 
-  const busy = checking || turns.some((turn) => turn.status === 'loading')
+  const loading = turns.some((turn) => turn.status === 'loading')
+  const busy = checking || loading
   const left = MAX_GUIDE_QUESTIONS - turns.length
   const preview = question.trim() ? maskNote(question.trim(), [], {}).masked : ''
 
-  async function send(text, fromInput = true) {
+  // A question you typed: checked on this device, then shown before sending.
+  async function send(text) {
     const raw = text.trim()
-    if (!raw || busy || left <= 0) return
+    if (!raw || !where || busy || left <= 0) return
     const base = maskNote(raw, [], {})
     let full = base
     let namesChecked = false
@@ -129,17 +163,18 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
       }
       setChecking(false)
     }
-    // Without the on-device check nobody looked for names, so the person sees
-    // exactly what will be sent and decides.
-    if (!namesChecked || full.masked !== base.masked) {
-      setConfirm({ masked: full.masked, namesChecked, fromInput })
-      return
-    }
-    submit(full.masked, fromInput)
+    setReview({ masked: full.masked, namesChecked, found: full.masked !== base.masked })
   }
 
-  async function submit(masked, fromInput = true) {
-    setConfirm(null)
+  // Kamarat's own questions (suggestions and follow-ups) go straight away.
+  function askSuggested(text) {
+    if (!where || busy || left <= 0) return
+    submit(text, false)
+  }
+
+  async function submit(masked, fromInput) {
+    if (!where) return
+    setReview(null)
     if (fromInput) setQuestion('')
     const id = nextId.current++
     const history = turns.filter((turn) => turn.status === 'done').map((turn) => ({ question: turn.question, answer: turn.answer }))
@@ -160,10 +195,27 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
     }
   }
 
+  function retry(turn) {
+    setTurns((list) => list.filter((other) => other.id !== turn.id))
+    submit(turn.question, false)
+  }
+
+  function editQuestion() {
+    setReview(null)
+    requestAnimationFrame(() => input.current?.focus())
+  }
+
   function newChat() {
     setTurns([])
-    setConfirm(null)
+    setReview(null)
     setQuestion('')
+  }
+
+  function changeWhere(code) {
+    setWhere(code)
+    saveAskCountry(code)
+    // Answers about another country would be mixed into the new ones.
+    if (turns.length > 0) newChat()
   }
 
   function onKeyDown(event) {
@@ -172,6 +224,8 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
       send(question)
     }
   }
+
+  const place = where ? countryName(where) : ''
 
   return (
     <div className="guide">
@@ -182,10 +236,19 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
         </p>
         <div className="move-field guide-where">
           <label htmlFor={`${uid}-where`}>{t('The answers are about')}</label>
-          <select id={`${uid}-where`} value={where} onChange={(e) => setWhere(e.target.value)} disabled={busy}>
+          <select
+            id={`${uid}-where`}
+            value={where}
+            onChange={(e) => changeWhere(e.target.value)}
+            disabled={busy}
+            aria-describedby={turns.length > 0 ? `${uid}-where-help` : undefined}
+          >
             <option value="">{t('Choose a country')}</option>
             {countries.map((c) => <option key={c.code} value={c.code}>{c.name}</option>)}
           </select>
+          {turns.length > 0 && (
+            <span id={`${uid}-where-help`} className="small muted">{t('Choosing another country starts a new chat.')}</span>
+          )}
         </div>
       </section>
 
@@ -200,9 +263,14 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
                 </div>
                 <div className="bubble bubble-kamarat">
                   {turn.status === 'loading' && <p className="small muted" role="status"><Dots /> {turn.statusText}</p>}
-                  {turn.status === 'error' && <p className="small warning-text">{t('Kamarat could not answer:')} {t(turn.error)}.</p>}
+                  {turn.status === 'error' && (
+                    <>
+                      <p className="small warning-text">{t('Kamarat could not answer:')} {t(turn.error)}.</p>
+                      <button className="secondary small-btn" onClick={() => retry(turn)} disabled={busy}>{t('Try again')}</button>
+                    </>
+                  )}
                   {turn.status === 'done' && (
-                    <GuideAnswer turn={turn} language={language} onAsk={(q) => send(q, false)} onAddLetter={onAddLetter} />
+                    <GuideAnswer turn={turn} language={language} place={place} onAsk={askSuggested} onAddLetter={onAddLetter} />
                   )}
                 </div>
               </li>
@@ -210,37 +278,18 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
           </ol>
         )}
 
-        {turns.length === 0 && !confirm && (
+        {turns.length === 0 && !review && (
           <div className="chips" aria-label={t('Suggested questions')}>
             {GUIDE_QUESTIONS.map((q) => (
-              <button key={q} className="chip-button" disabled={busy || !where} onClick={() => send(t(q), false)}>
+              <button key={q} className="chip-button" disabled={busy || !where} onClick={() => askSuggested(t(q))}>
                 {t(q)}
               </button>
             ))}
           </div>
         )}
 
-        {confirm ? (
-          <div className="review-note review-final" role="status">
-            <span className="quote-head">
-              {confirm.namesChecked
-                ? t('Kamarat found more personal details and hid them. This is exactly what will be sent:')
-                : t('On this device Kamarat cannot spot names. Check that there are no names or other personal details, then send. This is exactly what will be sent:')}
-            </span>
-            <SharedText text={confirm.masked} className="review-note-text" />
-            <div className="buttons">
-              <button
-                className="secondary"
-                onClick={() => {
-                  if (!confirm.fromInput) setQuestion(confirm.masked)
-                  setConfirm(null)
-                }}
-              >
-                {t('Edit question')}
-              </button>
-              <button className="primary" onClick={() => submit(confirm.masked, confirm.fromInput)}>{t('Send it')}</button>
-            </div>
-          </div>
+        {review ? (
+          <ReviewBeforeSend review={review} onEdit={editQuestion} onSend={() => submit(review.masked, true)} />
         ) : left > 0 ? (
           <form
             className="ask-form"
@@ -252,6 +301,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
             <label htmlFor={`${uid}-question`} className="small muted">{t('Your question, in any language')}</label>
             <textarea
               id={`${uid}-question`}
+              ref={input}
               rows={2}
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
@@ -261,7 +311,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
               dir="auto"
             />
             <p id={`${uid}-help`} className="small muted">
-              {t('Kamarat hides numbers and emails on your device, and looks for names when your device can. Leave out names and anything else you would rather not share.')}
+              {t('Kamarat hides numbers and emails on your device, and looks for names when your device can. You see your question before it is sent.')}
             </p>
             {preview && preview !== question.trim() && (
               <div className="review-note">
@@ -278,7 +328,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
         )}
 
         {turns.length > 0 && (
-          <button className="secondary guide-new" onClick={newChat} disabled={busy}>{t('New chat')}</button>
+          <button className="secondary guide-new" onClick={newChat} disabled={checking}>{t('New chat')}</button>
         )}
         <p className="small muted">{t('Kamarat is not a lawyer. Check important things with the official body.')}</p>
       </div>

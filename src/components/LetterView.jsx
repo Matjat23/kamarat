@@ -5,7 +5,7 @@
 //   Letter - the text that was sent, with word help.
 // Used for a letter that was just explained and for a letter from My papers.
 import { useId, useMemo, useRef, useState } from 'react'
-import { languageProps, LANGUAGES } from '../explain'
+import { languageProps, languageCode } from '../explain'
 import { prepareActions } from '../papers'
 import { WORRY, assessWorry, daysUntil, whenText } from '../worry'
 import { t, msg, dateLocale, uiLanguageCode } from '../i18n'
@@ -218,7 +218,7 @@ export default function LetterView({
       setSpeaking(false)
       return
     }
-    const code = LANGUAGES.find((l) => l.name === letter.language)?.code ?? 'en'
+    const code = languageCode(letter.language)
     const phrases = spokenPhrases(code)
     const parts = []
     if (code === 'en') parts.push(worry.title, assessed.raised)
@@ -305,7 +305,7 @@ export default function LetterView({
             <DateTile date={next.info.date} />
             <div className="answer-next-body">
               <span className="eyebrow">
-                {unknownDates > 0 ? t('Earliest known date') : t('Next')} · {whenText(next.info.date)}
+                {unknownDates > 0 ? t('Earliest known date') : t('Next deadline')} · {whenText(next.info.date)}
               </span>
               <strong {...langProps}>{next.title}</strong>
               <span className="small muted">{t('By {date}', { date: longDate(next.info.date) })}</span>

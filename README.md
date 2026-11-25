@@ -6,11 +6,11 @@ I have lived in Senegal, France, Sweden and the US, and every move came with for
 
 There are three parts:
 
-- My move: You say where you are moving, from where and why, and Kamarat makes a list of the setup steps for that country (registering your address, the personal number, health care, a bank account, the language course) that you can tick off. Only the countries and the reason are sent, nothing about you. Each step names the authority, and a website is only shown as a link when my code has checked that it is a government address. The list stays in your browser.
-- Ask Kamarat: A chat for questions about the new country. Your question is checked on the device first, so names and numbers are hidden before it is sent. Answers say who can help, with checked official links. Kamarat never gives phone numbers, addresses or fees, because those are easy to get wrong; it points to the official website instead.
+- My move: You say where you are moving, from where, your citizenship if you want to, and why, and Kamarat makes a list of the setup steps for that country (registering your address, the personal number, health care, a bank account, the language course) that you can tick off. Only the countries and the reason are sent, nothing else about you. Each step names the authority, and a website is only shown as a link when my code has checked that it is a government address or a well-known non-profit. The list stays in your browser. If Gemini is busy, you can look at an example list I wrote by hand, clearly marked as an example.
+- Ask Kamarat: A chat for questions about the new country. Your question is checked on the device first, so names and numbers are hidden, and you always see exactly what will be sent before it goes. Answers say who can help, with checked links, or a web search that is marked as a search. Kamarat is told never to give phone numbers, addresses or fees, because those are easy to get wrong, and my code also takes out phone numbers and asks you to check any numbers on the official website. Legal questions, like a refusal or an appeal, get a note to ask a free legal advice service first.
 - Letters: Kamarat reads an official letter and tells you what it means and what to do, as described below.
 
-The screens and answers come in the ten most spoken languages in the world, including Arabic and Urdu written right to left.
+The screens and answers come in the ten most spoken languages in the world, including Arabic and Urdu written right to left. The screen texts ship with the app, so changing the language does not wait for the AI.
 
 ## How the letter help works
 

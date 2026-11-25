@@ -108,7 +108,7 @@ export const cloudModel = getGenerativeModel(ai, {
 // first one is busy ("high demand").
 export const EXPLAIN_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
 
-export function getExplainModel(responseJsonSchema, systemInstruction, modelName) {
+export function getExplainModel(responseJsonSchema, systemInstruction, modelName, timeout = 25000) {
   return getGenerativeModel(
     ai,
     {
@@ -123,7 +123,7 @@ export function getExplainModel(responseJsonSchema, systemInstruction, modelName
         },
       },
     },
-    { timeout: 25000 },
+    { timeout },
   )
 }
 

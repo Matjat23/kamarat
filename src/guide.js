@@ -6,16 +6,17 @@
 // - Kamarat points to who can help: the official body and its website. The code
 //   keeps a website only when it is an official site or a well-known non-profit.
 // - No phone numbers, street addresses, fees or time limits: the AI is told so,
-//   and the code also takes out phone numbers and marks answers with numbers
-//   in them, so people check those on the official website.
+//   and the code also takes out phone numbers and marks answers that had
+//   numbers in them, so people check those on the official website.
 // - Legal problems (an appeal, a refusal, a fine) are marked, and the screen
-//   points to free legal advice.
+//   points to free legal advice. The AI marks them, and the code also looks
+//   for legal words in the question, in case the AI misses one.
 // - When the question is about a personal letter, Kamarat suggests adding the
 //   letter, so the answer can come from the letter itself.
 
 import { countryNameEnglish } from './countries'
 import { hostOf, isHelpDomain } from './officialDomains'
-import { PURPOSES, friendlyError, askCloudWithRetry, stripPhoneNumbers, hasNumbers } from './move'
+import { PURPOSES, friendlyError, askCloudWithRetry, stripPhoneNumbers, hasNumbers, looksLegal } from './move'
 import { msg } from './i18n'
 
 export const MAX_GUIDE_QUESTIONS = 15
@@ -81,6 +82,7 @@ function buildPrompt({ question, history, country, plan, language }) {
   const about = [
     `The person lives in or is moving to ${country ? countryNameEnglish(country) : 'a country they did not say'}.`,
     plan?.from ? `They are moving from ${countryNameEnglish(plan.from)}.` : '',
+    plan?.citizenship ? `Their citizenship: ${countryNameEnglish(plan.citizenship)}.` : '',
     purpose ? `Reason for the move: ${purpose.label}.` : '',
   ]
     .filter(Boolean)
@@ -103,10 +105,12 @@ function cleanContact(raw) {
   const organisation = typeof raw.organisation === 'string' ? raw.organisation.trim() : ''
   if (!organisation) return null
   const domain = hostOf(typeof raw.website === 'string' ? raw.website : '')
+  const why = typeof raw.why === 'string' ? raw.why.trim() : ''
   return {
     organisation,
-    why: stripPhoneNumbers(typeof raw.why === 'string' ? raw.why.trim() : ''),
+    why: stripPhoneNumbers(why),
     website: domain && isHelpDomain(domain) ? domain : '',
+    hadNumbers: hasNumbers(why),
   }
 }
 
@@ -114,19 +118,24 @@ function cleanContact(raw) {
 export async function askGuide({ question, history, country, plan, language, onStatus }) {
   let result
   try {
-    result = await askCloudWithRetry(SCHEMA, SYSTEM_INSTRUCTION, buildPrompt({ question, history, country, plan, language }), onStatus)
+    result = await askCloudWithRetry(SCHEMA, SYSTEM_INSTRUCTION, buildPrompt({ question, history, country, plan, language }), onStatus, {
+      timeout: 15000,
+      budget: 30000,
+    })
   } catch (err) {
     throw friendlyError(err)
   }
   const raw = result.response.text()
   const data = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1))
-  const answer = stripPhoneNumbers(typeof data.answer === 'string' ? data.answer.trim() : '')
+  const answer = typeof data.answer === 'string' ? data.answer.trim() : ''
+  const contacts = (Array.isArray(data.contacts) ? data.contacts : []).map(cleanContact).filter(Boolean)
   return {
-    answer,
-    contacts: (Array.isArray(data.contacts) ? data.contacts : []).map(cleanContact).filter(Boolean),
+    answer: stripPhoneNumbers(answer),
+    contacts: contacts.map(({ hadNumbers, ...contact }) => contact),
     aboutLetter: data.aboutLetter === true,
-    legal: data.legal === true,
-    hasNumbers: hasNumbers(answer),
+    legal: data.legal === true || looksLegal(question),
+    // Checked before the phone numbers are taken out, so the note is never lost.
+    hasNumbers: hasNumbers(answer) || contacts.some((c) => c.hadNumbers),
     followUps: (Array.isArray(data.followUps) ? data.followUps : [])
       .filter((q) => typeof q === 'string' && q.trim())
       .slice(0, 2),

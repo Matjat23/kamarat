@@ -1,8 +1,10 @@
 // "Ask Kamarat about this notice": a short chat under the next steps.
 //
-// - Your question is checked on this device first: details already hidden in
-//   the notice get the same label, numbers and emails are hidden, and Gemini
-//   Nano looks for names and other details. You see what will be sent.
+// - A question you type is checked on this device first: details already
+//   hidden in the notice get the same label, numbers and emails are hidden,
+//   and Gemini Nano looks for names and other details when it can. Then you
+//   always see exactly what will be sent and choose to send it. The suggested
+//   questions are Kamarat's own text, so they are sent with one tap.
 // - Answers come only from the notice. Each one shows what it is based on, and
 //   the code checks that quoted sentences are really in the notice.
 // - When the notice does not say, Kamarat suggests asking the sender and can
@@ -12,10 +14,11 @@ import { useId, useRef, useState } from 'react'
 import { askAboutNotice, MAX_QUESTIONS, SUGGESTED_QUESTIONS } from '../ask'
 import { maskNote } from '../reply'
 import { detectWithAI } from '../privacy'
-import { languageProps, LANGUAGES } from '../explain'
+import { languageProps, languageCode } from '../explain'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { speak, stopSpeaking, canSpeak } from '../speak'
 import { SharedText, QuoteInNotice } from './Text'
+import ReviewBeforeSend from './ReviewBeforeSend'
 import { t } from '../i18n'
 import { CloudIcon, DeviceIcon, LandmarkIcon, ArrowIcon, PenIcon, SpeakerIcon, Dots } from './Icons'
 
@@ -85,20 +88,21 @@ function Answer({ turn, shared, language, speakingId, onListen, onAskSender }) {
 export default function AskKamarat({ shared, labelMap, details, language, onAskSender }) {
   const [question, setQuestion] = useState('')
   const [turns, setTurns] = useState([])
-  const [confirm, setConfirm] = useState(null)
+  const [review, setReview] = useState(null)
   const [checking, setChecking] = useState(false)
   const [speakingId, setSpeakingId] = useState(null)
   const [voiceMissing, setVoiceMissing] = useState(false)
   const nextId = useRef(1)
+  const input = useRef(null)
   const uid = useId()
 
   const busy = checking || turns.some((t) => t.status === 'loading')
   const left = MAX_QUESTIONS - turns.length
   const preview = question.trim() ? maskNote(question.trim(), details, labelMap).masked : ''
 
-  // Step 1: check the question on this device. If Gemini Nano finds more than
-  // the preview showed, show the final text before anything is sent.
-  async function send(text, fromInput = true) {
+  // Step 1: check the question you typed on this device, then show exactly
+  // what will be sent.
+  async function send(text) {
     const raw = text.trim()
     if (!raw || busy || left <= 0) return
     const base = maskNote(raw, details, labelMap)
@@ -116,17 +120,25 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
       setChecking(false)
     }
     // Names from the letter are always hidden, but new names in the question
-    // can only be found by Gemini Nano. Without it, show what will be sent.
-    if (!namesChecked || full.masked !== base.masked) {
-      setConfirm({ masked: full.masked, namesChecked })
-      return
-    }
-    submit(full.masked, fromInput)
+    // can only be found by Gemini Nano, and it can miss one. So the person
+    // always sees the final text.
+    setReview({ masked: full.masked, namesChecked, found: full.masked !== base.masked })
+  }
+
+  // A suggested question is Kamarat's own text: nothing personal to check.
+  function askSuggested(text) {
+    if (busy || left <= 0) return
+    submit(text, false)
+  }
+
+  function editQuestion() {
+    setReview(null)
+    requestAnimationFrame(() => input.current?.focus())
   }
 
   // Step 2: send the checked question.
-  async function submit(masked, fromInput = true) {
-    setConfirm(null)
+  async function submit(masked, fromInput) {
+    setReview(null)
     if (fromInput) setQuestion('')
     const id = nextId.current++
     const history = turns.filter((t) => t.status === 'done').map((t) => ({ question: t.question, answer: t.answer }))
@@ -153,7 +165,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
       return
     }
     const name = turn.note ? 'English' : language
-    const code = LANGUAGES.find((l) => l.name === name)?.code ?? 'en'
+    const code = languageCode(name)
     const parts = [turn.answer.replace(/\[([A-Z]+)_(\d+)\]/g, ''), turn.askSender]
     const started = await speak(parts, code, () => setSpeakingId(null))
     setVoiceMissing(!started)
@@ -184,7 +196,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
                   <p className="small muted" role="status"><Dots /> {turn.statusText}</p>
                 )}
                 {turn.status === 'error' && (
-                  <p className="small warning-text">Kamarat could not answer: {turn.error}.</p>
+                  <p className="small warning-text">{t('Kamarat could not answer:')} {t(turn.error)}.</p>
                 )}
                 {turn.status === 'done' && (
                   <Answer
@@ -205,29 +217,18 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
         <p className="small muted">{t('Your device has no offline voice for this language.')}</p>
       )}
 
-      {left > 0 && !confirm && (
+      {left > 0 && !review && (
         <div className="chips" aria-label={t('Suggested questions')}>
           {SUGGESTED_QUESTIONS.map((q) => (
-            <button key={q} className="chip-button secondary" disabled={busy} onClick={() => send(t(q), false)}>
+            <button key={q} className="chip-button secondary" disabled={busy} onClick={() => askSuggested(t(q))}>
               {t(q)}
             </button>
           ))}
         </div>
       )}
 
-      {confirm ? (
-        <div className="review-note review-final" role="status">
-          <span className="quote-head">
-            {confirm.namesChecked
-              ? t('Kamarat found more personal details and hid them. This is exactly what will be sent:')
-              : t('On this device Kamarat cannot spot names. Check that there are no names or other personal details, then send. This is exactly what will be sent:')}
-          </span>
-          <SharedText text={confirm.masked} className="review-note-text" />
-          <div className="buttons">
-            <button className="secondary" onClick={() => setConfirm(null)}>{t('Edit question')}</button>
-            <button className="primary" onClick={() => submit(confirm.masked)}>{t('Send it')}</button>
-          </div>
-        </div>
+      {review ? (
+        <ReviewBeforeSend review={review} onEdit={editQuestion} onSend={() => submit(review.masked, true)} />
       ) : left > 0 ? (
         <form
           className="ask-form"
@@ -239,6 +240,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
           <label htmlFor={`${uid}-question`} className="small muted">{t('Your question, in any language')}</label>
           <textarea
             id={`${uid}-question`}
+            ref={input}
             rows={2}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
@@ -248,7 +250,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
             dir="auto"
           />
           <p id={`${uid}-help`} className="small muted">
-            {t('Names and numbers from your letter are hidden on your device before sending. Kamarat looks for new names when your device can. Leave out anything else you would rather not share.')}{' '}
+            {t('Names and numbers from your letter are hidden on your device before sending. Kamarat looks for new names when your device can. You see your question before it is sent.')}{' '}
             {t('{left} of {max} questions left for this letter.', { left, max: MAX_QUESTIONS })}
           </p>
           {preview && preview !== question.trim() && (

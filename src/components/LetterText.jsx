@@ -3,7 +3,7 @@
 // "From your letter" link is used, the sentence is highlighted here.
 import { useEffect, useId, useRef, useState } from 'react'
 import { explainWord, sentenceAround, findWord } from '../words'
-import { languageProps, LANGUAGES } from '../explain'
+import { languageProps, languageCode } from '../explain'
 import { wordHelpRunsOnDevice } from '../firebase'
 import { findQuote } from './Text'
 import { t } from '../i18n'
@@ -41,7 +41,7 @@ export default function LetterText({ shared, language, highlight }) {
   const firstMark = useRef(null)
   const uid = useId()
 
-  const code = LANGUAGES.find((l) => l.name === language)?.code ?? 'en'
+  const code = languageCode(language)
   const onDevice = wordHelpRunsOnDevice(code)
   const what = wordOnly ? t('only the word') : t('the word and its sentence')
   const range = highlight ? findQuote(shared, highlight.quote) : null

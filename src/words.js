@@ -6,7 +6,7 @@
 // Answers are kept for the session, and a word that is already being looked
 // up is not asked twice.
 import { getWordModel, EXPLAIN_MODELS } from './firebase'
-import { LANGUAGES } from './explain'
+import { languageCode } from './explain'
 import { QuotaError, isDailyLimit, markUsedUp, usableModels } from './quota'
 
 const cache = new Map()
@@ -39,7 +39,7 @@ In ${language}, explain in one or two short, simple sentences what "${word}" mea
 }
 
 async function lookUp(word, sentence, language) {
-  const code = LANGUAGES.find((l) => l.name === language)?.code ?? 'en'
+  const code = languageCode(language)
   const modelName = usableModels(EXPLAIN_MODELS)[0] ?? EXPLAIN_MODELS[0]
   const model = getWordModel(code, modelName)
   try {

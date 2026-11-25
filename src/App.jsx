@@ -51,6 +51,9 @@ const METHOD_TEXT = {
   tesseract: msg('Your photo was read on this device. The photo was not uploaded.'),
 }
 
+// One key per screen: a letter's screen is different for each letter.
+const screenKey = (route) => `${route.view}/${route.id ?? ''}`
+
 function readRoute() {
   const [view = '', id] = window.location.hash.replace(/^#\/?/, '').split('/')
   return { view: view || 'home', id }
@@ -127,6 +130,9 @@ export default function App() {
   const [guideSession, setGuideSession] = useState(0)
   const [movePlan, setMovePlan] = useState(loadMovePlan)
   const menuButton = useRef(null)
+  // The screen showing now, and the one the menu was opened on.
+  const screenNow = useRef('')
+  const menuScreen = useRef(null)
   // The first visit asks for the language and the country, once.
   const [setupDone, setSetupDone] = useState(setupWasDone)
   const scanInput = useRef(null)
@@ -221,7 +227,9 @@ export default function App() {
 
   function go(path = '', { replace = false } = {}) {
     const url = `#/${path}`
-    if (replace) window.history.replaceState({ kamarat: historyIndex() }, '', url)
+    // Going to the screen that is already open does not add a step to Back.
+    const same = (window.location.hash || '#/') === url
+    if (replace || same) window.history.replaceState({ kamarat: historyIndex() }, '', url)
     else window.history.pushState({ kamarat: historyIndex() + 1 }, '', url)
     setRoute(readRoute())
   }
@@ -259,8 +267,9 @@ export default function App() {
 
   // On every new screen: stop reading aloud, scroll up, and move focus to the
   // screen's heading for keyboard and screen reader users.
-  const routeKey = `${route.view}/${route.id ?? ''}`
+  const routeKey = screenKey(route)
   useEffect(() => {
+    screenNow.current = routeKey
     stopSpeaking()
     setMenuOpen(false)
     if (route.view !== 'ask') setGuideQuestion('')
@@ -270,6 +279,19 @@ export default function App() {
       heading?.focus({ preventScroll: true })
     })
   }, [routeKey])
+
+  // When the menu closes on the same screen (Close, Escape, or Back to the same
+  // screen), focus goes back to the Menu button, so keyboard users keep their
+  // place. A new screen focuses its own heading instead (see above). This runs
+  // after the page is no longer inert, so the button can take focus.
+  useEffect(() => {
+    if (menuOpen) {
+      menuScreen.current = screenNow.current
+      return
+    }
+    if (menuScreen.current !== null && menuScreen.current === screenNow.current) menuButton.current?.focus()
+    menuScreen.current = null
+  }, [menuOpen])
 
   // Starting a new letter closes the open one. If it was not kept, ask first.
   function beginNewLetter() {
@@ -428,8 +450,6 @@ export default function App() {
 
   function closeMenu() {
     setMenuOpen(false)
-    // Back to the Menu button, so keyboard users do not lose their place.
-    requestAnimationFrame(() => menuButton.current?.focus())
   }
 
   if (!setupDone && !new URLSearchParams(window.location.search).has('eval')) {

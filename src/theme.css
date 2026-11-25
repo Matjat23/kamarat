@@ -1260,3 +1260,23 @@ a.move-search {
   font-weight: 700;
   color: var(--ink);
 }
+
+/* Example list (shown when Gemini is busy): no tick box, a dashed square instead. */
+.move-step .example-mark {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1.5px dashed var(--muted);
+}
+
+.move-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.move-error p {
+  margin: 0;
+}

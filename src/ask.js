@@ -116,6 +116,8 @@ export async function askAboutNotice({ shared, question, history, language, onSt
       SYSTEM_INSTRUCTION,
       buildPrompt(shared, question, history, language, false),
       onStatus,
+      // At most about 30 seconds in the cloud before the answer moves to the device.
+      { timeout: 20000, budget: 30000 },
     )
     return { ...readAnswer(result, shared), note: '' }
   } catch (err) {

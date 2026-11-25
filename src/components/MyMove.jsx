@@ -1,20 +1,34 @@
 // "My move": tell Kamarat where you are moving and why, and get the setup steps
 // for the new country in one list you can tick off. Kept only on this device.
-import { useEffect, useId, useMemo, useState } from 'react'
+// When Gemini is busy, an example list written by hand shows how it works.
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import {
   makeMovePlan, loadMovePlan, saveMovePlan, moveProgress, addOwnStep,
-  PHASES, PHASE_TITLES, PURPOSES, MOVE_CHANGED,
+  PHASES, PHASE_TITLES, PURPOSES, MOVE_CHANGED, EXAMPLE_PLAN,
 } from '../move'
 import { countryList, countryName } from '../countries'
 import { languageProps } from '../explain'
 import { t } from '../i18n'
 import { ArrowIcon, ChatIcon, CheckIcon, LandmarkIcon, LockIcon, Dots } from './Icons'
 
-function MoveSetup({ country, language, onMade }) {
+// A web search for the organisation in that country, marked as a search.
+const searchLink = (name, place) => `https://www.google.com/search?q=${encodeURIComponent(`${name} ${place}`)}`
+
+function CountrySelect({ id, value, onChange, countries, empty }) {
+  return (
+    <select id={id} value={value} onChange={(e) => onChange(e.target.value)}>
+      <option value="">{empty}</option>
+      {countries.map((c) => <option key={c.code} value={c.code}>{c.name}</option>)}
+    </select>
+  )
+}
+
+function MoveSetup({ country, language, onMade, onExample }) {
   const uid = useId()
   const countries = useMemo(() => countryList(), [])
   const [to, setTo] = useState(country || '')
   const [from, setFrom] = useState('')
+  const [citizenship, setCitizenship] = useState('')
   const [purpose, setPurpose] = useState('')
   const [state, setState] = useState({ status: 'idle' })
 
@@ -24,6 +38,7 @@ function MoveSetup({ country, language, onMade }) {
       const plan = await makeMovePlan({
         to,
         from,
+        citizenship,
         purpose: purpose || 'OTHER',
         language,
         onStatus: (text) => setState({ status: 'loading', text: t(text) }),
@@ -42,18 +57,24 @@ function MoveSetup({ country, language, onMade }) {
 
       <div className="move-field">
         <label htmlFor={`${uid}-to`}>{t('Where are you moving to, or where do you live now?')}</label>
-        <select id={`${uid}-to`} value={to} onChange={(e) => setTo(e.target.value)}>
-          <option value="">{t('Choose a country')}</option>
-          {countries.map((c) => <option key={c.code} value={c.code}>{c.name}</option>)}
-        </select>
+        <CountrySelect id={`${uid}-to`} value={to} onChange={setTo} countries={countries} empty={t('Choose a country')} />
       </div>
 
       <div className="move-field">
         <label htmlFor={`${uid}-from`}>{t('Where are you moving from? (you can skip this)')}</label>
-        <select id={`${uid}-from`} value={from} onChange={(e) => setFrom(e.target.value)}>
-          <option value="">{t('Skip')}</option>
-          {countries.map((c) => <option key={c.code} value={c.code}>{c.name}</option>)}
-        </select>
+        <CountrySelect id={`${uid}-from`} value={from} onChange={setFrom} countries={countries} empty={t('Skip')} />
+      </div>
+
+      <div className="move-field">
+        <label htmlFor={`${uid}-citizenship`}>{t('Your citizenship (you can skip this)')}</label>
+        <CountrySelect
+          id={`${uid}-citizenship`}
+          value={citizenship}
+          onChange={setCitizenship}
+          countries={countries}
+          empty={t('Skip')}
+        />
+        <span className="small muted">{t('Some steps depend on it, for example whether you need a work permit.')}</span>
       </div>
 
       <fieldset className="move-field">
@@ -76,10 +97,15 @@ function MoveSetup({ country, language, onMade }) {
       </fieldset>
 
       <p className="small muted move-privacy">
-        <LockIcon width={16} height={16} /> {t('Only the countries and your reason are sent to Gemini. Nothing about you.')}
+        <LockIcon width={16} height={16} /> {t('Only the countries you choose here and your reason are sent to Gemini. Nothing else about you.')}
       </p>
 
-      {state.status === 'error' && <p className="notice notice-warn" role="alert">{t(state.text)}.</p>}
+      {state.status === 'error' && (
+        <div className="notice notice-warn move-error" role="alert">
+          <p>{t(state.text)}.</p>
+          <button className="secondary small-btn" onClick={onExample}>{t('See an example list')}</button>
+        </div>
+      )}
 
       <button className="primary" onClick={make} disabled={!to || state.status === 'loading'}>
         {state.status === 'loading' ? <span role="status"><Dots /> {state.text}</span> : <>{t('Make my list')} <ArrowIcon className="arrow-forward" width={18} height={18} /></>}
@@ -88,17 +114,21 @@ function MoveSetup({ country, language, onMade }) {
   )
 }
 
-function StepItem({ step, language, onToggle, onAsk }) {
+function StepItem({ step, language, place, onToggle, onAsk }) {
   return (
     <li className={`move-step ${step.done ? 'is-done' : ''}`}>
-      <button
-        className={`done-toggle ${step.done ? 'is-done' : ''}`}
-        aria-pressed={step.done}
-        aria-label={step.done ? t('Mark as not done') : t('Mark as done')}
-        onClick={onToggle}
-      >
-        {step.done && <CheckIcon width={18} height={18} />}
-      </button>
+      {onToggle ? (
+        <button
+          className={`done-toggle ${step.done ? 'is-done' : ''}`}
+          aria-pressed={step.done}
+          aria-label={step.done ? t('Mark as not done') : t('Mark as done')}
+          onClick={onToggle}
+        >
+          {step.done && <CheckIcon width={18} height={18} />}
+        </button>
+      ) : (
+        <span className="example-mark" aria-hidden="true" />
+      )}
       <div className="move-step-body">
         <strong {...languageProps(language)}>{step.title}</strong>
         {step.why && <span className="small muted" {...languageProps(language)}>{step.why}</span>}
@@ -111,11 +141,11 @@ function StepItem({ step, language, onToggle, onAsk }) {
           {step.organisation && !step.website && (
             <a
               className="move-site move-search"
-              href={`https://www.google.com/search?q=${encodeURIComponent(step.organisation)}`}
+              href={searchLink(step.organisation, place)}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <LandmarkIcon width={16} height={16} /> {step.organisation} · {t('Search for them')}
+              <LandmarkIcon width={16} height={16} /> {step.organisation} · {t('Search the web for them')}
             </a>
           )}
           <button className="link-button small" onClick={() => onAsk(step)}>
@@ -127,10 +157,61 @@ function StepItem({ step, language, onToggle, onAsk }) {
   )
 }
 
+function Phases({ steps, language, place, onToggle, onAsk }) {
+  return PHASES.map((phase) => {
+    const inPhase = steps.filter((s) => s.phase === phase)
+    if (inPhase.length === 0) return null
+    return (
+      <section key={phase} className="move-phase">
+        <h2 className="section-title">{t(PHASE_TITLES[phase])}</h2>
+        <ol className="move-steps">
+          {inPhase.map((step) => (
+            <StepItem
+              key={step.id}
+              step={step}
+              language={step.own ? undefined : language}
+              place={place}
+              onToggle={onToggle ? () => onToggle(step.id) : null}
+              onAsk={(s) => onAsk(t('How do I do this: {step}?', { step: s.title }))}
+            />
+          ))}
+        </ol>
+      </section>
+    )
+  })
+}
+
+// Shown when Gemini is busy. Read only, never saved, and clearly an example.
+function ExampleList({ onAsk, onBack }) {
+  const heading = useRef(null)
+  useEffect(() => {
+    window.scrollTo({ top: 0 })
+    heading.current?.focus({ preventScroll: true })
+  }, [])
+  const steps = EXAMPLE_PLAN.steps.map((s) => ({ ...s, title: t(s.title), why: t(s.why) }))
+  return (
+    <div className="move">
+      <section className="move-head">
+        <h1 className="flow-title" tabIndex={-1} ref={heading}>{t('Example: moving to Sweden to work')}</h1>
+        <p className="notice notice-warn">
+          {t('Gemini is busy, so this is an example list written by hand. It shows how My move works. It is not your list, and nothing is saved.')}
+        </p>
+      </section>
+      <div className="move-sheet">
+        <Phases steps={steps} place={countryName(EXAMPLE_PLAN.to)} onAsk={onAsk} />
+        <div className="buttons">
+          <button className="primary" onClick={onBack}>{t('Make my own list')}</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function MyMove({ country, language, onAsk }) {
   const uid = useId()
   const [plan, setPlan] = useState(loadMovePlan)
   const [own, setOwn] = useState('')
+  const [example, setExample] = useState(false)
 
   useEffect(() => {
     const onChange = () => setPlan(loadMovePlan())
@@ -138,7 +219,8 @@ export default function MyMove({ country, language, onAsk }) {
     return () => window.removeEventListener(MOVE_CHANGED, onChange)
   }, [])
 
-  if (!plan) return <MoveSetup country={country} language={language} onMade={setPlan} />
+  if (!plan && example) return <ExampleList onAsk={onAsk} onBack={() => setExample(false)} />
+  if (!plan) return <MoveSetup country={country} language={language} onMade={setPlan} onExample={() => setExample(true)} />
 
   const { done, total } = moveProgress(plan)
 
@@ -178,26 +260,7 @@ export default function MyMove({ country, language, onAsk }) {
       </section>
 
       <div className="move-sheet">
-        {PHASES.map((phase) => {
-          const steps = plan.steps.filter((s) => s.phase === phase)
-          if (steps.length === 0) return null
-          return (
-            <section key={phase} className="move-phase">
-              <h2 className="section-title">{t(PHASE_TITLES[phase])}</h2>
-              <ol className="move-steps">
-                {steps.map((step) => (
-                  <StepItem
-                    key={step.id}
-                    step={step}
-                    language={step.own ? undefined : plan.language}
-                    onToggle={() => toggle(step.id)}
-                    onAsk={(s) => onAsk(t('How do I do this: {step}?', { step: s.title }))}
-                  />
-                ))}
-              </ol>
-            </section>
-          )
-        })}
+        <Phases steps={plan.steps} language={plan.language} place={countryName(plan.to)} onToggle={toggle} onAsk={onAsk} />
 
         <form className="move-own" onSubmit={addOwn}>
           <label htmlFor={`${uid}-own`} className="small muted">{t('Add your own step')}</label>
