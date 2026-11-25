@@ -120,7 +120,7 @@ export default function LetterText({ shared, language, highlight }) {
         <p className="small warning-text">{t('Kamarat could not find this sentence in your letter.')}</p>
       )}
 
-      <div className="word-text" dir="auto">
+      <div className="word-text" dir="auto" translate="no">
         {splitLetter(shared).map(render)}
       </div>
 

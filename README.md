@@ -63,6 +63,19 @@ Open the app with `?eval` at the end of the address, press "Run the test", downl
 
 Without Gemini Nano, a rule-based check looks for numbers, emails, names (after greetings, titles and roles) and home addresses (address blocks, or a street the letter calls your address). Addresses of courts and offices stay visible. On all 44 test letters it now keeps 207 of 208 personal details out of the shared text. That number is flattering: I wrote the rules while looking at these letters. The 8 harder letters were written afterwards, and before I added rules for their formats the check caught 13 of their 21 details. So on devices without Gemini Nano, Kamarat also asks you to confirm that you read the text before it is sent.
 
+## Translating the screens
+
+The screen texts are in `src/ui-strings.json` (`python tools/extract_strings.py` updates it). Eleven languages were translated and checked by hand. The others are translated once with Google Cloud Translation and shipped as files too:
+
+1. In the Google Cloud console for the Firebase project, turn on the Cloud Translation API (it needs billing).
+2. Create an API key that is only allowed to use the Cloud Translation API.
+3. Put it in `.env.local` as `GOOGLE_TRANSLATE_API_KEY=...`. It has no `VITE_` prefix, so it never goes into the app.
+4. Run `python tools/translate_google.py --dry-run` to see the size, then `python tools/translate_google.py`.
+
+The script skips languages that already have a file, keeps placeholders and names as they are, and leaves a text in English if its placeholders do not come back exactly.
+
+The letter and your personal details are marked `translate="no"`, so a browser's own "Translate this page" does not send them anywhere.
+
 ## License
 
 Apache 2.0

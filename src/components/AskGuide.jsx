@@ -309,6 +309,7 @@ export default function AskGuide({ country, language, startQuestion, onAddLetter
               aria-describedby={`${uid}-help`}
               placeholder={t('For example: How do I register my address?')}
               dir="auto"
+              translate="no"
             />
             <p id={`${uid}-help`} className="small muted">
               {t('Kamarat hides numbers and emails on your device, and looks for names when your device can. You see your question before it is sent.')}

@@ -177,6 +177,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
       </label>
       <textarea
         id={`${uid}-note`}
+        translate="no"
         value={note}
         onChange={(e) => {
           setNote(e.target.value)
@@ -255,6 +256,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             dir="auto"
+            translate="no"
           />
           <label className="small muted" htmlFor={`${uid}-letter`}>{t('Your reply (you can edit it)')}</label>
           <textarea
@@ -263,6 +265,7 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
             onChange={(e) => setLetter(e.target.value)}
             rows={10}
             dir="auto"
+            translate="no"
           />
 
           {!ready && (
@@ -298,7 +301,8 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
                 {t('You changed the reply after it was written, so this translation shows the first version.')}
               </p>
             )}
-            <p {...langProps}>{fillIn(state.draft.translation, state.allLabels, state.allowed)}</p>
+            {/* Your real name and case number are filled in here. */}
+            <p {...langProps} translate="no">{fillIn(state.draft.translation, state.allLabels, state.allowed)}</p>
           </details>
 
           <button className="link-button" onClick={() => setShowLabels(!showLabels)}>

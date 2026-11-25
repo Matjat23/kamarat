@@ -248,6 +248,7 @@ export default function AskKamarat({ shared, labelMap, details, language, onAskS
             aria-describedby={`${uid}-help`}
             placeholder={t('For example: Do I need to send the originals?')}
             dir="auto"
+            translate="no"
           />
           <p id={`${uid}-help`} className="small muted">
             {t('Names and numbers from your letter are hidden on your device before sending. Kamarat looks for new names when your device can. You see your question before it is sent.')}{' '}

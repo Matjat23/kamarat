@@ -131,14 +131,15 @@ export default function CheckLetter({
         </p>
       )}
       {detection.lost?.length > 0 && (
-        <p className="notice notice-warn small" role="alert">
+        <p className="notice notice-warn small" role="alert" translate="no">
           {t('You hid {text} before, but it is not in the text any more. If you changed how it is written, hide it again below.', {
             text: detection.lost.map((lost) => `"${lost}"`).join(', '),
           })}
         </p>
       )}
 
-      <div className="details-list" role="list">
+      {/* The details themselves never go to a browser translation service. */}
+      <div className="details-list" role="list" translate="no">
         {details.length === 0 && (
           <p className="muted small">{t('No personal details found yet. Hide anything you want below.')}</p>
         )}
@@ -173,6 +174,7 @@ export default function CheckLetter({
         </label>
         <input
           id="hide-more-input"
+          translate="no"
           value={extra}
           onChange={(e) => setExtra(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && hide(extra)}
@@ -220,13 +222,13 @@ export default function CheckLetter({
             <span>{t('Your letter')}</span>
             {selection ? (
               <button className="primary hide-selection" onClick={() => hide(selection)}>
-                {t('Hide')} "{selection.length > 24 ? `${selection.slice(0, 24)}...` : selection}"
+                {t('Hide')} <span translate="no">"{selection.length > 24 ? `${selection.slice(0, 24)}...` : selection}"</span>
               </button>
             ) : (
               <span className="small muted">{t('stays on this device')}</span>
             )}
           </div>
-          <div className="pane-body" ref={noticeRef} dir="auto">
+          <div className="pane-body" ref={noticeRef} dir="auto" translate="no">
             {segments.map((seg, i) =>
               seg.detail ? (
                 <mark key={i} className={`hl hl-${seg.detail.type}`} title={seg.label}>

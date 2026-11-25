@@ -80,6 +80,7 @@ export default function AddLetter({
         rows={phone ? 9 : 12}
         disabled={working}
         dir="auto"
+        translate="no"
       />
 
       {reading && (
