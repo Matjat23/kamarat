@@ -104,7 +104,7 @@ const PATTERNS = [
 const LABELLED_NUMBERS = [
   {
     type: 'CASE',
-    re: /(?:ärendenummer|diarienummer|dnr|kundnummer|case number|case no\.?|file number|reference number|customer number|account number|referensnummer|numéro de dossier|numéro client|référence|aktenzeichen|geschäftszeichen|kundennummer|número de expediente|expediente|número de cliente|protocollo|numero di pratica|zaaknummer|kenmerk|klantnummer|saksnummer|sagsnummer|journalnummer|asiankohta|diaarinumero|numer sprawy|sygnatura|номер дела|رقم الملف|رقم المرجع)\s*\(?\s*(?:nr|no|n°|nº)?\.?\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-/.]{3,30})/gi,
+    re: /(?:ärendenummer|diarienummer|dnr|kundnummer|case number|case no\.?|claim number|claim no\.?|application number|application no\.?|file number|reference number|customer number|account number|referensnummer|numéro de dossier|numéro client|référence|aktenzeichen|geschäftszeichen|kundennummer|número de expediente|expediente|número de cliente|protocollo|numero di pratica|zaaknummer|kenmerk|klantnummer|saksnummer|sagsnummer|journalnummer|asiankohta|diaarinumero|numer sprawy|sygnatura|номер дела|رقم الملف|رقم المرجع)\s*\(?\s*(?:nr|no|n°|nº)?\.?\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-/.]{3,30})/gi,
   },
   {
     type: 'ID',

@@ -3,6 +3,7 @@
 // more text, see exactly what will be sent, pick the language, and send.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildRedaction } from '../privacy'
+import { mostlyWithoutCapitals } from '../namesAddresses.js'
 import { t, msg } from '../i18n'
 import { LANGUAGES, languageLabel } from '../explain'
 import { LockIcon, ArrowIcon } from './Icons'
@@ -51,6 +52,11 @@ export default function CheckLetter({
     [text, details],
   )
   const hiddenCount = details.filter((d) => d.hidden).length
+  // A tick only counts for the exact text it was given for.
+  useEffect(() => {
+    setConfirmed(false)
+  }, [shared])
+  const noCapitals = needsConfirm && mostlyWithoutCapitals(text)
   const sentCount = details.length - hiddenCount
 
   // Works with a mouse and with a long press on a touch screen.
@@ -119,6 +125,11 @@ export default function CheckLetter({
         <LockIcon width={16} height={16} /> {t('{count} hidden', { count: hiddenCount })}
         {sentCount > 0 && <span className="count-sent"> · {t('{count} will be sent', { count: sentCount })}</span>}
       </span>
+      {noCapitals && (
+        <p className="notice notice-warn small" role="alert">
+          {t('This letter uses a script without capital letters, so Kamarat cannot find names in it here. Look for names yourself and hide them below.')}
+        </p>
+      )}
       {detection.lost?.length > 0 && (
         <p className="notice notice-warn small" role="alert">
           {t('You hid {text} before, but it is not in the text any more. If you changed how it is written, hide it again below.', {

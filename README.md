@@ -48,10 +48,12 @@ and register the same token in the Firebase console under App Check, Apps, Manag
 
 The `tools` folder has two small Python scripts:
 
-- `tools/make_test_notices.py` writes made-up notices with known personal details to `public/eval/notices.json`: 30 from templates (Swedish, English and French) plus 6 I wrote by hand in other layouts and languages, including one with no personal details at all.
+- `tools/make_test_notices.py` writes made-up notices with known personal details to `public/eval/notices.json`: 30 from templates (Swedish, English and French), 6 I wrote by hand in other layouts and languages, and 8 harder ones (a UK court letter, Dutch, Italian, Canadian, Japanese, Arabic, Spanish and Swedish with a c/o address).
 - `tools/score.py` checks the exact text Kamarat would send. A detail only counts as protected if no part of it is left in that text. It also reports how much of the rest of the letter was kept, so hiding everything would not score well.
 
-Open the app with `?eval` at the end of the address, press "Run the test", download `results.json`, then run `python tools/score.py results.json`. Without Gemini Nano only the pattern check runs: in my test it kept every ID, case, phone and email number out of the shared text (100 of 100) and kept 96 to 100 percent of the other text, but no names or addresses, which is the part Gemini Nano is there for.
+Open the app with `?eval` at the end of the address, press "Run the test", download `results.json`, then run `python tools/score.py results.json`.
+
+Without Gemini Nano, a rule-based check looks for numbers, emails, names (after greetings, titles and roles) and home addresses (address blocks, or a street the letter calls your address). Addresses of courts and offices stay visible. On all 44 test letters it now keeps 207 of 208 personal details out of the shared text. That number is flattering: I wrote the rules while looking at these letters. The 8 harder letters were written afterwards, and before I added rules for their formats the check caught 13 of their 21 details. So on devices without Gemini Nano, Kamarat also asks you to confirm that you read the text before it is sent.
 
 ## License
 

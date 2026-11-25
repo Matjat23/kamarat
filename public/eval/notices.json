@@ -997,5 +997,145 @@
     "kind": "se-information",
     "text": "Skatteverket informerar\n\nNu kan du deklarera digitalt från den 17 mars 2027. Om du godkänner deklarationen senast den 2 maj 2027 kan du få pengar tillbaka före midsommar.\n\nDu behöver inte göra något om uppgifterna stämmer. Läs mer på skatteverket.se.",
     "details": []
+  },
+  {
+    "id": "hard-uk-county-court",
+    "kind": "uk-court",
+    "text": "County Court at Manchester\nManchester Civil Justice Centre, 1 Bridge Street West, Manchester M60 9DJ\n\nMr Daniel O'Brien\nFlat 3, 27 Oakfield Road\nManchester M14 6RT\n\nClaim number: K9QZ4A21\n\nDear Mr O'Brien,\n\nA hearing has been listed. Please attend Court 2 at the address above on 14 January 2027 at 10:00. Please Reply By Friday if you cannot attend.\n\nBring this letter and any documents you want the judge to see.",
+    "details": [
+      {
+        "text": "Daniel O'Brien",
+        "type": "NAME"
+      },
+      {
+        "text": "Flat 3, 27 Oakfield Road, Manchester M14 6RT",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "K9QZ4A21",
+        "type": "CASE"
+      }
+    ]
+  },
+  {
+    "id": "hard-nl-belasting",
+    "kind": "nl-tax",
+    "text": "Belastingdienst\n\nDe heer P. van den Berg\nKeizersgracht 120-2\n1015 CX Amsterdam\n\nBurgerservicenummer: 123456782\n\nGeachte heer Van den Berg,\n\nU moet uw aangifte inkomstenbelasting uiterlijk 1 mei 2027 indienen. Doet u dat niet, dan kunnen wij u een boete geven.\n\nMet vriendelijke groet,\nBelastingdienst",
+    "details": [
+      {
+        "text": "P. van den Berg",
+        "type": "NAME"
+      },
+      {
+        "text": "Keizersgracht 120-2, 1015 CX Amsterdam",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "123456782",
+        "type": "ID"
+      }
+    ]
+  },
+  {
+    "id": "hard-it-questura",
+    "kind": "it-immigration",
+    "text": "Questura di Roma - Ufficio Immigrazione\n\nGentile Sig.ra Maria Rossi,\nresidente in Via Roma 15, 00184 Roma,\n\nla informiamo che il suo permesso di soggiorno è pronto. Codice fiscale: RSSMRA85T10A562S.\n\nPuò ritirarlo presso il nostro ufficio in Via Teofilo Patini 23 entro il 20 dicembre 2026, portando il passaporto.",
+    "details": [
+      {
+        "text": "Maria Rossi",
+        "type": "NAME"
+      },
+      {
+        "text": "Via Roma 15, 00184 Roma",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "RSSMRA85T10A562S",
+        "type": "ID"
+      }
+    ]
+  },
+  {
+    "id": "hard-ca-ircc",
+    "kind": "ca-immigration",
+    "text": "Immigration, Refugees and Citizenship Canada\n\nMr. Minh Nguyen\n456 Maple Ave Unit 12\nToronto ON M5V 2T6\n\nApplication number: E001234567\n\nDear Mr. Nguyen,\n\nWe need your biometrics. Please give your fingerprints and photo within 30 days of the date of this letter.",
+    "details": [
+      {
+        "text": "Minh Nguyen",
+        "type": "NAME"
+      },
+      {
+        "text": "456 Maple Ave Unit 12, Toronto ON M5V 2T6",
+        "type": "ADDRESS"
+      },
+      {
+        "text": "E001234567",
+        "type": "CASE"
+      }
+    ]
+  },
+  {
+    "id": "hard-jp-ward-office",
+    "kind": "jp-ward",
+    "text": "新宿区役所\n\n山田花子様\n〒160-0022 東京都新宿区新宿3丁目12番5号\n\n在留カードの住所変更の届出を、令和9年1月15日までに行ってください。",
+    "details": [
+      {
+        "text": "山田花子",
+        "type": "NAME"
+      },
+      {
+        "text": "東京都新宿区新宿3丁目12番5号",
+        "type": "ADDRESS"
+      }
+    ]
+  },
+  {
+    "id": "hard-ae-residency",
+    "kind": "ae-residency",
+    "text": "الهيئة الاتحادية للهوية والجنسية\n\nالسيدة فاطمة الزهراء علي المحترمة،\n\nرقم الهوية: 784-1985-1234567-1\n\nنود إبلاغك بأن إقامتك تنتهي في 31 ديسمبر 2026. يرجى تقديم طلب التجديد قبل هذا التاريخ.",
+    "details": [
+      {
+        "text": "فاطمة الزهراء علي",
+        "type": "NAME"
+      },
+      {
+        "text": "784-1985-1234567-1",
+        "type": "ID"
+      }
+    ]
+  },
+  {
+    "id": "hard-es-extranjeria",
+    "kind": "es-immigration",
+    "text": "Delegación del Gobierno en Madrid\n\nDña. Lucía Fernández de la Vega\nC/ Mayor 12, 3º B\n28013 Madrid\n\nEstimada Sra. Fernández de la Vega:\n\nDispone de diez días hábiles para aportar el contrato de trabajo firmado.",
+    "details": [
+      {
+        "text": "Lucía Fernández de la Vega",
+        "type": "NAME"
+      },
+      {
+        "text": "C/ Mayor 12, 3º B, 28013 Madrid",
+        "type": "ADDRESS"
+      }
+    ]
+  },
+  {
+    "id": "hard-se-cdo",
+    "kind": "se-benefits",
+    "text": "Försäkringskassan\n\nFatima Hassan\nc/o Johansson\nVästra Hamngatan 8\n411 17 Göteborg\n\nVi behöver träffa dig. Välkommen till vårt servicekontor på Kungsgatan 12 i Göteborg den 9 december 2026 klockan 10.\n\nMed vänlig hälsning\nFörsäkringskassan",
+    "details": [
+      {
+        "text": "Fatima Hassan",
+        "type": "NAME"
+      },
+      {
+        "text": "Johansson",
+        "type": "NAME"
+      },
+      {
+        "text": "Västra Hamngatan 8, 411 17 Göteborg",
+        "type": "ADDRESS"
+      }
+    ]
   }
 ]

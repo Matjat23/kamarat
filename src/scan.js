@@ -25,11 +25,12 @@ const TESSERACT = {
   pa: 'pan', ne: 'nep', uz: 'uzb', ti: 'tir', ps: 'pus', bs: 'bos', sr: 'srp',
 }
 const COUNTRY_TESSERACT = {
-  SE: 'swe', NO: 'nor', DK: 'dan', FI: 'fin', IS: 'isl', DE: 'deu', AT: 'deu', CH: 'deu', FR: 'fra', BE: 'fra',
-  LU: 'fra', ES: 'spa', IT: 'ita', PT: 'por', BR: 'por', NL: 'nld', PL: 'pol', CZ: 'ces', SK: 'slk', HU: 'hun',
+  SE: 'swe', NO: 'nor', DK: 'dan', FI: 'fin+swe', IS: 'isl', DE: 'deu', AT: 'deu', CH: 'deu+fra+ita', FR: 'fra',
+  BE: 'fra+nld+deu', LU: 'fra+deu', ES: 'spa+cat', IT: 'ita', PT: 'por', BR: 'por', NL: 'nld', PL: 'pol', CZ: 'ces', SK: 'slk', HU: 'hun',
   RO: 'ron', GR: 'ell', BG: 'bul', HR: 'hrv', SI: 'slv', RS: 'srp', TR: 'tur', UA: 'ukr', RU: 'rus', JP: 'jpn',
-  KR: 'kor', CN: 'chi_sim', TW: 'chi_tra', IN: 'hin', IL: 'heb', IR: 'fas', AF: 'fas', PK: 'urd', TH: 'tha',
-  VN: 'vie', ID: 'ind', MY: 'msa', ET: 'amh', KE: 'swa', TZ: 'swa', CA: 'fra', MA: 'fra', DZ: 'fra', TN: 'fra',
+  KR: 'kor', CN: 'chi_sim', TW: 'chi_tra', IN: 'hin+tam+ben', IL: 'heb+ara', IR: 'fas', AF: 'fas+pus', PK: 'urd',
+  TH: 'tha', VN: 'vie', ID: 'ind', MY: 'msa+chi_sim', ET: 'amh', ER: 'tir+ara', KE: 'swa', TZ: 'swa', CA: 'fra',
+  MA: 'ara+fra', DZ: 'ara+fra', TN: 'ara+fra', SG: 'chi_sim+msa',
   SN: 'fra', CI: 'fra', ML: 'fra', CM: 'fra', CD: 'fra', SA: 'ara', AE: 'ara', EG: 'ara', JO: 'ara', LB: 'ara',
   IQ: 'ara', SY: 'ara', KW: 'ara', QA: 'ara', BH: 'ara', OM: 'ara', YE: 'ara', LY: 'ara', SD: 'ara', MX: 'spa',
   AR: 'spa', CO: 'spa', CL: 'spa', PE: 'spa', VE: 'spa', EC: 'spa', BO: 'spa', PY: 'spa', UY: 'spa', CU: 'spa',
@@ -37,7 +38,8 @@ const COUNTRY_TESSERACT = {
 }
 
 export function readerLanguages(languageCode, country) {
-  return [...new Set(['eng', COUNTRY_TESSERACT[country], TESSERACT[languageCode]].filter(Boolean))]
+  const local = (COUNTRY_TESSERACT[country] ?? '').split('+')
+  return [...new Set(['eng', ...local, TESSERACT[languageCode]].filter(Boolean))].slice(0, 5)
 }
 
 // Returns { text, method, note, missing }. "note" says honestly what was and
@@ -128,13 +130,25 @@ async function makeImageReader(onProgress, languages) {
     if (!tesseract) {
       onProgress(t('Loading the text reader (first time only)...'))
       const { createWorker } = await import('tesseract.js')
-      tesseract = await createWorker(languages, 1, {
-        logger: (m) => {
-          if (m.status === 'recognizing text') {
-            onProgress(t('Reading {what} on this device: {percent}%', { what: reader.current, percent: Math.round(m.progress * 100) }))
-          }
-        },
-      })
+      const logger = (m) => {
+        if (m.status === 'recognizing text') {
+          onProgress(t('Reading {what} on this device: {percent}%', { what: reader.current, percent: Math.round(m.progress * 100) }))
+        } else if (m.status?.includes('loading language') && m.progress < 1) {
+          onProgress(t('Downloading the text reader: {percent}%', { percent: Math.round(m.progress * 100) }))
+        }
+      }
+      // If one language pack cannot be loaded (offline, for example), read with
+      // English alone rather than not at all.
+      try {
+        tesseract = await createWorker(languages, 1, { logger })
+      } catch (err) {
+        console.warn('Some text reader languages could not be loaded, using English only.', err)
+        try {
+          tesseract = await createWorker(['eng'], 1, { logger })
+        } catch {
+          throw new Error(t('The text reader could not be loaded. Check your internet connection, or paste the text instead.'))
+        }
+      }
     }
     const { data } = await tesseract.recognize(image)
     return data.text.replace(/\n{3,}/g, '\n\n').trim()

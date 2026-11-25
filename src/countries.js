@@ -126,8 +126,12 @@ export function weekendDays(code) {
   return [6, 0]
 }
 
-export function weekendText(code) {
-  const days = weekendDays(code)
+// Names of week days in the language on screen: [5, 6] -> "Friday and Saturday".
+export function dayNames(days) {
   const label = (d) => new Date(2026, 0, 4 + d).toLocaleDateString(dateLocale(), { weekday: 'long' })
   return days.map(label).join(t(' and '))
+}
+
+export function weekendText(code) {
+  return dayNames(weekendDays(code))
 }

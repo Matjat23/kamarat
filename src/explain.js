@@ -13,7 +13,7 @@ import {
 } from './firebase'
 import { SOURCES } from './sources'
 import { QuotaError, isDailyLimit, markUsedUp, usableModels } from './quota'
-import { countryNameEnglish, weekendDays, weekendText } from './countries'
+import { countryNameEnglish, weekendDays, weekendText, dayNames } from './countries'
 import { hostOf, isOfficialDomain } from './officialDomains'
 import { t, dateLocale } from './i18n'
 
@@ -141,7 +141,12 @@ const SCHEMA = {
               },
               date: { type: 'string', description: 'YYYY-MM-DD, only for FIXED_DATE.' },
               amount: { type: 'integer', description: 'Only for the AFTER_ kinds.' },
-              unit: { type: 'string', enum: ['DAYS', 'BUSINESS_DAYS', 'WEEKS', 'MONTHS'] },
+              unit: {
+                type: 'string',
+                enum: ['DAYS', 'BUSINESS_DAYS', 'BUSINESS_DAYS_WITH_SATURDAY', 'WEEKS', 'MONTHS'],
+                description:
+                  'BUSINESS_DAYS: Monday to Friday. BUSINESS_DAYS_WITH_SATURDAY: when the letter counts Saturday as a working day, for example French "jours ouvrables".',
+              },
               event: { type: 'string', description: 'Only for AFTER_OTHER_EVENT: the event in plain words.' },
             },
             required: ['kind'],
@@ -424,7 +429,9 @@ export function formatDay(day) {
 
 function addTime(start, amount, unit, weekend = [6, 0]) {
   const day = new Date(start)
-  if (unit === 'BUSINESS_DAYS') {
+  // Monday to Saturday: only the last weekend day (Sunday in most countries) is skipped.
+  if (unit === 'BUSINESS_DAYS_WITH_SATURDAY') weekend = weekend.slice(-1)
+  if (unit === 'BUSINESS_DAYS' || unit === 'BUSINESS_DAYS_WITH_SATURDAY') {
     let left = amount
     while (left > 0) {
       day.setDate(day.getDate() + 1)
@@ -448,6 +455,7 @@ function addTime(start, amount, unit, weekend = [6, 0]) {
 
 function spanText(amount, unit) {
   if (unit === 'BUSINESS_DAYS') return t('{amount} business days', { amount })
+  if (unit === 'BUSINESS_DAYS_WITH_SATURDAY') return t('{amount} working days (Monday to Saturday)', { amount })
   if (unit === 'WEEKS') return t('{amount} weeks', { amount })
   if (unit === 'MONTHS') return t('{amount} months', { amount })
   return t('{amount} days', { amount })
@@ -480,7 +488,7 @@ export function resolveDeadline(deadline, { noticeDate, receivedDate, quote, cou
     return {
       date: addTime(start, amount, unit, weekend),
       basis: t('{span} from {date}, the day you got it.', { span, date: formatDay(start) }),
-      businessNote: unit === 'BUSINESS_DAYS' ? weekendText(country) : '',
+      businessNote: unit === 'BUSINESS_DAYS' ? weekendText(country) : unit === 'BUSINESS_DAYS_WITH_SATURDAY' ? dayNames(weekendDays(country).slice(-1)) : '',
     }
   }
 
@@ -490,7 +498,7 @@ export function resolveDeadline(deadline, { noticeDate, receivedDate, quote, cou
     return {
       date: addTime(start, amount, unit, weekend),
       basis: t('{span} from {date}, the date on the letter.', { span, date: formatDay(start) }),
-      businessNote: unit === 'BUSINESS_DAYS' ? weekendText(country) : '',
+      businessNote: unit === 'BUSINESS_DAYS' ? weekendText(country) : unit === 'BUSINESS_DAYS_WITH_SATURDAY' ? dayNames(weekendDays(country).slice(-1)) : '',
     }
   }
 

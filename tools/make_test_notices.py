@@ -310,6 +310,161 @@ Du behöver inte göra något om uppgifterna stämmer. Läs mer på skatteverket
     },
 ]
 
+# Harder letters, written after the name and address rules, in formats the
+# rules were not tuned for. Their score is the honest one. Public places in
+# them (a court, an office) are not personal and should stay visible.
+HARDER = [
+    {
+        "id": "hard-uk-county-court",
+        "kind": "uk-court",
+        "text": """County Court at Manchester
+Manchester Civil Justice Centre, 1 Bridge Street West, Manchester M60 9DJ
+
+Mr Daniel O'Brien
+Flat 3, 27 Oakfield Road
+Manchester M14 6RT
+
+Claim number: K9QZ4A21
+
+Dear Mr O'Brien,
+
+A hearing has been listed. Please attend Court 2 at the address above on 14 January 2027 at 10:00. Please Reply By Friday if you cannot attend.
+
+Bring this letter and any documents you want the judge to see.""",
+        "details": [
+            {"text": "Daniel O'Brien", "type": "NAME"},
+            {"text": "Flat 3, 27 Oakfield Road, Manchester M14 6RT", "type": "ADDRESS"},
+            {"text": "K9QZ4A21", "type": "CASE"},
+        ],
+    },
+    {
+        "id": "hard-nl-belasting",
+        "kind": "nl-tax",
+        "text": """Belastingdienst
+
+De heer P. van den Berg
+Keizersgracht 120-2
+1015 CX Amsterdam
+
+Burgerservicenummer: 123456782
+
+Geachte heer Van den Berg,
+
+U moet uw aangifte inkomstenbelasting uiterlijk 1 mei 2027 indienen. Doet u dat niet, dan kunnen wij u een boete geven.
+
+Met vriendelijke groet,
+Belastingdienst""",
+        "details": [
+            {"text": "P. van den Berg", "type": "NAME"},
+            {"text": "Keizersgracht 120-2, 1015 CX Amsterdam", "type": "ADDRESS"},
+            {"text": "123456782", "type": "ID"},
+        ],
+    },
+    {
+        "id": "hard-it-questura",
+        "kind": "it-immigration",
+        "text": """Questura di Roma - Ufficio Immigrazione
+
+Gentile Sig.ra Maria Rossi,
+residente in Via Roma 15, 00184 Roma,
+
+la informiamo che il suo permesso di soggiorno è pronto. Codice fiscale: RSSMRA85T10A562S.
+
+Può ritirarlo presso il nostro ufficio in Via Teofilo Patini 23 entro il 20 dicembre 2026, portando il passaporto.""",
+        "details": [
+            {"text": "Maria Rossi", "type": "NAME"},
+            {"text": "Via Roma 15, 00184 Roma", "type": "ADDRESS"},
+            {"text": "RSSMRA85T10A562S", "type": "ID"},
+        ],
+    },
+    {
+        "id": "hard-ca-ircc",
+        "kind": "ca-immigration",
+        "text": """Immigration, Refugees and Citizenship Canada
+
+Mr. Minh Nguyen
+456 Maple Ave Unit 12
+Toronto ON M5V 2T6
+
+Application number: E001234567
+
+Dear Mr. Nguyen,
+
+We need your biometrics. Please give your fingerprints and photo within 30 days of the date of this letter.""",
+        "details": [
+            {"text": "Minh Nguyen", "type": "NAME"},
+            {"text": "456 Maple Ave Unit 12, Toronto ON M5V 2T6", "type": "ADDRESS"},
+            {"text": "E001234567", "type": "CASE"},
+        ],
+    },
+    {
+        "id": "hard-jp-ward-office",
+        "kind": "jp-ward",
+        "text": """新宿区役所
+
+山田花子様
+〒160-0022 東京都新宿区新宿3丁目12番5号
+
+在留カードの住所変更の届出を、令和9年1月15日までに行ってください。""",
+        "details": [
+            {"text": "山田花子", "type": "NAME"},
+            {"text": "東京都新宿区新宿3丁目12番5号", "type": "ADDRESS"},
+        ],
+    },
+    {
+        "id": "hard-ae-residency",
+        "kind": "ae-residency",
+        "text": """الهيئة الاتحادية للهوية والجنسية
+
+السيدة فاطمة الزهراء علي المحترمة،
+
+رقم الهوية: 784-1985-1234567-1
+
+نود إبلاغك بأن إقامتك تنتهي في 31 ديسمبر 2026. يرجى تقديم طلب التجديد قبل هذا التاريخ.""",
+        "details": [
+            {"text": "فاطمة الزهراء علي", "type": "NAME"},
+            {"text": "784-1985-1234567-1", "type": "ID"},
+        ],
+    },
+    {
+        "id": "hard-es-extranjeria",
+        "kind": "es-immigration",
+        "text": """Delegación del Gobierno en Madrid
+
+Dña. Lucía Fernández de la Vega
+C/ Mayor 12, 3º B
+28013 Madrid
+
+Estimada Sra. Fernández de la Vega:
+
+Dispone de diez días hábiles para aportar el contrato de trabajo firmado.""",
+        "details": [
+            {"text": "Lucía Fernández de la Vega", "type": "NAME"},
+            {"text": "C/ Mayor 12, 3º B, 28013 Madrid", "type": "ADDRESS"},
+        ],
+    },
+    {
+        "id": "hard-se-cdo",
+        "kind": "se-benefits",
+        "text": """Försäkringskassan
+
+Fatima Hassan
+c/o Johansson
+Västra Hamngatan 8
+411 17 Göteborg
+
+Vi behöver träffa dig. Välkommen till vårt servicekontor på Kungsgatan 12 i Göteborg den 9 december 2026 klockan 10.
+
+Med vänlig hälsning
+Försäkringskassan""",
+        "details": [
+            {"text": "Fatima Hassan", "type": "NAME"},
+            {"text": "Johansson", "type": "NAME"},
+            {"text": "Västra Hamngatan 8, 411 17 Göteborg", "type": "ADDRESS"},
+        ],
+    },
+]
+
 
 def norm(text):
     return " ".join(text.lower().replace(",", " ").split())
@@ -340,7 +495,7 @@ def main():
     for i in range(args.count):
         kind, text, details = KINDS[i % len(KINDS)](rng)
         notices.append({"id": f"{kind}-{i + 1:02d}", "kind": kind, "text": text, "details": details})
-    notices += HANDWRITTEN
+    notices += HANDWRITTEN + HARDER
     check(notices)
 
     out = Path(args.out)

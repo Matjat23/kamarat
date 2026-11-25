@@ -106,33 +106,52 @@ function savePartial(code, map) {
 
 export class Cancelled extends Error {}
 
+// Texts about privacy, what is sent and deadlines. A translation that misses
+// any of these is not used, so nobody gets those parts in a language they
+// cannot read without noticing.
+const CRITICAL = STRINGS.filter((s) => /sent|send|hidden|hide|private|privacy|cloud|on your device|deadline|legal/i.test(s))
+
+// Asks Gemini for one part and adds the good answers to map. Returns how many
+// different texts came back translated.
+async function translatePart(language, batch, map, onStatus) {
+  const numbered = batch.map((text, i) => ({ i, text }))
+  const prompt = `Language: ${language}\n\nTexts:\n${JSON.stringify(numbered)}`
+  const result = await askWithRetries(prompt, onStatus)
+  const raw = result.response.text()
+  const list = JSON.parse(raw.slice(raw.indexOf('['), raw.lastIndexOf(']') + 1))
+  const done = new Set()
+  for (const item of Array.isArray(list) ? list : []) {
+    const english = batch[item?.i]
+    const translated = typeof item?.text === 'string' ? item.text.trim() : ''
+    // A translation that lost a {placeholder} would show wrong numbers, so
+    // that one text stays in English. The same number twice counts once.
+    if (english && translated && !done.has(item.i) && placeholders(translated) === placeholders(english)) {
+      map[english] = translated
+      done.add(item.i)
+    }
+  }
+  return done.size
+}
+
 // Translates every text that is not translated yet, about 120 at a time.
 // Finished parts are kept, so a retry continues where it stopped. isCancelled
 // is checked between parts, so choosing another language stops this one.
+// Texts that are still missing at the end are asked for once more.
 export async function translateAll(language, onStatus = () => {}, { code = '', isCancelled = () => false } = {}) {
   const map = code ? readPartial(code) : {}
   const todo = STRINGS.filter((english) => !map[english])
   for (let start = 0; start < todo.length; start += 120) {
     if (isCancelled()) throw new Cancelled()
     const batch = todo.slice(start, start + 120)
-    const numbered = batch.map((text, i) => ({ i, text }))
-    const prompt = `Language: ${language}\n\nTexts:\n${JSON.stringify(numbered)}`
-    const result = await askWithRetries(prompt, onStatus)
-    const raw = result.response.text()
-    const list = JSON.parse(raw.slice(raw.indexOf('['), raw.lastIndexOf(']') + 1))
-    let good = 0
-    for (const item of Array.isArray(list) ? list : []) {
-      const english = batch[item?.i]
-      const translated = typeof item?.text === 'string' ? item.text.trim() : ''
-      // A translation that lost a {placeholder} would show wrong numbers, so
-      // that one text stays in English.
-      if (english && translated && placeholders(translated) === placeholders(english)) {
-        map[english] = translated
-        good += 1
-      }
-    }
+    const good = await translatePart(language, batch, map, onStatus)
     // A part that came back mostly empty or broken counts as failed.
     if (good < batch.length * 0.9) throw new Error('The translation came back incomplete')
+    if (code) savePartial(code, map)
+  }
+  const missing = STRINGS.filter((english) => !map[english])
+  for (let start = 0; start < missing.length; start += 120) {
+    if (isCancelled()) throw new Cancelled()
+    await translatePart(language, missing.slice(start, start + 120), map, onStatus)
     if (code) savePartial(code, map)
   }
   return map
@@ -172,8 +191,10 @@ export async function loadUiTranslation(language, code, { onStatus = () => {}, i
   const saved = cached(code)
   if (saved) return saved
   const map = (await shipped(code)) ?? (await translateAll(language, onStatus, { code, isCancelled }))
-  // Only a translation that covers nearly everything is kept.
-  if (Object.keys(map).length < STRINGS.length * 0.9) throw new Error('The translation is incomplete')
+  // Only a translation that covers nearly everything, and every text about
+  // privacy and deadlines, is kept.
+  const coverage = STRINGS.filter((english) => map[english]).length / STRINGS.length
+  if (coverage < 0.95 || CRITICAL.some((english) => !map[english])) throw new Error('The translation is incomplete')
   try {
     localStorage.setItem(cacheKey(code), JSON.stringify(map))
     localStorage.removeItem(partialKey(code))
