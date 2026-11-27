@@ -5,6 +5,7 @@ Katty is your friend in a new country. It guides you through the setup, explains
 <p align="center">
   <img src="docs/screenshots/home.jpg" alt="Katty home screen" width="260">
   <img src="docs/screenshots/check.jpg" alt="Katty showing which personal details in a test letter stay hidden" width="260">
+  <img src="docs/screenshots/move.jpg" alt="My move: the setup steps for someone moving to Sweden to work" width="260">
 </p>
 
 Try it: [katty-buddy.web.app](https://katty-buddy.web.app) (desktop Chrome with Gemini Nano for the on-device part).

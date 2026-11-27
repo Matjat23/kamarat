@@ -29,3 +29,6 @@ eval-report.md
 results.json
 __pycache__/
 design-preview/
+
+# Devpost text, video script and screenshots for the submission
+submission/

@@ -1705,6 +1705,7 @@ button.chat-panel-close:hover:not(:disabled) {
 .main > .guide,
 .main > .more-page,
 .main .reading-card {
+  box-sizing: border-box;
   width: 100%;
   max-width: var(--read-max);
   margin-inline: auto;
@@ -1966,4 +1967,12 @@ button.way-link:focus-visible {
     padding-block: 0 20px;
     padding-inline: 24px;
   }
+}
+
+/* A ticked step in My move: a green box with a white tick (the white box
+   above would otherwise hide the tick). */
+.move-step .done-toggle.is-done {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
 }
