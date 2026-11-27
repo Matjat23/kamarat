@@ -10,6 +10,7 @@
 import { t } from './i18n'
 import { getGenerativeModel, InferenceMode } from 'firebase/ai'
 import { ai, checkOnDeviceModel } from './firebase'
+import { withDeadline } from './deadline'
 
 const MAX_SIDE = 2000
 const MAX_PDF_PAGES = 15
@@ -86,10 +87,16 @@ async function readPdf(file, onProgress, languages) {
       text = text.replace(/[ \t]+\n/g, '\n').trim()
 
       // Little or no text on this page: it is a scan, so read it like a photo.
-      if (text.length < 40) {
+      // A page with a little text (a typed header) and a picture may be a
+      // scanned letter under that header: read it as an image too, and keep
+      // whichever gives more text.
+      const scanned = text.length < 40
+      const maybeScanned = !scanned && text.length < 600 && (await hasImage(page, pdfjs))
+      if (scanned || maybeScanned) {
         reader ??= await makeImageReader(onProgress, languages)
         const image = await renderPage(page)
-        text = await reader.read(image, t('page {n} of {total}', { n, total: limit }))
+        const read = await reader.read(image, t('page {n} of {total}', { n, total: limit }))
+        if (scanned || read.trim().length > text.length) text = read
         imagePages += 1
       }
       pages.push(text)
@@ -162,7 +169,8 @@ async function makeImageReader(onProgress, languages) {
       if (nano) {
         try {
           onProgress(t('Gemini Nano is reading {what} on this device...', { what: label }))
-          const text = await readImageWithNano(image)
+          // At most a minute, then the text reader (Tesseract) takes over.
+          const text = await withDeadline(() => readImageWithNano(image), 60000)
           if (text.trim().length > 20) return text
         } catch (err) {
           console.warn('Gemini Nano could not read the image, using the text reader.', err)
@@ -196,6 +204,17 @@ async function blobToBase64(blob) {
     binary += String.fromCharCode(...buffer.subarray(i, i + 0x8000))
   }
   return btoa(binary)
+}
+
+// Does this PDF page draw a picture (for example a scanned page)?
+async function hasImage(page, pdfjs) {
+  try {
+    const ops = await page.getOperatorList()
+    const kinds = [pdfjs.OPS.paintImageXObject, pdfjs.OPS.paintInlineImageXObject, pdfjs.OPS.paintJpegXObject]
+    return ops.fnArray.some((fn) => kinds.includes(fn))
+  } catch {
+    return false
+  }
 }
 
 async function readImageWithNano(image) {

@@ -4,7 +4,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import {
   makeMovePlan, loadMovePlan, saveMovePlan, moveProgress, addOwnStep,
-  PHASES, PHASE_TITLES, PURPOSES, MOVE_CHANGED, EXAMPLE_PLAN,
+  PHASES, PHASE_TITLES, PURPOSES, MOVE_CHANGED, EXAMPLE_PLAN, moveSaveFailed,
 } from '../move'
 import { countryList, countryName } from '../countries'
 import { languageProps } from '../explain'
@@ -255,6 +255,11 @@ export default function MyMove({ country, language, onAsk }) {
         <h1 className="flow-title" tabIndex={-1} data-step-heading>
           {t('Your move to {country}', { country: countryName(plan.to) })}
         </h1>
+        {moveSaveFailed() && (
+          <p className="notice notice-warn small" role="status">
+            {t('This list could not be saved on this device. It stays until you close the page.')}
+          </p>
+        )}
         <div className="move-progress" aria-label={t('{done} of {total} done', { done, total })}>
           <div className="progress-track"><span style={{ width: `${total ? (done / total) * 100 : 0}%` }} /></div>
           <span className="small muted">{t('{done} of {total} done', { done, total })}</span>

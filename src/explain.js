@@ -16,6 +16,7 @@ import { QuotaError, isDailyLimit, markUsedUp, usableModels } from './quota'
 import { countryNameEnglish, weekendDays, weekendText, dayNames } from './countries'
 import { hostOf, isOfficialDomain } from './officialDomains'
 import { t, dateLocale } from './i18n'
+import { withDeadline } from './deadline'
 
 // Languages Katty can answer in. Each one is shown in its own script, so
 // people can find theirs. English first, then by English name. The screens of
@@ -306,21 +307,6 @@ export function isTemporary(err) {
   )
 }
 
-// Stops waiting after `ms`, even when a step inside has no timeout of its own
-// (for example getting the App Check token). A late answer is ignored, and
-// state.expired tells the work behind it not to start anything new.
-export function withDeadline(work, ms) {
-  const state = { expired: false }
-  let timer
-  const deadline = new Promise((_, reject) => {
-    timer = setTimeout(() => {
-      state.expired = true
-      reject(new Error('Gemini timed out'))
-    }, ms)
-  })
-  return Promise.race([work(state), deadline]).finally(() => clearTimeout(timer))
-}
-
 // One try on the main model, then one on the backup model. A model whose daily
 // free limit is used up is skipped until the limit resets. timeout is the time
 // one model gets; budget is the time for everything, so a busy Gemini fails in
@@ -446,13 +432,20 @@ export function dateInQuote(day, quote) {
   ]
   if (numeric.some((p) => (typeof p === 'string' ? q.includes(p) : p.test(q)))) return true
 
-  // Written forms: "15 december 2026", "December 15, 2026", "le 15 janvier"
-  const hasDay = new RegExp(`\\D0?${d}(st|nd|rd|th|e|:e|er)?\\D`).test(q)
-  const names = monthNames[m - 1]
-  const hasMonth = names.some((name) => new RegExp(`(^|[^\\p{L}])${name}([^\\p{L}]|$)`, 'u').test(q))
+  // Written forms: "15 december 2026", "December 15, 2026", "le 15 janvier",
+  // "15. Dezember", "15 de diciembre". The day and the month have to stand
+  // together: in "dated 15 November ... by 30 December", 15 December is not there.
+  const names = monthNames[m - 1].map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')
+  const dayPart = `0?${d}(?:st|nd|rd|th|e|:e|er)?\\.?`
+  const dayMonth = new RegExp(`(?:^|[^\\p{Nd}])${dayPart}\\s*(?:de\\s+|del\\s+|of\\s+)?(?:${names})(?![\\p{L}])(?:[\\s,.]*(\\p{Nd}{4}))?`, 'u')
+  const monthDay = new RegExp(`(?:^|[^\\p{L}])(?:${names})\\s+${dayPart}(?![\\p{Nd}])(?:[\\s,.]*(\\p{Nd}{4}))?`, 'u')
+  const match = q.match(dayMonth) ?? q.match(monthDay)
+  if (!match) return false
+  // A year right after the date has to be the right one; otherwise any year
+  // written in the quote has to be.
+  if (match[1]) return match[1] === String(y)
   const years = q.match(/\b(19|20)\d{2}\b/g)
-  const yearOk = !years || years.includes(String(y))
-  return hasDay && hasMonth && yearOk
+  return !years || years.includes(String(y))
 }
 
 export function formatDay(day) {

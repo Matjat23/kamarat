@@ -41,6 +41,7 @@ import MyMove from './components/MyMove'
 import AskGuide from './components/AskGuide'
 import { loadMovePlan, MOVE_CHANGED } from './move'
 import Onboarding, { Settings } from './components/Setup'
+import { withDeadline } from './deadline'
 import './App.css'
 import './layout.css'
 import './redesign.css'
@@ -159,6 +160,8 @@ export default function App() {
   const [liveSavedId, setLiveSavedId] = useState(null)
   const [papers, setPapers] = useState(listPapers)
   const detectRun = useRef(0)
+  // Only the newest letter file counts: an older, slower read is dropped.
+  const readRun = useRef(0)
 
   function setLanguage(name) {
     setLanguageState(name)
@@ -278,6 +281,12 @@ export default function App() {
     })
   }, [routeKey])
 
+  // The Ask chat is kept (hidden) once it has been opened, like an open letter.
+  const [guideOpened, setGuideOpened] = useState(false)
+  useEffect(() => {
+    if (route.view === 'ask') setGuideOpened(true)
+  }, [route.view])
+
   // When the menu closes on the same screen (Close, Escape, or Back to the same
   // screen), focus goes back to the Menu button, so keyboard users keep their
   // place. A new screen focuses its own heading instead (see above). This runs
@@ -300,6 +309,7 @@ export default function App() {
       if (!ok) return false
     }
     detectRun.current += 1
+    readRun.current += 1
     setShared('')
     setLabelMap({})
     setLiveSavedId(null)
@@ -315,21 +325,28 @@ export default function App() {
 
   async function readLetterFile(file, { fresh = false } = {}) {
     if (fresh && !beginNewLetter()) return
+    const run = ++readRun.current
     go('new')
     setMessage(null)
     setReading(t('Opening the file on your device...'))
     try {
       const lang = LANGUAGES.find((l) => l.name === language)
-      const { text: found, method, note, missing } = await readFile(file, setReading, readerLanguages(lang?.code, country))
+      const { text: found, method, note, missing } = await readFile(
+        file,
+        (status) => run === readRun.current && setReading(status),
+        readerLanguages(lang?.code, country),
+      )
+      // Another letter was started while this one was read: drop this one.
+      if (run !== readRun.current) return
       setText(found)
       setMessage({
         kind: missing ? 'warn' : 'check',
         text: `${t(METHOD_TEXT[method] ?? METHOD_TEXT.pdf)} ${note} ${t('Check that the text matches your letter, especially numbers and dates.')}`.replace(/\s+/g, ' '),
       })
     } catch (err) {
-      setMessage({ kind: 'warn', text: err.message })
+      if (run === readRun.current) setMessage({ kind: 'warn', text: err.message })
     } finally {
-      setReading('')
+      if (run === readRun.current) setReading('')
     }
   }
 
@@ -352,6 +369,8 @@ export default function App() {
 
   function pickExample(example, { fresh = false } = {}) {
     if (fresh && !beginNewLetter()) return
+    readRun.current += 1
+    setReading('')
     setText(example.text)
     setMessage(null)
     go('new')
@@ -378,9 +397,12 @@ export default function App() {
     if (!['unsupported', 'unavailable'].includes(nanoStatus)) {
       try {
         setProgress(t('Starting private on-device AI...'))
-        await detectorModel.initializeDeviceModel((value) =>
+        const start = detectorModel.initializeDeviceModel((value) =>
           setProgress(t('Downloading on-device AI: {percent}%', { percent: Math.round(value * 100) })),
         )
+        // When the model is already on the device, starting it takes seconds:
+        // after 30 the pattern check takes over. A download shows its progress.
+        await (nanoStatus === 'available' ? withDeadline(() => start, 30000) : start)
         setProgress(t('Looking for personal details on your device...'))
         const result = await detectWithAI(detectorModel, text)
         aiItems = result.items
@@ -439,15 +461,16 @@ export default function App() {
   const expired = (view === 'check' && !checkReady) || (view === 'letter' && !shared)
   const inFlow = view === 'new' || view === 'check'
 
-  // Opens the guide chat, with a question ready to send or edit.
-  // Opens the guide chat, with a question ready to send or edit. Coming from
-  // another screen starts a new chat; tapping Ask while already there keeps it.
+  // Opens the guide chat. The chat stays while the app is open (it is never
+  // saved), so Ask from anywhere comes back to it. A question from a move
+  // step, or a move list's country, starts a new chat about that.
   function openGuide(question = '', countryCode = '') {
-    if (view === 'ask' && !question) return
-    setGuideQuestion(question)
-    setGuideCountry(countryCode)
-    setGuideSession((n) => n + 1)
-    go('ask')
+    if (question || countryCode) {
+      setGuideQuestion(question)
+      setGuideCountry(countryCode)
+      setGuideSession((n) => n + 1)
+    }
+    if (view !== 'ask') go('ask')
   }
 
   function closeMenu() {
@@ -576,15 +599,17 @@ export default function App() {
         )}
 
         {view === 'move' && <MyMove country={country} language={language} onAsk={openGuide} />}
-        {view === 'ask' && (
-          <AskGuide
-            key={guideSession}
-            country={country}
-            language={language}
-            startQuestion={guideQuestion}
-            startCountry={guideCountry}
-            onAddLetter={newLetter}
-          />
+        {(view === 'ask' || guideOpened) && (
+          <div hidden={view !== 'ask'}>
+            <AskGuide
+              key={guideSession}
+              country={country}
+              language={language}
+              startQuestion={guideQuestion}
+              startCountry={guideCountry}
+              onAddLetter={newLetter}
+            />
+          </div>
         )}
 
         {view === 'new' && (

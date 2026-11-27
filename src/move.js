@@ -8,7 +8,8 @@
 // - No phone numbers, street addresses, fees or waiting times: those change
 //   and are easy to get wrong. Each step points to the official website instead.
 // - The list is kept only in this browser, like My papers.
-import { askCloudJSON, isTemporary, withDeadline } from './explain'
+import { askCloudJSON, isTemporary } from './explain'
+import { withDeadline } from './deadline'
 import { countryNameEnglish } from './countries'
 import { hostOf, isHelpDomain } from './officialDomains'
 import { msg } from './i18n'
@@ -141,7 +142,17 @@ const PHONE_CUE = new RegExp(`(?:${PHONE_WORD.source})[\\s:.(\\p{Pd}]{0,4}$`, 'i
 // Could this be a real date? 12.34.5678 and 0207-12-30 cannot: a 4-digit year
 // has to be between 1900 and 2100. Only checked for 0-9 digits; dates in other
 // digits are kept as they are.
-function couldBeDate(text) {
+// The zero of each digit system Katty's languages use (0, ٠, ۰, ०, ০ and so on).
+const DIGIT_ZEROS = [0x30, 0x660, 0x6f0, 0x7c0, 0x966, 0x9e6, 0xa66, 0xae6, 0xb66, 0xbe6, 0xc66, 0xce6, 0xd66, 0xe50, 0xed0, 0xf20, 0x1040, 0x17e0, 0x1810, 0xff10]
+const toAsciiDigits = (text) =>
+  text.replace(/\p{Nd}/gu, (c) => {
+    const cp = c.codePointAt(0)
+    const zero = DIGIT_ZEROS.find((z) => cp >= z && cp < z + 10)
+    return zero === undefined ? c : String(cp - zero)
+  })
+
+function couldBeDate(original) {
+  const text = toAsciiDigits(original)
   if (!/^[0-9./-]+$/.test(text)) return true
   const parts = text.split(/[-./]/)
   const [a, b, c] = parts.map(Number)
@@ -205,7 +216,7 @@ const LEGAL_WORDS = new RegExp(
     // Polish
     // dług (debt) as a whole word, so długo (long) does not count
     'odwołan', 'odmow', 'odrzuc', 'wydalen', 'sąd', 'adwokat', 'prawnik', 'policj', 'grzywn', 'zadłuż',
-    'dług(?:u|ów|ami|iem)?(?!\\p{L})',
+    'dług(?:u|ów|ami|iem|ach|om)?(?!\\p{L})', 'mam długi',
     'komornik', 'windykac', 'eksmisj', 'zatrzyma',
     // Somali
     'racfaan', 'la diiday', 'masaafur', 'tarxiil', 'maxkamad', 'qareen', 'booliis', 'ganaax', 'xabsi', 'deynta',
@@ -292,7 +303,13 @@ export async function makeMovePlan({ to, from, citizenship, purpose, language, o
   return { to, from: from || '', citizenship: citizenship || '', purpose, language, createdAt: new Date().toISOString(), steps }
 }
 
+// The newest list when this browser could not save it (storage full or
+// blocked). It stays until the page is closed.
+let unsaved = null
+export const moveSaveFailed = () => unsaved !== null
+
 export function loadMovePlan() {
+  if (unsaved) return unsaved
   try {
     const data = JSON.parse(localStorage.getItem(KEY) ?? 'null')
     if (!data || typeof data !== 'object' || !/^[A-Z]{2}$/.test(data.to ?? '')) return null
@@ -305,14 +322,17 @@ export function loadMovePlan() {
 }
 
 export function saveMovePlan(plan) {
+  let saved = true
   try {
     if (plan) localStorage.setItem(KEY, JSON.stringify(plan))
     else localStorage.removeItem(KEY)
-    window.dispatchEvent(new Event(MOVE_CHANGED))
-    return true
+    unsaved = null
   } catch {
-    return false
+    unsaved = plan
+    saved = false
   }
+  window.dispatchEvent(new Event(MOVE_CHANGED))
+  return saved
 }
 
 export function moveProgress(plan) {

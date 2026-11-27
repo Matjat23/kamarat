@@ -6,6 +6,7 @@
 // 3. The code keeps only details that really appear in the text, then replaces
 //    them with labels like [NAME_1]. Dates, amounts and deadlines are never touched.
 import { findNamesAndAddresses } from './namesAddresses.js'
+import { withDeadline } from './deadline.js'
 
 export const TYPE_LABELS = {
   NAME: 'Name',
@@ -43,10 +44,9 @@ Letter:
 // Asks Gemini Nano for the list. Throws if the on-device model is not available,
 // and also if its answer cannot be read, so a broken answer never looks like
 // "no personal details found".
+// At most 45 seconds: then the callers fall back to the pattern check.
 export async function detectWithAI(model, text) {
-  const result = await model.generateContent(
-    DETECT_PROMPT.replace('{LETTER}', text),
-  )
+  const result = await withDeadline(() => model.generateContent(DETECT_PROMPT.replace('{LETTER}', text)), 45000)
   const items = parseDetailList(result.response.text())
   if (items === null) throw new Error('On-device detection returned an answer Katty could not read')
   return { items, source: result.response.inferenceSource }
