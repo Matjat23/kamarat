@@ -8,7 +8,7 @@ import {
 } from '../move'
 import { countryList, countryName } from '../countries'
 import { languageProps } from '../explain'
-import { t, uiLanguageCode } from '../i18n'
+import { t, dateLocale } from '../i18n'
 import { useAccount } from '../accountState'
 import { ArrowIcon, ChatIcon, CheckIcon, LandmarkIcon, LockIcon, Dots } from './Icons'
 
@@ -27,8 +27,8 @@ function CountrySelect({ id, value, onChange, countries, empty }) {
 function MoveSetup({ country, language, onMade, onExample }) {
   const uid = useId()
   // Country names follow the screen language, once its translation has loaded.
-  const screenLanguage = uiLanguageCode()
-  const countries = useMemo(() => countryList(screenLanguage), [screenLanguage])
+  const locale = dateLocale()
+  const countries = useMemo(() => countryList(locale), [locale])
   const [to, setTo] = useState(country || '')
   const [from, setFrom] = useState('')
   const [citizenship, setCitizenship] = useState('')

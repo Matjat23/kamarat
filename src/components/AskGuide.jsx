@@ -12,7 +12,7 @@ import { isOfficialDomain } from '../officialDomains'
 import { detectorModel, checkOnDeviceModel } from '../firebase'
 import { SharedText } from './Text'
 import ReviewBeforeSend from './ReviewBeforeSend'
-import { t, uiLanguageCode } from '../i18n'
+import { t, dateLocale } from '../i18n'
 import { CloudIcon, LandmarkIcon, ArrowIcon, CameraIcon, Dots } from './Icons'
 
 const COUNTRY_KEY = 'katty.ask.country.v1'
@@ -116,8 +116,8 @@ function GuideAnswer({ turn, language, place, onAsk, onAddLetter }) {
 export default function AskGuide({ country, language, startQuestion, startCountry, onAddLetter, compact = false }) {
   const uid = useId()
   // Country names follow the screen language, once its translation has loaded.
-  const screenLanguage = uiLanguageCode()
-  const countries = useMemo(() => countryList(screenLanguage), [screenLanguage])
+  const locale = dateLocale()
+  const countries = useMemo(() => countryList(locale), [locale])
   // The move list, kept up to date (the chat panel stays open while you change it).
   const [plan, setPlan] = useState(loadMovePlan)
   useEffect(() => {
