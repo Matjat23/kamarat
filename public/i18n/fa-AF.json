@@ -440,5 +440,7 @@
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "فقط صفحه‌های ۱ تا {read} از {total} خوانده شد. اگر در صفحه‌ای بعدی تاریخ یا تصمیمی هست، متن آن را اضافه کنید، وگرنه ممکن است Katty آن را نبیند.",
  "Add all {count} dates to my calendar": "همه {count} تاریخ را به تقویم من اضافه کن",
  "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini فعلاً مصروف است، پس این توضیحی است که Katty برای این مکتوب نمونه آماده نگه داشته است.",
- "It is in English.": "به انگلیسی است."
+ "It is in English.": "به انگلیسی است.",
+ "Only My move is synced: the countries, your reason and your steps, also the ones you add yourself.": "فقط «نقل مکان من» همگام می‌شود: کشورها، دلیل شما و قدم‌های شما، همچنین قدم‌هایی که خودتان اضافه می‌کنید.",
+ "Your letters and My papers stay on this device.": "مکتوب‌های شما و «اسناد من» در همین دستگاه می‌مانند."
 }

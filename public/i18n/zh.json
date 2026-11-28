@@ -440,5 +440,7 @@
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "{total} 页中只读取了第 1 到第 {read} 页。如果后面的页面上有日期或决定，请把那部分文字加进来，否则 Katty 可能会漏掉。",
  "Add all {count} dates to my calendar": "把全部 {count} 个日期添加到我的日历",
  "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini 现在很忙，所以这是 Katty 为这封示例信事先准备好的解释。",
- "It is in English.": "它是英文的。"
+ "It is in English.": "它是英文的。",
+ "Only My move is synced: the countries, your reason and your steps, also the ones you add yourself.": "只同步“我的搬迁”：国家、搬迁原因和您的步骤，包括您自己添加的步骤。",
+ "Your letters and My papers stay on this device.": "您的信函和“我的文件”都留在本设备上。"
 }

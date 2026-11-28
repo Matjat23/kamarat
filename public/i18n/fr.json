@@ -440,5 +440,7 @@
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "Seules les pages 1 à {read} sur {total} ont été lues. Si une page suivante contient une date ou une décision, ajoutez son texte, sinon Katty peut la manquer.",
  "Add all {count} dates to my calendar": "Ajouter les {count} dates à mon agenda",
  "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini est occupé pour le moment, voici donc une explication que Katty garde prête pour cette lettre d'exemple.",
- "It is in English.": "Elle est en anglais."
+ "It is in English.": "Elle est en anglais.",
+ "Only My move is synced: the countries, your reason and your steps, also the ones you add yourself.": "Seule Mon installation est synchronisée : les pays, votre raison et vos étapes, y compris celles que vous ajoutez vous-même.",
+ "Your letters and My papers stay on this device.": "Vos lettres et Mes papiers restent sur cet appareil."
 }

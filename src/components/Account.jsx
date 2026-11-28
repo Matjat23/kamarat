@@ -50,8 +50,8 @@ export default function Account({ onBack }) {
       {account.error && <p className="notice notice-warn small" role="alert">{t(account.error)}</p>}
 
       <ul className="account-facts">
-        <li><DeviceIcon width={20} height={20} /> {t('Only My move is synced: where you are moving, your reason and your steps.')}</li>
-        <li><LockIcon width={20} height={20} /> {t('Letters, papers and personal details stay on this device.')}</li>
+        <li><DeviceIcon width={20} height={20} /> {t('Only My move is synced: the countries, your reason and your steps, also the ones you add yourself.')}</li>
+        <li><LockIcon width={20} height={20} /> {t('Your letters and My papers stay on this device.')}</li>
         <li><PersonIcon width={20} height={20} /> {t('Signing in stores your Google name and email with Firebase, so Katty knows it is you.')}</li>
       </ul>
       <p className="small muted">{t('No account needed. Katty works the same without one.')}</p>

@@ -118,6 +118,7 @@ export default function ExplainStep({ shared, labelMap, details, readInfo, langu
       receivedDate,
       shared,
       done,
+      pagesMissing: readInfo?.missing ? readInfo.pages : null,
     })
     if (ok) {
       setSavedId(id)

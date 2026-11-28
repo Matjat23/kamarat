@@ -81,6 +81,7 @@ export function SavedLetter({ id, language, country, onBack }) {
     sites: paper.sites,
     shared: paper.shared,
     note: '',
+    pagesMissing: paper.pagesMissing,
   }
 
   return (

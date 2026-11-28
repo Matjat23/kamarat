@@ -440,5 +440,7 @@
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "Прочитано лише сторінки з 1 по {read} із {total}. Якщо на наступній сторінці є дата чи рішення, додайте її текст, інакше Katty може його пропустити.",
  "Add all {count} dates to my calendar": "Додати всі дати ({count}) до мого календаря",
  "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini зараз зайнятий, тому це пояснення, яке Katty заздалегідь підготувала для цього прикладу листа.",
- "It is in English.": "Воно англійською."
+ "It is in English.": "Воно англійською.",
+ "Only My move is synced: the countries, your reason and your steps, also the ones you add yourself.": "Синхронізується лише «Мій переїзд»: країни, причина та ваші кроки, зокрема ті, що ви додаєте самі.",
+ "Your letters and My papers stay on this device.": "Ваші листи та «Мої документи» залишаються на цьому пристрої."
 }

@@ -440,5 +440,7 @@
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "{total} में से सिर्फ़ पेज 1 से {read} तक पढ़े गए। अगर किसी बाद वाले पेज पर कोई तारीख या फ़ैसला है, तो उसका टेक्स्ट जोड़ें, वरना Katty उसे छोड़ सकती है।",
  "Add all {count} dates to my calendar": "सभी {count} तारीखें मेरे कैलेंडर में जोड़ें",
  "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini अभी व्यस्त है, इसलिए यह वह व्याख्या है जो Katty ने इस उदाहरण पत्र के लिए पहले से तैयार रखी है।",
- "It is in English.": "यह अंग्रेज़ी में है।"
+ "It is in English.": "यह अंग्रेज़ी में है।",
+ "Only My move is synced: the countries, your reason and your steps, also the ones you add yourself.": "सिर्फ़ \"मेरा मूव\" सिंक होता है: देश, आपका कारण और आपके कदम, आपके खुद जोड़े गए कदम भी।",
+ "Your letters and My papers stay on this device.": "आपके पत्र और \"मेरे काग़ज़ात\" इसी डिवाइस पर रहते हैं।"
 }

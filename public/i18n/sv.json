@@ -440,5 +440,7 @@
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "Bara sidorna 1 till {read} av {total} lästes. Om en senare sida har ett datum eller ett beslut, lägg till dess text, annars kan Katty missa det.",
  "Add all {count} dates to my calendar": "Lägg in alla {count} datum i min kalender",
  "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini är upptaget just nu, så det här är en förklaring som Katty har färdig för just det här exempelbrevet.",
- "It is in English.": "Den är på engelska."
+ "It is in English.": "Den är på engelska.",
+ "Only My move is synced: the countries, your reason and your steps, also the ones you add yourself.": "Bara Min flytt synkas: länderna, varför du flyttar och dina steg, även dem du lägger till själv.",
+ "Your letters and My papers stay on this device.": "Dina brev och Mina papper stannar på den här enheten."
 }

@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from 'react'
 import { msg } from './i18n'
 
-const SIGNED_IN_KEY = 'katty.account'
+export const SIGNED_IN_KEY = 'katty.account'
 
 // status: 'signed-out' | 'busy' | 'signed-in'. error: a msg() key or ''.
 let state = { status: 'signed-out', name: '', error: '', syncError: false }

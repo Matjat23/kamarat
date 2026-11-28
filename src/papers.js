@@ -44,6 +44,12 @@ function cleanDeadline(deadline) {
 // not a paper at all, so a damaged entry can never break the page.
 // Papers saved by the first version kept a computed date instead of the
 // deadline itself; those dates are kept as fixed dates.
+// { read, total } when only the first pages of a long PDF were read.
+function pagesMissing(value) {
+  const { read, total } = value ?? {}
+  return Number.isInteger(read) && Number.isInteger(total) && read > 0 && read < total ? { read, total } : null
+}
+
 export function cleanPaper(raw) {
   if (!raw || typeof raw !== 'object' || typeof raw.id !== 'string') return null
   const shared = text(raw.shared)
@@ -84,6 +90,7 @@ export function cleanPaper(raw) {
     done: (Array.isArray(raw.done) ? raw.done : []).filter((i) => Number.isInteger(i) && i >= 0 && i < actions.length),
     actions,
     pages: (Array.isArray(raw.pages) ? raw.pages : []).filter((p) => typeof p === 'string'),
+    pagesMissing: pagesMissing(raw.pagesMissing),
     sites: (Array.isArray(raw.sites) ? raw.sites : [])
       .filter((s) => s && typeof s === 'object')
       .map((s) => ({ name: text(s.name), why: text(s.why), domain: hostOf(text(s.domain)) }))

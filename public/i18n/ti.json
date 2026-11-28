@@ -440,5 +440,7 @@
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "ካብ {total} ገጻት ካብ 1 ክሳብ {read} ጥራይ እዮም ተነቢቦም። ኣብ ዝቕጽል ገጽ ዕለት ወይ ውሳነ እንተሃልዩ፡ ጽሑፉ ወስኹ፣ እንተዘይኮይኑ Katty ክትስሕቶ ትኽእል እያ።",
  "Add all {count} dates to my calendar": "ኩሎም {count} ዕለታት ናብ ካሌንደረይ ወስኽ",
  "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini ሕጂ ተታሒዙ ስለ ዘሎ፡ እዚ Katty ንዚ ኣብነታዊ ደብዳቤ ኣዳልያ ዝሓዘቶ መብርሂ እዩ።",
- "It is in English.": "ብእንግሊዝኛ እዩ።"
+ "It is in English.": "ብእንግሊዝኛ እዩ።",
+ "Only My move is synced: the countries, your reason and your steps, also the ones you add yourself.": "ናተይ ጉዕዞ ጥራይ እዩ ዝሰናኸል፡ ሃገራት፣ ምኽንያትኩምን ስጉምትታትኩምን፣ ባዕልኹም ዝወሰኽኩምዎም እውን።",
+ "Your letters and My papers stay on this device.": "ደብዳበታትኩምን \"ወረቐትተይ\"ን ኣብዚ መሳርሒ ይተርፉ።"
 }
