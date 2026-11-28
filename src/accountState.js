@@ -43,6 +43,8 @@ function loadAccount() {
 
 function errorFor(err) {
   switch (err?.code) {
+    case 'katty/sign-in-again':
+      return msg('For safety, sign out, sign in again, then delete your account.')
     case 'auth/popup-closed-by-user':
     case 'auth/cancelled-popup-request':
     case 'auth/user-cancelled':
@@ -66,6 +68,11 @@ async function run(action, { restore = 'signed-out' } = {}) {
     console.warn('Account action failed.', err)
     update({ status: before === 'busy' ? restore : before, error: errorFor(err) })
   }
+}
+
+// Loads the sign-in code without changing anything on screen.
+export function loadSignIn() {
+  loadAccount().catch((err) => console.warn('Could not load sign-in.', err))
 }
 
 export const signIn = () => run((account) => account.signIn())

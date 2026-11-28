@@ -54,10 +54,12 @@ export async function signIn() {
   } catch (err) {
     if (!POPUP_BLOCKED.includes(err.code)) throw err
     // The page reloads after the redirect: load the sign-in code again then.
+    // Without storage, the Account screen (where the redirect comes back to)
+    // loads it instead.
     try {
       localStorage.setItem(SIGNED_IN_KEY, '1')
     } catch {
-      // Without storage the sign-in finishes on the next visit to Account.
+      // See above.
     }
     await signInWithRedirect(auth, provider)
   }
@@ -73,7 +75,13 @@ export async function deleteAccount() {
     await user.delete()
   } catch (err) {
     if (err.code !== 'auth/requires-recent-login') throw err
-    await reauthenticateWithPopup(user, provider)
+    try {
+      await reauthenticateWithPopup(user, provider)
+    } catch (reauthErr) {
+      // No popup here: a fresh sign-in (which can redirect) does the same job.
+      if (!POPUP_BLOCKED.includes(reauthErr.code)) throw reauthErr
+      throw Object.assign(new Error('Sign in again to delete the account'), { code: 'katty/sign-in-again' })
+    }
     await user.delete()
   }
 }

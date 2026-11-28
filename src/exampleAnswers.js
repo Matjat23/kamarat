@@ -119,9 +119,34 @@ function usUniversity(text) {
   }
 }
 
+// The sentences of each example that never change (its dates do). A letter
+// only counts as the example when it has all of them and little else, so a
+// real letter from the same sender never gets a prepared answer.
+const SWEDISH_SENTENCES = [
+  'Begäran om komplettering',
+  'Vi har tagit emot din ansökan om förlängning av uppehållstillstånd för studier.',
+  'För att kunna fortsätta handlägga ärendet behöver vi en kopia av ditt antagningsbesked och ett intyg om studieresultat från ditt universitet.',
+  'Skicka in kompletteringen inom 14 dagar från att du har tagit emot detta brev.',
+  'Om vi inte får kompletteringen kan din ansökan komma att avgöras på befintligt underlag, vilket kan leda till att den avslås.',
+  'Avgiften på 1 500 kr ska betalas senast den',
+  'Du kan skicka kompletteringen via e-tjänsten på migrationsverket.se. Ange alltid ditt ärendenummer.',
+]
+const US_SENTENCES = [
+  'Example State University',
+  'Subject: Action required before your program end date',
+  'Our records show that your I-20 program end date is',
+  'If you plan to continue your studies or apply for Optional Practical Training (OPT), you must submit a request to our office before this date.',
+  'If you apply for OPT, your application must be received by U.S. Citizenship and Immigration Services no later than 60 days after your program end date.',
+  'Please upload your updated financial documents to the student portal within 10 business days of this notice.',
+]
+// With the hidden details as labels, both examples are under 1,000 characters.
+const MAX_LENGTH = 1500
+
+const isExample = (text, sentences) => text.length <= MAX_LENGTH && sentences.every((s) => text.includes(s))
+
 // The prepared answer for an example letter, or null for any other text.
 export function exampleAnswer(sharedText) {
-  if (sharedText.includes('Begäran om komplettering') && sharedText.includes('Migrationsverket')) return swedishMigration(sharedText)
-  if (sharedText.includes('Example State University')) return usUniversity(sharedText)
+  if (isExample(sharedText, SWEDISH_SENTENCES)) return swedishMigration(sharedText)
+  if (isExample(sharedText, US_SENTENCES)) return usUniversity(sharedText)
   return null
 }

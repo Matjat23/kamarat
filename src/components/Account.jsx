@@ -1,12 +1,19 @@
 // The account screen: optional Google sign-in that keeps My move on every
 // device. Nothing else is synced.
-import { useAccount, signIn, signOut, deleteAccount } from '../accountState'
+import { useEffect } from 'react'
+import { useAccount, signIn, signOut, deleteAccount, loadSignIn } from '../accountState'
 import { t } from '../i18n'
 import { ArrowIcon, CheckIcon, DeviceIcon, LockIcon, PersonIcon, Dots } from './Icons'
 
 export default function Account({ onBack }) {
   const account = useAccount()
   const busy = account.status === 'busy'
+
+  // Finishes a sign-in that came back from Google by redirect, also when this
+  // browser could not remember that one was started.
+  useEffect(() => {
+    loadSignIn()
+  }, [])
 
   function confirmDelete() {
     if (window.confirm(t('Delete your account and the synced My move? My move stays on this device.'))) deleteAccount()
@@ -50,7 +57,7 @@ export default function Account({ onBack }) {
       {account.error && <p className="notice notice-warn small" role="alert">{t(account.error)}</p>}
 
       <ul className="account-facts">
-        <li><DeviceIcon width={20} height={20} /> {t('Only My move is synced: the countries, your reason and your steps, also the ones you add yourself.')}</li>
+        <li><DeviceIcon width={20} height={20} /> {t('Only My move is synced: the countries, your citizenship if you chose it, your reason and your steps, also the ones you add yourself.')}</li>
         <li><LockIcon width={20} height={20} /> {t('Your letters and My papers stay on this device.')}</li>
         <li><PersonIcon width={20} height={20} /> {t('Signing in stores your Google name and email with Firebase, so Katty knows it is you.')}</li>
       </ul>

@@ -1,4 +1,5 @@
 [
+ "For safety, sign out, sign in again, then delete your account.",
  "Allow pop-ups for this site, then try again.",
  "There is no connection right now. Please try again later.",
  "Sign-in did not work. Please try again.",
@@ -48,7 +49,7 @@
  "Delete my account",
  "Sign in to keep My move on your phone and your computer.",
  "Sign in with Google",
- "Only My move is synced: the countries, your reason and your steps, also the ones you add yourself.",
+ "Only My move is synced: the countries, your citizenship if you chose it, your reason and your steps, also the ones you add yourself.",
  "Your letters and My papers stay on this device.",
  "Signing in stores your Google name and email with Firebase, so Katty knows it is you.",
  "No account needed. Katty works the same without one.",
