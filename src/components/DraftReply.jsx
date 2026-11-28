@@ -1,7 +1,5 @@
-// "Draft my reply": cloud Gemini writes the reply with labels, and this device
-// fills your real details back in. Shown under the next steps.
-//
-// Safety rules here:
+// The Reply tab: cloud Gemini writes the reply with labels, and this device
+// fills your real details back in.
 // - Katty never guesses who you are: you choose your own name for the signature.
 // - Your own message is checked on the device, and you see exactly what Gemini
 //   will get before it is sent.
@@ -39,17 +37,20 @@ export default function DraftReply({ shared, labelMap, details, language, prefil
   const [subject, setSubject] = useState('')
   const [showLabels, setShowLabels] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [appliedPrefill, setAppliedPrefill] = useState(null)
   const uid = useId()
 
   // "Ask the sender" in the chat starts a question reply with the suggested text.
   // It is checked on the device again like any other message.
-  useEffect(() => {
-    if (!prefill) return
+  if (prefill && prefill !== appliedPrefill) {
+    setAppliedPrefill(prefill)
     setIntent(prefill.intent)
     setNote(prefill.note)
     setState({ phase: 'idle' })
-    document.getElementById(`${uid}-note`)?.focus({ preventScroll: true })
-  }, [prefill])
+  }
+  useEffect(() => {
+    if (prefill) document.getElementById(`${uid}-note`)?.focus({ preventScroll: true })
+  }, [prefill, uid])
 
   const selfLabel = selfChoice === WRITE_MYSELF ? '' : selfChoice
   const preview = useMemo(() => maskNote(note, details, labelMap), [note, details, labelMap])

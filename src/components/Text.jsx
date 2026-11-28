@@ -4,7 +4,7 @@
 // Letter text is marked translate="no" everywhere: Katty translates its own
 // screens, and a browser's "Translate this page" would otherwise send the
 // letter to a translation service.
-import { occurrences } from '../privacy'
+import { findQuote } from '../explain'
 import { t } from '../i18n'
 
 // Shows text with hidden details as black redaction bars.
@@ -23,11 +23,6 @@ export function SharedText({ text, className = 'shared-text', highlight }) {
       )}
     </div>
   )
-}
-
-// Where a quote is in the letter, ignoring differences in spaces and quote marks.
-export function findQuote(shared, quote) {
-  return occurrences(shared, (quote ?? '').replace(/[“”"«»]/g, '').replace(/[.…]+$/, ''))[0] ?? null
 }
 
 // A short piece of the letter around the quote, with the quote marked.

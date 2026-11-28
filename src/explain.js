@@ -12,6 +12,7 @@ import {
   ON_DEVICE_LANGUAGES,
 } from './firebase'
 import { SOURCES } from './sources'
+import { occurrences } from './privacy'
 import { QuotaError, isDailyLimit, markUsedUp, usableModels } from './quota'
 import { countryNameEnglish, weekendDays, weekendText, dayNames } from './countries'
 import { hostOf, isOfficialDomain } from './officialDomains'
@@ -175,23 +176,22 @@ const SCHEMA = {
         required: ['id', 'why'],
       },
     },
+    officialSites: {
+      type: 'array',
+      description:
+        'Up to 3 official websites of government agencies or public authorities in the country the letter comes from that can help with it, besides the pages in the list. Give only the main web domain, for example "bamf.de" or "uscis.gov". Leave the list empty if you are not sure of the exact domain.',
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', description: 'The name of the agency.' },
+          domain: { type: 'string', description: 'Its main web domain, without a path.' },
+          why: { type: 'string', description: 'One short sentence: why it helps.' },
+        },
+        required: ['name', 'domain', 'why'],
+      },
+    },
   },
   required: ['sender', 'summary', 'worry', 'actions', 'sources'],
-}
-
-SCHEMA.properties.officialSites = {
-  type: 'array',
-  description:
-    'Up to 3 official websites of government agencies or public authorities in the country the letter comes from that can help with it, besides the pages in the list. Give only the main web domain, for example "bamf.de" or "uscis.gov". Leave the list empty if you are not sure of the exact domain.',
-  items: {
-    type: 'object',
-    properties: {
-      name: { type: 'string', description: 'The name of the agency.' },
-      domain: { type: 'string', description: 'Its main web domain, without a path.' },
-      why: { type: 'string', description: 'One short sentence: why it helps.' },
-    },
-    required: ['name', 'domain', 'why'],
-  },
 }
 
 // The list Gemini may choose from. It only ever returns an id; the link itself
@@ -247,6 +247,12 @@ export async function explainNotice(sharedText, language, onStatus = () => {}, c
     }
   }
   return readAnswer(result, sharedText, note)
+}
+
+// The language an explanation is really in. When on-device AI cannot write the
+// chosen language it answers in English, and the note says so.
+export function explainedIn(result, language) {
+  return result.note?.includes('this is in English') ? 'English' : language
 }
 
 function buildPrompt(sharedText, language, includeRules = false, country = '') {
@@ -366,6 +372,11 @@ function normalise(text) {
 export function quoteIsInText(quote, text) {
   const q = normalise(quote).replace(/[.…]+$/, '')
   return q.length > 5 && normalise(text).includes(q)
+}
+
+// Where a quote is in the letter, ignoring differences in spaces and quote marks.
+export function findQuote(shared, quote) {
+  return occurrences(shared, (quote ?? '').replace(/[“”"«»]/g, '').replace(/[.…]+$/, ''))[0] ?? null
 }
 
 // ---- Deadlines: plain date maths, done by the code, not the AI ----
@@ -491,6 +502,13 @@ function spanText(amount, unit) {
   return t('{amount} days', { amount })
 }
 
+// The weekend days a count of business days skips, for the note under the date.
+function skippedDays(unit, country) {
+  if (unit === 'BUSINESS_DAYS') return weekendText(country)
+  if (unit === 'BUSINESS_DAYS_WITH_SATURDAY') return dayNames(weekendDays(country).slice(-1))
+  return ''
+}
+
 // Returns what Katty can honestly say about a deadline.
 // needs: 'received' when the person must tell us when they got the notice.
 export function resolveDeadline(deadline, { noticeDate, receivedDate, quote, country = '' }) {
@@ -518,7 +536,7 @@ export function resolveDeadline(deadline, { noticeDate, receivedDate, quote, cou
     return {
       date: addTime(start, amount, unit, weekend),
       basis: t('{span} from {date}, the day you got it.', { span, date: formatDay(start) }),
-      businessNote: unit === 'BUSINESS_DAYS' ? weekendText(country) : unit === 'BUSINESS_DAYS_WITH_SATURDAY' ? dayNames(weekendDays(country).slice(-1)) : '',
+      businessNote: skippedDays(unit, country),
     }
   }
 
@@ -528,7 +546,7 @@ export function resolveDeadline(deadline, { noticeDate, receivedDate, quote, cou
     return {
       date: addTime(start, amount, unit, weekend),
       basis: t('{span} from {date}, the date on the letter.', { span, date: formatDay(start) }),
-      businessNote: unit === 'BUSINESS_DAYS' ? weekendText(country) : unit === 'BUSINESS_DAYS_WITH_SATURDAY' ? dayNames(weekendDays(country).slice(-1)) : '',
+      businessNote: skippedDays(unit, country),
     }
   }
 

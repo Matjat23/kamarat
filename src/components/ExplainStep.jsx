@@ -1,9 +1,8 @@
-// Step 3: the reviewed text is explained as soon as this screen opens (the
-// person already chose to send it). While waiting, Katty shows what it is
-// doing. Then the letter screen takes over.
-import { useEffect, useRef, useState } from 'react'
-import { explainNotice } from '../explain'
-import { savePaper, updatePaper, listPapers, PAPERS_CHANGED } from '../papers'
+// Step 3: the reviewed text is explained as soon as this screen opens, since
+// the person already chose to send it. Then the letter screen takes over.
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { explainNotice, explainedIn } from '../explain'
+import { savePaper, updatePaper, listPapers, explanationForPaper, PAPERS_CHANGED } from '../papers'
 import { stopSpeaking } from '../speak'
 import LetterView from './LetterView'
 import { t, msg } from '../i18n'
@@ -48,7 +47,6 @@ export default function ExplainStep({ shared, labelMap, details, language, count
 
   async function send() {
     // A new explanation can have different steps, so old ticks are cleared.
-    // If the letter was kept, it is saved again once the new one arrives.
     stopSpeaking()
     setDone([])
     setStage(0)
@@ -57,19 +55,23 @@ export default function ExplainStep({ shared, labelMap, details, language, count
     try {
       const result = await explainNotice(shared, language, (status) => setState({ phase: 'loading', status }), country)
       clearTimeout(timer)
-      // The note says when the device had to answer in English instead.
-      const shownIn = result.note?.includes('this is in English') ? 'English' : language
-      setState({ phase: 'done', result: { ...result, language: shownIn, country } })
+      const letter = { ...result, language: explainedIn(result, language), country }
+      setState({ phase: 'done', result: letter })
+      // A kept letter is saved again with the new explanation, unless it was
+      // deleted from My papers while Katty was explaining it.
+      const kept = savedId && listPapers().find((p) => p.id === savedId)
+      if (kept) save(kept.id, { result: letter, receivedDate: kept.receivedDate, done: [] })
     } catch (err) {
       clearTimeout(timer)
       setState({ phase: 'error', message: err.message })
     }
   }
 
+  const explainOnOpen = useEffectEvent(send)
   useEffect(() => {
     if (started.current) return
     started.current = true
-    send()
+    explainOnOpen()
   }, [])
 
   useEffect(() => () => stopSpeaking(), [])
@@ -87,7 +89,7 @@ export default function ExplainStep({ shared, labelMap, details, language, count
 
   useEffect(() => {
     onSavedChange?.(savedId)
-  }, [savedId])
+  }, [savedId, onSavedChange])
 
   // Once kept, My papers holds the one true copy. If it is changed or deleted
   // there, this screen follows instead of saving an old version over it.
@@ -106,30 +108,16 @@ export default function ExplainStep({ shared, labelMap, details, language, count
     return () => window.removeEventListener(PAPERS_CHANGED, sync)
   }, [savedId])
 
-  function save(id = savedId ?? crypto.randomUUID()) {
-    const { result } = state
+  function save(id, { result, receivedDate, done }) {
     const ok = savePaper({
+      ...explanationForPaper(result),
       id,
       savedAt: new Date().toISOString(),
-      sender: result.sender,
-      summary: result.summary,
-      worry: result.worry,
       language: result.language,
-      noticeDate: result.noticeDate,
       country: result.country,
       receivedDate,
       shared,
       done,
-      actions: result.actions.map((a) => ({
-        title: a.title,
-        explanation: a.explanation,
-        kind: a.kind,
-        quote: a.quote,
-        quoteFound: a.quoteFound,
-        deadline: a.deadline,
-      })),
-      pages: result.pages.map(({ page }) => page.id),
-      sites: result.sites,
     })
     if (ok) {
       setSavedId(id)
@@ -139,11 +127,14 @@ export default function ExplainStep({ shared, labelMap, details, language, count
     }
   }
 
-  // Keeps a kept letter up to date when the received date is added, or when
-  // the letter is explained again.
-  useEffect(() => {
-    if (savedId && state.phase === 'done') save(savedId)
-  }, [receivedDate, state.result])
+  function keep() {
+    save(savedId ?? crypto.randomUUID(), { result: state.result, receivedDate, done })
+  }
+
+  function changeReceivedDate(value) {
+    setReceivedDate(value)
+    if (savedId) save(savedId, { result: state.result, receivedDate: value, done })
+  }
 
   function toggleDone(index) {
     const next = done.includes(index) ? done.filter((i) => i !== index) : [...done, index]
@@ -175,12 +166,12 @@ export default function ExplainStep({ shared, labelMap, details, language, count
       currentLanguage={language}
       onExplainAgain={send}
       receivedDate={receivedDate}
-      onReceivedDate={setReceivedDate}
+      onReceivedDate={changeReceivedDate}
       done={done}
       onToggleDone={toggleDone}
       labelMap={labelMap}
       details={details}
-      save={{ saved: !!savedId, onSave: () => save(), error: saveError }}
+      save={{ saved: !!savedId, onSave: keep, error: saveError }}
       onBack={onHome}
       backLabel={t('Home')}
       menu={[
