@@ -45,20 +45,30 @@ Katty is not legal advice and does not make you anonymous. It shows you exactly 
 
 ## Running it locally
 
-You need desktop Chrome with the built-in Prompt API (Gemini Nano). In `chrome://flags`, enable "Prompt API" and restart Chrome.
+The easiest way to try Katty is the live site above. To run the code yourself, you need your own Firebase project, because App Check only lets requests through from apps the project knows.
+
+1. Create a Firebase project (the free Spark plan is enough) and add a web app to it.
+2. In the Firebase console, open AI Logic and turn it on with the Gemini Developer API.
+3. Replace the values in `firebaseConfig` in `src/firebase.js` with your web app's config.
+4. In App Check, register the web app. For local development you only need a debug token: create `.env.local` with
+
+   ```
+   VITE_APPCHECK_DEBUG_TOKEN=your-debug-token
+   ```
+
+   and add the same token under App Check, Apps, Manage debug tokens. (`.env.local` is ignored by git.)
+5. For the on-device part, use desktop Chrome with the built-in Prompt API (Gemini Nano). If it is not on yet, enable "Prompt API" in `chrome://flags` and restart Chrome.
+
+Then:
 
 ```
 npm install
 npm run dev
 ```
 
-App Check needs a debug token in development. Create `.env.local` with:
+Without Gemini Nano the app still works: personal details are found with rules on the device, and Katty asks you to check what will be sent.
 
-```
-VITE_APPCHECK_DEBUG_TOKEN=your-debug-token
-```
-
-and register the same token in the Firebase console under App Check, Apps, Manage debug tokens.
+To put it online with Firebase Hosting, register the app with a reCAPTCHA Enterprise key in App Check, put its site key in `.env.production` as `VITE_RECAPTCHA_SITE_KEY`, run `npm run build`, and deploy with the Firebase CLI to your own project.
 
 About the keys in this repo: the `apiKey` in `src/firebase.js` is the Firebase web config key, and the reCAPTCHA site key in `.env.production` is a public site key. Both are meant to be public and ship to every browser that opens the app. They are not secrets, and there are no private keys in this repo. The Gemini calls are protected by Firebase App Check, so only requests from the app itself get through.
 

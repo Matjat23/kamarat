@@ -17,7 +17,7 @@ const plain = (text) =>
     .toLowerCase()
     .normalize('NFD')
     .replace(/\p{M}/gu, '')
-    .replace(/[.'‘’ʼ`]/g, '')
+    .replace(/[.'‘’ʼʻ`]/g, '')
 
 // How well an item matches the search, lower is better: 0 the whole name or a
 // short form ("us", "uk"), 1 the name on screen starts with it, 2 another name
