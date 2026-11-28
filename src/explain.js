@@ -12,6 +12,7 @@ import {
   ON_DEVICE_LANGUAGES,
 } from './firebase'
 import { SOURCES } from './sources'
+import { occurrences } from './privacy'
 import { QuotaError, isDailyLimit, markUsedUp, usableModels } from './quota'
 import { countryNameEnglish, weekendDays, weekendText, dayNames } from './countries'
 import { hostOf, isOfficialDomain } from './officialDomains'
@@ -366,6 +367,11 @@ function normalise(text) {
 export function quoteIsInText(quote, text) {
   const q = normalise(quote).replace(/[.…]+$/, '')
   return q.length > 5 && normalise(text).includes(q)
+}
+
+// Where a quote is in the letter, ignoring differences in spaces and quote marks.
+export function findQuote(shared, quote) {
+  return occurrences(shared, (quote ?? '').replace(/[“”"«»]/g, '').replace(/[.…]+$/, ''))[0] ?? null
 }
 
 // ---- Deadlines: plain date maths, done by the code, not the AI ----

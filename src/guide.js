@@ -131,7 +131,7 @@ export async function askGuide({ question, history, country, plan, language, onS
   const contacts = (Array.isArray(data.contacts) ? data.contacts : []).map(cleanContact).filter(Boolean)
   return {
     answer: stripPhoneNumbers(answer),
-    contacts: contacts.map(({ hadNumbers, ...contact }) => contact),
+    contacts: contacts.map(({ organisation, why, website }) => ({ organisation, why, website })),
     aboutLetter: data.aboutLetter === true,
     legal: data.legal === true || looksLegal(question),
     // Checked before the phone numbers are taken out, so the note is never lost.

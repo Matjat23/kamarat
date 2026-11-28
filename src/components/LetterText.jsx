@@ -3,9 +3,8 @@
 // "From your letter" link is used, the sentence is highlighted here.
 import { useEffect, useId, useRef, useState } from 'react'
 import { explainWord, sentenceAround, findWord } from '../words'
-import { languageProps, languageCode } from '../explain'
+import { languageProps, languageCode, findQuote } from '../explain'
 import { wordHelpRunsOnDevice } from '../firebase'
-import { findQuote } from './Text'
 import { t } from '../i18n'
 import { CloudIcon, DeviceIcon, Dots } from './Icons'
 
@@ -74,8 +73,9 @@ export default function LetterText({ shared, language, highlight }) {
     ask(word, findWord(shared, word))
   }
 
-  let marked = false
+  const pieces = splitLetter(shared)
   const inRange = (p) => range && p.at < range.end && p.at + p.text.length > range.start
+  const firstMarked = pieces.findIndex(inRange)
 
   function render(p, i) {
     let node
@@ -102,10 +102,8 @@ export default function LetterText({ shared, language, highlight }) {
       node = <span key={i}>{p.text}</span>
     }
     if (!inRange(p)) return node
-    const ref = marked ? undefined : firstMark
-    marked = true
     return (
-      <mark key={i} ref={ref} className="letter-mark">
+      <mark key={i} ref={i === firstMarked ? firstMark : undefined} className="letter-mark">
         {node}
       </mark>
     )
@@ -121,7 +119,7 @@ export default function LetterText({ shared, language, highlight }) {
       )}
 
       <div className="word-text" dir="auto" translate="no">
-        {splitLetter(shared).map(render)}
+        {pieces.map(render)}
       </div>
 
       {help && (

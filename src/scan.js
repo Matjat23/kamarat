@@ -133,10 +133,12 @@ async function makeImageReader(onProgress, languages) {
   let tesseract = null
   const nano = (await checkOnDeviceModel()) === 'available'
 
-  async function withTesseract(image, label) {
+  async function withTesseract(image) {
     if (!tesseract) {
       onProgress(t('Loading the text reader (first time only)...'))
       const { createWorker } = await import('tesseract.js')
+      // The worker is made once per file, so its progress names whatever
+      // page or photo is being read at that moment.
       const logger = (m) => {
         if (m.status === 'recognizing text') {
           onProgress(t('Reading {what} on this device: {percent}%', { what: reader.current, percent: Math.round(m.progress * 100) }))
@@ -177,7 +179,7 @@ async function makeImageReader(onProgress, languages) {
         }
         reader.method = 'tesseract'
       }
-      return withTesseract(image, label)
+      return withTesseract(image)
     },
     async close() {
       await tesseract?.terminate()

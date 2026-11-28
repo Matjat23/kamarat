@@ -4,11 +4,11 @@
 //   Reply  - draft a reply to the sender.
 //   Letter - the text that was sent, with word help.
 // Used for a letter that was just explained and for a letter from My papers.
-import { useId, useMemo, useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { languageProps, languageCode } from '../explain'
 import { prepareActions } from '../papers'
 import { WORRY, assessWorry, daysUntil, whenText } from '../worry'
-import { t, msg, dateLocale, uiLanguageCode } from '../i18n'
+import { t, msg, dateLocale } from '../i18n'
 import { downloadDeadline } from '../calendar'
 import { speak, stopSpeaking, canSpeak, spokenPhrases, spokenDate } from '../speak'
 import AskKatty from './AskKatty'
@@ -170,11 +170,9 @@ export default function LetterView({
   const receivedRef = useRef(null)
 
   const langProps = languageProps(letter.language)
-  const actions = useMemo(
-    () => prepareActions(letter.actions, { noticeDate: letter.noticeDate, receivedDate, done, country: letter.country }),
-    // The language on screen is a dependency too: the deadline sentences are translated.
-    [letter, receivedDate, done, uiLanguageCode()],
-  )
+  // Worked out on every render, so the translated deadline sentences follow
+  // the language on screen.
+  const actions = prepareActions(letter.actions, { noticeDate: letter.noticeDate, receivedDate, done, country: letter.country })
   const assessed = assessWorry(letter.worry, actions)
   const worry = WORRY[assessed.level]
 

@@ -43,8 +43,6 @@ export default function CheckLetter({
   // On phones only one of the two texts is shown at a time. Start with the
   // text that will actually be sent, since that is the decision being made.
   const [view, setView] = useState('shared')
-  // Without Gemini Nano, the person confirms they checked for names and addresses.
-  const [confirmed, setConfirmed] = useState(false)
   const needsConfirm = detection.mode !== 'ai'
   const noticeRef = useRef(null)
   const { segments, shared, labels } = useMemo(
@@ -52,10 +50,12 @@ export default function CheckLetter({
     [text, details],
   )
   const hiddenCount = details.filter((d) => d.hidden).length
-  // A tick only counts for the exact text it was given for.
-  useEffect(() => {
-    setConfirmed(false)
-  }, [shared])
+  // Without Gemini Nano, the person confirms they checked for names and
+  // addresses. The tick holds the text it was given for and is cleared as soon
+  // as that text changes, so it never carries over to another version.
+  const [confirmedText, setConfirmedText] = useState(null)
+  if (confirmedText !== null && confirmedText !== shared) setConfirmedText(null)
+  const confirmed = confirmedText === shared
   const noCapitals = needsConfirm && mostlyWithoutCapitals(text)
   const sentCount = details.length - hiddenCount
 
@@ -257,7 +257,7 @@ export default function CheckLetter({
         </p>
         {needsConfirm && (
           <label className="check-line confirm-line">
-            <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
+            <input type="checkbox" checked={confirmed} onChange={(e) => setConfirmedText(e.target.checked ? shared : null)} />
             {t('I read "What will be sent". My name, address and other details about me are hidden.')}
           </label>
         )}

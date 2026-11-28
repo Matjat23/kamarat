@@ -130,7 +130,7 @@ export default function AskGuide({ country, language, startQuestion, startCountr
   const uid = useId()
   // Country names follow the screen language, once its translation has loaded.
   const screenLanguage = uiLanguageCode()
-  const countries = useMemo(() => countryList(), [screenLanguage])
+  const countries = useMemo(() => countryList(screenLanguage), [screenLanguage])
   // The move list, kept up to date (the chat panel stays open while you change it).
   const [plan, setPlan] = useState(loadMovePlan)
   useEffect(() => {
