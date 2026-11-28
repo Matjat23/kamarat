@@ -1976,3 +1976,56 @@ button.way-link:focus-visible {
   border-color: var(--green);
   color: #fff;
 }
+
+/* ---------- Account ---------- */
+.account-card {
+  gap: 16px;
+}
+
+.account-who,
+.account-synced {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.account-who {
+  font-weight: 600;
+}
+
+.account-synced {
+  color: var(--green);
+}
+
+.account-facts {
+  display: grid;
+  gap: 12px;
+  margin: 8px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--hairline);
+  list-style: none;
+}
+
+.account-facts li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--ink-soft);
+}
+
+.account-facts svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--green);
+}
+
+button.danger {
+  color: var(--terracotta);
+}
+
+.move-sync .link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

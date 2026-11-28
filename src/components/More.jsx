@@ -3,7 +3,8 @@
 import { LANGUAGES } from '../explain'
 import { countryName } from '../countries'
 import { t } from '../i18n'
-import { ChevronIcon, FolderIcon, PlusIcon, GlobeIcon, LandmarkIcon, LockIcon, DeviceIcon, CheckIcon } from './Icons'
+import { useAccount } from '../accountState'
+import { ChevronIcon, FolderIcon, PlusIcon, GlobeIcon, LandmarkIcon, LockIcon, DeviceIcon, CheckIcon, PersonIcon } from './Icons'
 
 function Row({ icon: Icon, label, sub, onClick }) {
   return (
@@ -20,8 +21,9 @@ function Row({ icon: Icon, label, sub, onClick }) {
   )
 }
 
-export default function More({ papersCount, language, country, onPapers, onNew, onSettings }) {
+export default function More({ papersCount, language, country, onPapers, onNew, onSettings, onAccount }) {
   const native = LANGUAGES.find((l) => l.name === language)?.native ?? language
+  const account = useAccount()
   return (
     <div className="more-page">
       <h1 className="page-title" tabIndex={-1} data-step-heading>{t('More')}</h1>
@@ -34,6 +36,12 @@ export default function More({ papersCount, language, country, onPapers, onNew, 
       <ul className="row-group">
         <Row icon={GlobeIcon} label={t('Language')} sub={native} onClick={onSettings} />
         <Row icon={LandmarkIcon} label={t('Where you live')} sub={countryName(country)} onClick={onSettings} />
+        <Row
+          icon={PersonIcon}
+          label={t('Account')}
+          sub={account.status === 'signed-in' ? t('Signed in as {name}', { name: account.name }) : t('Optional: keep My move on all your devices')}
+          onClick={onAccount}
+        />
       </ul>
 
       <section className="row-group row-facts" aria-labelledby="more-privacy">

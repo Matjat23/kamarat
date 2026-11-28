@@ -3,17 +3,21 @@
 // More screen on phones; the page you are on is marked.
 import { useEffect, useRef } from 'react'
 import { t } from '../i18n'
+import { useAccount } from '../accountState'
 import { LANGUAGES } from '../explain'
 import { countryName } from '../countries'
-import { GlobeIcon, CloseIcon, HomeIcon, ListIcon, ChatIcon, CameraIcon, FolderIcon, ChevronIcon } from './Icons'
+import { GlobeIcon, CloseIcon, HomeIcon, ListIcon, ChatIcon, CameraIcon, FolderIcon, ChevronIcon, PersonIcon } from './Icons'
 
-export default function SiteMenu({ open, onClose, active, papersCount, language, country, onHome, onMove, onAsk, onNew, onPapers, onSettings }) {
+export default function SiteMenu({ open, onClose, active, papersCount, language, country, onHome, onMove, onAsk, onNew, onPapers, onSettings, onAccount }) {
+  const account = useAccount()
   const panel = useRef(null)
   const firstLink = useRef(null)
   // The latest onClose, so the effect below only runs when the menu opens or
   // closes, not every time the app updates (which would move focus).
   const closeRef = useRef(onClose)
-  closeRef.current = onClose
+  useEffect(() => {
+    closeRef.current = onClose
+  })
 
   // While open: the page behind does not scroll, Escape closes, and Tab stays
   // inside the panel.
@@ -110,6 +114,24 @@ export default function SiteMenu({ open, onClose, active, papersCount, language,
                 <span className="row-text">
                   <span className="row-label">{t('Language and country')}</span>
                   <span className="row-sub">{native}{country ? ` · ${countryName(country)}` : ''}</span>
+                </span>
+                <ChevronIcon className="row-chevron arrow-forward" width={18} height={18} />
+              </button>
+            </li>
+            <li>
+              <button
+                className={`row ${active === 'account' ? 'is-active' : ''}`}
+                aria-current={active === 'account' ? 'page' : undefined}
+                onClick={() => pick(onAccount)}
+              >
+                <PersonIcon className="row-icon" width={20} height={20} />
+                <span className="row-text">
+                  <span className="row-label">{t('Account')}</span>
+                  <span className="row-sub">
+                    {account.status === 'signed-in'
+                      ? t('Signed in as {name}', { name: account.name })
+                      : t('Optional: keep My move on all your devices')}
+                  </span>
                 </span>
                 <ChevronIcon className="row-chevron arrow-forward" width={18} height={18} />
               </button>

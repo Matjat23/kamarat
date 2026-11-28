@@ -60,8 +60,9 @@ export const COUNTRY_ALIASES = {
 // For the AI, the country is always named in English.
 export const countryNameEnglish = (code) => countryName(code, 'en')
 
-export function countryList() {
-  return CODES.map((code) => ({ code, name: countryName(code) })).sort((a, b) => a.name.localeCompare(b.name))
+// locale: the language the names are in, the screen language by default.
+export function countryList(locale = dateLocale()) {
+  return CODES.map((code) => ({ code, name: countryName(code, locale) })).sort((a, b) => a.name.localeCompare(b.name, locale))
 }
 
 // Time zones of the most common places people move to and from.

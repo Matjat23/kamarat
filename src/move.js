@@ -131,7 +131,7 @@ export function friendlyError(err) {
 //   911 have 3 digits and stay.
 // Works for every script's digits.
 const DATE = /(?<!\p{Nd})(?:\p{Nd}{4}[-./]\p{Nd}{1,2}[-./]\p{Nd}{1,2}|\p{Nd}{1,2}[-./]\p{Nd}{1,2}[-./]\p{Nd}{2,4})(?!\p{Nd})/gu
-const NUMBER_RUN = /\+?\p{Nd}(?:[\p{Nd}\s().\/\p{Pd}]*\p{Nd})?/gu
+const NUMBER_RUN = /\+?\p{Nd}(?:[\p{Nd}\s()./\p{Pd}]*\p{Nd})?/gu
 const PHONE_WORD =
   /(?<!\p{L})(?:call|phone|telephone|tel|ring|dial|number|appel\p{L}*|téléphon\p{L}*|numéro|llam\p{L}*|tel[eé]fono|número|lig\p{L}*|telefon\p{L}*|ring\p{L}*|nummer|номер|звон\p{L}*|позвон\p{L}*|телефон\p{L}*)|اتصل|هاتف|رقم|فون|کال|نمبر|फ़ोन|फोन|कॉल|नंबर|ফোন|কল|নম্বর|电话|致电|拨打|号码/iu
 
@@ -321,17 +321,31 @@ export function loadMovePlan() {
   }
 }
 
-export function saveMovePlan(plan) {
+// When the list last changed on any device, so sync can tell which copy is
+// newer. Kept apart from the list, because deleting the list is a change too.
+const CHANGED_AT_KEY = 'katty.move.changedAt'
+
+export function moveChangedAt() {
+  try {
+    return Number(localStorage.getItem(CHANGED_AT_KEY)) || 0
+  } catch {
+    return 0
+  }
+}
+
+// fromSync: the list came from another device, so it is not sent back.
+export function saveMovePlan(plan, { changedAt = Date.now(), fromSync = false } = {}) {
   let saved = true
   try {
     if (plan) localStorage.setItem(KEY, JSON.stringify(plan))
     else localStorage.removeItem(KEY)
+    localStorage.setItem(CHANGED_AT_KEY, String(changedAt))
     unsaved = null
   } catch {
     unsaved = plan
     saved = false
   }
-  window.dispatchEvent(new Event(MOVE_CHANGED))
+  window.dispatchEvent(new CustomEvent(MOVE_CHANGED, { detail: { fromSync } }))
   return saved
 }
 

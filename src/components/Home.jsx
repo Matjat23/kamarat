@@ -36,6 +36,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
   const { dated, unknown } = upcomingDeadlines(papers)
   const recent = papers.slice(0, 3)
   const progress = movePlan ? moveProgress(movePlan) : null
+  const nextStep = movePlan?.steps.find((step) => !step.done)
 
   const how = [
     { title: t('Add your letter'), text: t('Take a photo, upload a PDF or paste the text.') },
@@ -129,6 +130,21 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
           <ul className="row-group">
             <Row title={t('Continue with your letter')} sub={t('The explanation is still open.')} onClick={onResume} />
           </ul>
+        )}
+
+        {nextStep && (
+          <section className="home-section">
+            <h2 className="section-title">{t('Next in your move')}</h2>
+            <ul className="row-group">
+              <Row
+                icon={ListIcon}
+                title={nextStep.title}
+                titleProps={languageProps(movePlan.language)}
+                sub={t('Your move to {country}', { country: countryName(movePlan.to) })}
+                onClick={onMove}
+              />
+            </ul>
+          </section>
         )}
 
         {(dated.length > 0 || unknown.length > 0) && (

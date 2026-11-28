@@ -12,10 +12,18 @@ import {
   InferenceMode,
 } from 'firebase/ai'
 
+// Sign-in runs on the site's own domain when it can, so browsers that block
+// third-party storage (Safari) can finish it. Every Hosting site of the
+// project serves the /__/auth/ handler.
+const HOSTING_DOMAINS = ['katty-buddy.web.app', 'kamarat-hackathon.web.app']
+const authDomain = HOSTING_DOMAINS.includes(window.location.hostname)
+  ? window.location.hostname
+  : 'kamarat-hackathon.firebaseapp.com'
+
 // These values identify the Firebase project. They are not secrets.
 const firebaseConfig = {
   apiKey: 'AIzaSyD6WLGBgbknqqpdHxi10y03ZTRE_uyjaT4',
-  authDomain: 'kamarat-hackathon.firebaseapp.com',
+  authDomain,
   projectId: 'kamarat-hackathon',
   storageBucket: 'kamarat-hackathon.firebasestorage.app',
   messagingSenderId: '950303220911',

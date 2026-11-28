@@ -41,6 +41,7 @@ import MyMove from './components/MyMove'
 import AskGuide from './components/AskGuide'
 import { loadMovePlan, MOVE_CHANGED } from './move'
 import Onboarding, { Settings } from './components/Setup'
+import Account from './components/Account'
 import { withDeadline } from './deadline'
 import './App.css'
 import './layout.css'
@@ -123,15 +124,21 @@ export default function App() {
     }
     return name
   })
-  // Whether Katty's own texts are being translated, or could not be.
-  const [uiStatus, setUiStatus] = useState({ code: 'en', state: 'ready' })
   const [uiRetry, setUiRetry] = useState(0)
+  // Whether Katty's own texts are being translated, or could not be. A result
+  // belongs to one language and one retry; until it arrives, it is loading.
+  const [uiResult, setUiResult] = useState({ key: '', state: 'ready' })
+  const uiKey = `${language}/${uiRetry}`
+  const uiCode = (LANGUAGES.find((l) => l.name === language) ?? LANGUAGES[0]).code
+  const uiStatus = uiCode === 'en' ? { state: 'ready' } : uiResult.key === uiKey ? uiResult : { state: 'loading' }
   const [toastClosed, setToastClosed] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [guideQuestion, setGuideQuestion] = useState('')
   const [guideSession, setGuideSession] = useState(0)
   const [guideCountry, setGuideCountry] = useState('')
   const [movePlan, setMovePlan] = useState(loadMovePlan)
+  // The Ask chat is kept (hidden) once it has been opened, like an open letter.
+  const [guideOpened, setGuideOpened] = useState(() => readRoute().view === 'ask')
   const menuButton = useRef(null)
   // The screen showing now, and the one the menu was opened on.
   const screenNow = useRef('')
@@ -184,21 +191,20 @@ export default function App() {
     }
     if (lang.code === 'en') {
       apply('en', null, false)
-      setUiStatus({ code: 'en', state: 'ready' })
       return undefined
     }
-    setUiStatus({ code: lang.code, state: 'loading' })
+    const key = `${language}/${uiRetry}`
     loadUiTranslation(lang.name, lang.code, { isCancelled: () => cancelled })
       .then((map) => {
         if (cancelled) return
         apply(lang.code, map, lang.rtl)
-        setUiStatus({ code: lang.code, state: 'ready' })
+        setUiResult({ key, state: 'ready' })
       })
       .catch((err) => {
         if (cancelled) return
         console.warn('Could not translate the app:', err.message)
         apply('en', null, false)
-        setUiStatus({ code: lang.code, state: 'failed' })
+        setUiResult({ key, state: 'failed' })
       })
     return () => {
       cancelled = true
@@ -223,13 +229,26 @@ export default function App() {
     saveCountry(code)
   }
 
+  // Every way of changing screen ends here: a new screen closes the menu,
+  // and leaving Ask forgets a question that was handed to it.
+  function showRoute(next) {
+    setRoute(next)
+    setMenuOpen(false)
+    if (next.view === 'ask') {
+      setGuideOpened(true)
+    } else {
+      setGuideQuestion('')
+      setGuideCountry('')
+    }
+  }
+
   function go(path = '', { replace = false } = {}) {
     const url = `#/${path}`
     // Going to the screen that is already open does not add a step to Back.
     const same = (window.location.hash || '#/') === url
     if (replace || same) window.history.replaceState({ katty: historyIndex() }, '', url)
     else window.history.pushState({ katty: historyIndex() + 1 }, '', url)
-    setRoute(readRoute())
+    showRoute(readRoute())
   }
 
   // Like the browser's back button when there is a Katty screen to go back
@@ -244,10 +263,7 @@ export default function App() {
       window.history.replaceState({ katty: 0 }, '', window.location.href)
     }
     // Back and Forward always close the menu, even when the screen stays the same.
-    const onNavigate = () => {
-      setMenuOpen(false)
-      setRoute(readRoute())
-    }
+    const onNavigate = () => showRoute(readRoute())
     const onPapers = () => setPapers(listPapers())
     const onMove = () => setMovePlan(loadMovePlan())
     window.addEventListener('popstate', onNavigate)
@@ -270,11 +286,6 @@ export default function App() {
   useEffect(() => {
     screenNow.current = routeKey
     stopSpeaking()
-    setMenuOpen(false)
-    if (route.view !== 'ask') {
-      setGuideQuestion('')
-      setGuideCountry('')
-    }
     window.scrollTo({ top: 0 })
     requestAnimationFrame(() => {
       const heading = [...document.querySelectorAll('[data-step-heading]')].find((el) => el.offsetParent)
@@ -282,11 +293,6 @@ export default function App() {
     })
   }, [routeKey, setupDone])
 
-  // The Ask chat is kept (hidden) once it has been opened, like an open letter.
-  const [guideOpened, setGuideOpened] = useState(false)
-  useEffect(() => {
-    if (route.view === 'ask') setGuideOpened(true)
-  }, [route.view])
 
   // When the menu closes on the same screen (Close, Escape, or Back to the same
   // screen), focus goes back to the Menu button, so keyboard users keep their
@@ -506,21 +512,29 @@ export default function App() {
     {
       title: 'Katty',
       links: [
-        { label: t('Home'), onClick: () => go('') },
-        { label: t('My move'), onClick: () => go('move') },
-        { label: t('Ask Katty'), onClick: () => openGuide() },
-        { label: t('Add a letter'), onClick: newLetter },
-        { label: t('My papers'), onClick: () => go('papers') },
+        { label: t('Home'), to: '' },
+        { label: t('My move'), to: 'move' },
+        { label: t('Ask Katty'), to: 'ask' },
+        { label: t('Add a letter'), to: 'new' },
+        { label: t('My papers'), to: 'papers' },
       ],
     },
     {
       title: t('Settings'),
       links: [
-        { label: t('Language'), onClick: () => go('settings') },
-        { label: t('Where you live'), onClick: () => go('settings') },
+        { label: t('Language'), to: 'settings' },
+        { label: t('Where you live'), to: 'settings' },
+        { label: t('Account'), to: 'account' },
       ],
     },
   ]
+
+  // Ask and a new letter have their own way in; the rest are plain screens.
+  function openFooterLink(to) {
+    if (to === 'ask') openGuide()
+    else if (to === 'new') newLetter()
+    else go(to)
+  }
 
   return (
     <div className={`app ${inFlow ? 'in-flow' : ''}`}>
@@ -553,6 +567,7 @@ export default function App() {
         onNew={newLetter}
         onPapers={() => go('papers')}
         onSettings={() => go('settings')}
+        onAccount={() => go('account')}
       />
 
       <main className="main" inert={menuOpen}>
@@ -596,10 +611,11 @@ export default function App() {
             onPapers={() => go('papers')}
             onNew={newLetter}
             onSettings={() => go('settings')}
+            onAccount={() => go('account')}
           />
         )}
 
-        {view === 'move' && <MyMove country={country} language={language} onAsk={openGuide} />}
+        {view === 'move' && <MyMove country={country} language={language} onAsk={openGuide} onAccount={() => go('account')} />}
         {(view === 'ask' || guideOpened) && (
           <div hidden={view !== 'ask'}>
             <AskGuide
@@ -655,6 +671,8 @@ export default function App() {
           />
         )}
 
+        {view === 'account' && <Account onBack={() => goBack('')} />}
+
         {view === 'papers' && !route.id && <MyPapers onOpen={(id) => go(`papers/${id}`)} onNew={newLetter} />}
         {view === 'papers' && route.id && (
           <SavedLetter key={route.id} id={route.id} language={language} country={country} onBack={() => go('papers')} />
@@ -705,7 +723,7 @@ export default function App() {
               <ul>
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <button onClick={link.onClick}>{link.label}</button>
+                    <button onClick={() => openFooterLink(link.to)}>{link.label}</button>
                   </li>
                 ))}
               </ul>

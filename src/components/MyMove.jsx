@@ -9,6 +9,7 @@ import {
 import { countryList, countryName } from '../countries'
 import { languageProps } from '../explain'
 import { t, uiLanguageCode } from '../i18n'
+import { useAccount } from '../accountState'
 import { ArrowIcon, ChatIcon, CheckIcon, LandmarkIcon, LockIcon, Dots } from './Icons'
 
 // A web search for the organisation in that country, marked as a search.
@@ -27,7 +28,7 @@ function MoveSetup({ country, language, onMade, onExample }) {
   const uid = useId()
   // Country names follow the screen language, once its translation has loaded.
   const screenLanguage = uiLanguageCode()
-  const countries = useMemo(() => countryList(), [screenLanguage])
+  const countries = useMemo(() => countryList(screenLanguage), [screenLanguage])
   const [to, setTo] = useState(country || '')
   const [from, setFrom] = useState('')
   const [citizenship, setCitizenship] = useState('')
@@ -209,8 +210,9 @@ function ExampleList({ onAsk, onBack }) {
   )
 }
 
-export default function MyMove({ country, language, onAsk }) {
+export default function MyMove({ country, language, onAsk, onAccount }) {
   const uid = useId()
+  const account = useAccount()
   const [plan, setPlan] = useState(loadMovePlan)
   const [own, setOwn] = useState('')
   const [example, setExample] = useState(false)
@@ -279,6 +281,15 @@ export default function MyMove({ country, language, onAsk }) {
 
         <p className="small muted">
           {t('Katty made this list with AI. Check each step on the official website before you rely on it. Katty only links to official websites and well-known help organisations it has checked.')}
+        </p>
+        <p className="small move-sync">
+          {account.status === 'signed-in' ? (
+            <button className="link-button" onClick={onAccount}>
+              <CheckIcon width={16} height={16} /> {account.syncError ? t('Not synced right now') : t('Synced with your account')}
+            </button>
+          ) : (
+            <button className="link-button" onClick={onAccount}>{t('Keep this list on your phone and computer')}</button>
+          )}
         </p>
         <div className="buttons">
           <button className="secondary" onClick={() => onAsk('', plan.to)}>

@@ -1,0 +1,16 @@
+rules_version = '2';
+
+// Only My move is stored, one document per signed-in person, readable and
+// writable by that person alone. Everything else is closed.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /moves/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['plan', 'changedAt'])
+        && request.resource.data.changedAt is number
+        && (request.resource.data.plan == null || request.resource.data.plan is map);
+    }
+  }
+}
