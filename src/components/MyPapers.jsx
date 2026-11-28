@@ -10,9 +10,10 @@ import {
   deleteAllPapers,
   upcomingDeadlines,
   paperActions,
+  explanationForPaper,
   PAPERS_CHANGED,
 } from '../papers'
-import { languageProps, explainNotice } from '../explain'
+import { languageProps, explainNotice, explainedIn } from '../explain'
 import { SOURCES } from '../sources'
 import { WORRY, assessWorry, daysUntil, whenText, closeness } from '../worry'
 import { t } from '../i18n'
@@ -54,24 +55,7 @@ export function SavedLetter({ id, language, country, onBack }) {
     setError('')
     try {
       const result = await explainNotice(paper.shared, language, undefined, paper.country || country)
-      update({
-        sender: result.sender,
-        summary: result.summary,
-        worry: result.worry,
-        language: result.note?.includes('this is in English') ? 'English' : language,
-        noticeDate: result.noticeDate,
-        done: [],
-        actions: result.actions.map((a) => ({
-          title: a.title,
-          explanation: a.explanation,
-          kind: a.kind,
-          quote: a.quote,
-          quoteFound: a.quoteFound,
-          deadline: a.deadline,
-        })),
-        pages: result.pages.map(({ page }) => page.id),
-        sites: result.sites,
-      })
+      update({ ...explanationForPaper(result), language: explainedIn(result, language), done: [] })
     } catch (err) {
       setError(`${t('Katty could not explain it again:')} ${err.message}.`)
     }

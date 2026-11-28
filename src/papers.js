@@ -111,6 +111,26 @@ function store(list) {
   }
 }
 
+// The parts of a new explanation that a kept paper stores.
+export function explanationForPaper(result) {
+  return {
+    sender: result.sender,
+    summary: result.summary,
+    worry: result.worry,
+    noticeDate: result.noticeDate,
+    actions: result.actions.map((a) => ({
+      title: a.title,
+      explanation: a.explanation,
+      kind: a.kind,
+      quote: a.quote,
+      quoteFound: a.quoteFound,
+      deadline: a.deadline,
+    })),
+    pages: result.pages.map(({ page }) => page.id),
+    sites: result.sites,
+  }
+}
+
 export function savePaper(paper) {
   const clean = cleanPaper(paper)
   if (!clean) return false

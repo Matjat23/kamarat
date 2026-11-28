@@ -2,8 +2,8 @@
 // person already chose to send it). While waiting, Katty shows what it is
 // doing. Then the letter screen takes over.
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
-import { explainNotice } from '../explain'
-import { savePaper, updatePaper, listPapers, PAPERS_CHANGED } from '../papers'
+import { explainNotice, explainedIn } from '../explain'
+import { savePaper, updatePaper, listPapers, explanationForPaper, PAPERS_CHANGED } from '../papers'
 import { stopSpeaking } from '../speak'
 import LetterView from './LetterView'
 import { t, msg } from '../i18n'
@@ -56,9 +56,7 @@ export default function ExplainStep({ shared, labelMap, details, language, count
     try {
       const result = await explainNotice(shared, language, (status) => setState({ phase: 'loading', status }), country)
       clearTimeout(timer)
-      // The note says when the device had to answer in English instead.
-      const shownIn = result.note?.includes('this is in English') ? 'English' : language
-      const letter = { ...result, language: shownIn, country }
+      const letter = { ...result, language: explainedIn(result, language), country }
       setState({ phase: 'done', result: letter })
       // A kept letter is saved again with the new explanation, unless it was
       // deleted from My papers while Katty was explaining it.
@@ -113,27 +111,14 @@ export default function ExplainStep({ shared, labelMap, details, language, count
 
   function save(id, { result, receivedDate, done }) {
     const ok = savePaper({
+      ...explanationForPaper(result),
       id,
       savedAt: new Date().toISOString(),
-      sender: result.sender,
-      summary: result.summary,
-      worry: result.worry,
       language: result.language,
-      noticeDate: result.noticeDate,
       country: result.country,
       receivedDate,
       shared,
       done,
-      actions: result.actions.map((a) => ({
-        title: a.title,
-        explanation: a.explanation,
-        kind: a.kind,
-        quote: a.quote,
-        quoteFound: a.quoteFound,
-        deadline: a.deadline,
-      })),
-      pages: result.pages.map(({ page }) => page.id),
-      sites: result.sites,
     })
     if (ok) {
       setSavedId(id)
