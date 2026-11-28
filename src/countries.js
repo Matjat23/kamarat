@@ -118,7 +118,7 @@ export function guessCountry() {
   return ''
 }
 
-const KEY = 'kamarat.country'
+const KEY = 'katty.country'
 
 export function savedCountry() {
   try {

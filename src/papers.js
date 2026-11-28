@@ -10,10 +10,10 @@
 import { resolveDeadline, quoteIsInText, parseDay } from './explain'
 import { hostOf, isOfficialDomain } from './officialDomains'
 
-const KEY = 'kamarat.papers.v1'
+const KEY = 'katty.papers.v1'
 
 // Sent on window whenever My papers changes, so every open screen stays in step.
-export const PAPERS_CHANGED = 'kamarat-papers-changed'
+export const PAPERS_CHANGED = 'katty-papers-changed'
 
 function announce() {
   window.dispatchEvent(new Event(PAPERS_CHANGED))

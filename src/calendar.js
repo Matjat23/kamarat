@@ -32,7 +32,7 @@ export function makeDeadlineFile({ title, date, details }) {
     'PRODID:-//Katty//Deadline//EN',
     'CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
-    `UID:${crypto.randomUUID()}@kamarat`,
+    `UID:${crypto.randomUUID()}@katty-buddy.web.app`,
     `DTSTAMP:${nowStamp()}`,
     `DTSTART;VALUE=DATE:${dayStamp(date)}`,
     `DTEND;VALUE=DATE:${dayStamp(end)}`,
@@ -56,7 +56,7 @@ export function downloadDeadline({ title, date, details }) {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `kamarat-deadline-${dayStamp(date)}.ics`
+  link.download = `katty-deadline-${dayStamp(date)}.ics`
   document.body.appendChild(link)
   link.click()
   link.remove()

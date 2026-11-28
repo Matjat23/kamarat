@@ -61,8 +61,8 @@ function readRoute() {
   return { view: view || 'home', id }
 }
 
-const LANGUAGE_KEY = 'kamarat.language'
-const SETUP_KEY = 'kamarat.setup.v1'
+const LANGUAGE_KEY = 'katty.language'
+const SETUP_KEY = 'katty.setup.v1'
 
 function setupWasDone() {
   try {
@@ -93,7 +93,7 @@ function startLanguage() {
 }
 
 // How many screens back inside Katty the browser can go.
-const historyIndex = () => window.history.state?.kamarat ?? 0
+const historyIndex = () => window.history.state?.katty ?? 0
 
 function Expired({ onAdd, onHome }) {
   return (
@@ -227,8 +227,8 @@ export default function App() {
     const url = `#/${path}`
     // Going to the screen that is already open does not add a step to Back.
     const same = (window.location.hash || '#/') === url
-    if (replace || same) window.history.replaceState({ kamarat: historyIndex() }, '', url)
-    else window.history.pushState({ kamarat: historyIndex() + 1 }, '', url)
+    if (replace || same) window.history.replaceState({ katty: historyIndex() }, '', url)
+    else window.history.pushState({ katty: historyIndex() + 1 }, '', url)
     setRoute(readRoute())
   }
 
@@ -240,8 +240,8 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (window.history.state?.kamarat === undefined) {
-      window.history.replaceState({ kamarat: 0 }, '', window.location.href)
+    if (window.history.state?.katty === undefined) {
+      window.history.replaceState({ katty: 0 }, '', window.location.href)
     }
     // Back and Forward always close the menu, even when the screen stays the same.
     const onNavigate = () => {

@@ -4,11 +4,11 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 // While developing, the translation page (open the app with ?translations)
-// saves finished translations of Kamarat's screens into public/i18n, so they
+// saves finished translations of Katty's screens into public/i18n, so they
 // ship with the app. This only exists in the dev server.
 function saveTranslations() {
   return {
-    name: 'kamarat-save-translations',
+    name: 'katty-save-translations',
     apply: 'serve',
     configureServer(server) {
       server.middlewares.use('/__save-translation', (req, res) => {

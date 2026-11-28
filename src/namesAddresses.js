@@ -32,7 +32,7 @@ const TITLE = String.raw`(?:Frau|Herrn?|Mrs?\.?|Ms\.?|Miss|Dr\.?|M\.|Mme\.?|Mlle
 // Words that follow a greeting but are not names.
 const NOT_NAMES = new Set([
   'madame', 'monsieur', 'sir', 'madam', 'customer', 'client', 'student', 'applicant', 'sökande', 'kund',
-  'kamarat', 'all', 'team', 'colleague', 'colleagues', 'mesdames', 'messieurs', 'damen', 'herren',
+  'katty', 'all', 'team', 'colleague', 'colleagues', 'mesdames', 'messieurs', 'damen', 'herren',
 ])
 
 // Small words inside names: Jan van der Meer, Ana de la Cruz, Omar bin Said.

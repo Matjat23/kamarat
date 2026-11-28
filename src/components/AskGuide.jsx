@@ -28,7 +28,7 @@ import ReviewBeforeSend from './ReviewBeforeSend'
 import { t, uiLanguageCode } from '../i18n'
 import { CloudIcon, LandmarkIcon, ArrowIcon, CameraIcon, Dots } from './Icons'
 
-const COUNTRY_KEY = 'kamarat.ask.country.v1'
+const COUNTRY_KEY = 'katty.ask.country.v1'
 
 function savedAskCountry() {
   try {
@@ -275,7 +275,7 @@ export default function AskGuide({ country, language, startQuestion, startCountr
                   <span className="quote-head">{t('You asked · sent like this')}</span>
                   <SharedText text={turn.question} className="bubble-text" />
                 </div>
-                <div className="bubble bubble-kamarat">
+                <div className="bubble bubble-katty">
                   {turn.status === 'loading' && <p className="small muted" role="status"><Dots /> {turn.statusText}</p>}
                   {turn.status === 'error' && (
                     <>

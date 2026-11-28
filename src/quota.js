@@ -2,7 +2,7 @@
 // day's limit is used up, Katty stops asking it until the limit resets
 // (midnight US Pacific time) instead of failing on every try.
 
-const KEY = 'kamarat.quota.v1'
+const KEY = 'katty.quota.v1'
 
 export class QuotaError extends Error {
   constructor() {

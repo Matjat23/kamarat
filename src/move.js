@@ -14,8 +14,8 @@ import { countryNameEnglish } from './countries'
 import { hostOf, isHelpDomain } from './officialDomains'
 import { msg } from './i18n'
 
-const KEY = 'kamarat.move.v1'
-export const MOVE_CHANGED = 'kamarat-move-changed'
+const KEY = 'katty.move.v1'
+export const MOVE_CHANGED = 'katty-move-changed'
 
 export const PHASES = ['BEFORE', 'FIRST_WEEK', 'FIRST_MONTH', 'LATER']
 

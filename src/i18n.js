@@ -44,7 +44,7 @@ function fingerprint() {
   return `${STRINGS.length}-${hash >>> 0}`
 }
 
-const cacheKey = (code) => `kamarat.ui.${code}.${fingerprint()}`
+const cacheKey = (code) => `katty.ui.${code}.${fingerprint()}`
 
 function cached(code) {
   try {

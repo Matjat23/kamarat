@@ -192,7 +192,7 @@ export default function AskKatty({ shared, labelMap, details, language, onAskSen
                 <span className="quote-head">{t('You asked · sent like this')}</span>
                 <SharedText text={turn.question} className="bubble-text" />
               </div>
-              <div className="bubble bubble-kamarat">
+              <div className="bubble bubble-katty">
                 {turn.status === 'loading' && (
                   <p className="small muted" role="status"><Dots /> {turn.statusText}</p>
                 )}
