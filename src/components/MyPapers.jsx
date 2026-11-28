@@ -163,7 +163,7 @@ export default function MyPapers({ onOpen, onNew }) {
                 {dated.map(({ paper, action, date }) => (
                   <li key={`${paper.id}-${action.index}`}>
                     <button className={`coming-item ${closeness(date)}`} onClick={() => onOpen(paper.id)}>
-                      <span className={`coming-when ${daysUntil(date) <= 7 ? 'is-soon' : ''}`}>
+                      <span className={`coming-when ${daysUntil(date) < 7 ? 'is-soon' : ''}`}>
                         {whenText(date)}
                         <span className="small muted">{shortDate(date)}</span>
                       </span>

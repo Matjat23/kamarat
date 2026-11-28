@@ -55,11 +55,11 @@ export function daysUntil(date) {
 }
 
 // How close a date is, so a card can be coloured by meaning and not by its
-// place in a list: already late, within a week, or later.
+// place in a list: already late, less than a week away (0 to 6 days), or later.
 export function closeness(date) {
   const days = daysUntil(date)
   if (days < 0) return 'is-late'
-  if (days <= 7) return 'is-soon'
+  if (days < 7) return 'is-soon'
   return 'is-later'
 }
 
@@ -94,7 +94,7 @@ export function assessWorry(worry, actions) {
   if (soonest !== null && soonest < 0 && RANK[level] < RANK.URGENT) {
     level = 'URGENT'
     raised = t('Katty raised this because a deadline has already passed.')
-  } else if (soonest !== null && soonest <= 7 && RANK[level] < RANK.URGENT) {
+  } else if (soonest !== null && soonest < 7 && RANK[level] < RANK.URGENT) {
     level = 'URGENT'
     raised = t('Katty raised this because a deadline is less than a week away.')
   } else if (level === 'INFO') {

@@ -79,7 +79,7 @@ function DateChip({ info, done }) {
   if (!info) return null
   if (!info.date) return <span className="date-chip chip-unknown">{t('Date not known')}</span>
   const days = daysUntil(info.date)
-  const tone = done ? '' : days < 0 ? 'chip-late' : days <= 7 ? 'chip-soon' : ''
+  const tone = done ? '' : days < 0 ? 'chip-late' : days < 7 ? 'chip-soon' : ''
   return <span className={`date-chip ${tone}`}>{shortDate(info.date)}</span>
 }
 

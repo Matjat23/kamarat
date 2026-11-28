@@ -138,7 +138,7 @@ export default function Home({ papers, onResume, onFile, onPaste, onExample, onO
               {dated.slice(0, 3).map(({ paper, action, date }) => (
                 <li key={`${paper.id}-${action.index}`}>
                   <button className={`row coming-item ${closeness(date)}`} onClick={() => onOpenPaper(paper.id)}>
-                    <span className={`coming-when ${daysUntil(date) <= 7 ? 'is-soon' : ''}`}>{whenText(date)}</span>
+                    <span className={`coming-when ${daysUntil(date) < 7 ? 'is-soon' : ''}`}>{whenText(date)}</span>
                     <span className="row-text">
                       <span className="row-label" {...languageProps(paper.language)}>{action.title}</span>
                       <span className="row-sub">{paper.sender}</span>
