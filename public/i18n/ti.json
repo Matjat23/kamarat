@@ -438,5 +438,7 @@
  "Keep this list on your phone and computer": "ነዚ ዝርዝር ኣብ ተሌፎንኩምን ኮምፒተርኩምን ሓዝዎ",
  "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "እዚ ጽሑፍ ካብ ስእሊ እዩ ተነቢቡ፣ ስለዚ ሓደ ስም ወይ ቁጽሪ ካብ ደብዳቤኹም ብኻልእ መንገዲ ተጻሒፉ ክኸውን ይኽእል። \"እቲ ዝልኣኽ\" ምስ ናይ ወረቐት ደብዳቤኹም ኣወዳድርዎ።",
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "ካብ {total} ገጻት ካብ 1 ክሳብ {read} ጥራይ እዮም ተነቢቦም። ኣብ ዝቕጽል ገጽ ዕለት ወይ ውሳነ እንተሃልዩ፡ ጽሑፉ ወስኹ፣ እንተዘይኮይኑ Katty ክትስሕቶ ትኽእል እያ።",
- "Add all {count} dates to my calendar": "ኩሎም {count} ዕለታት ናብ ካሌንደረይ ወስኽ"
+ "Add all {count} dates to my calendar": "ኩሎም {count} ዕለታት ናብ ካሌንደረይ ወስኽ",
+ "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini ሕጂ ተታሒዙ ስለ ዘሎ፡ እዚ Katty ንዚ ኣብነታዊ ደብዳቤ ኣዳልያ ዝሓዘቶ መብርሂ እዩ።",
+ "It is in English.": "ብእንግሊዝኛ እዩ።"
 }

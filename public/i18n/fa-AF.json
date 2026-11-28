@@ -438,5 +438,7 @@
  "Keep this list on your phone and computer": "این فهرست را در تلیفون و کمپیوتر خود داشته باشید",
  "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "این متن از یک عکس خوانده شده است، پس ممکن است یک نام یا عدد متفاوت از مکتوب شما نوشته شده باشد. «آنچه فرستاده می‌شود» را با مکتوب کاغذی خود مقایسه کنید.",
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "فقط صفحه‌های ۱ تا {read} از {total} خوانده شد. اگر در صفحه‌ای بعدی تاریخ یا تصمیمی هست، متن آن را اضافه کنید، وگرنه ممکن است Katty آن را نبیند.",
- "Add all {count} dates to my calendar": "همه {count} تاریخ را به تقویم من اضافه کن"
+ "Add all {count} dates to my calendar": "همه {count} تاریخ را به تقویم من اضافه کن",
+ "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini فعلاً مصروف است، پس این توضیحی است که Katty برای این مکتوب نمونه آماده نگه داشته است.",
+ "It is in English.": "به انگلیسی است."
 }

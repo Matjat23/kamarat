@@ -438,5 +438,7 @@
  "Keep this list on your phone and computer": "ئەم لیستە لەسەر مۆبایل و کۆمپیوتەرەکەتان بهێڵنەوە",
  "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "ئەم دەقە لە وێنەیەکەوە خوێنراوەتەوە، بۆیە لەوانەیە ناوێک یان ژمارەیەک جیاواز لە نامەکەتان نووسرابێت. \"ئەوەی دەنێردرێت\" لەگەڵ نامە کاغەزییەکەتان بەراورد بکەن.",
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "تەنیا لاپەڕە 1 تا {read} لە {total} لاپەڕە خوێنرانەوە. ئەگەر لاپەڕەیەکی دواتر بەروار یان بڕیارێکی تێدایە، دەقەکەی زیاد بکەن، دەنا لەوانەیە Katty لێی تێنەگات.",
- "Add all {count} dates to my calendar": "هەموو {count} بەروارەکە بۆ ڕۆژژمێرەکەم زیاد بکە"
+ "Add all {count} dates to my calendar": "هەموو {count} بەروارەکە بۆ ڕۆژژمێرەکەم زیاد بکە",
+ "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini ئێستا سەرقاڵە، بۆیە ئەمە ڕوونکردنەوەیەکە کە Katty بۆ ئەم نامە نموونەییە ئامادەی کردووە.",
+ "It is in English.": "بە ئینگلیزییە."
 }

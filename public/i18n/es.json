@@ -438,5 +438,7 @@
  "Keep this list on your phone and computer": "Ten esta lista en tu teléfono y en tu computadora",
  "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "Este texto se leyó de una foto, así que un nombre o un número puede estar escrito distinto que en tu carta. Compara \"Lo que se enviará\" con tu carta en papel.",
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "Solo se leyeron las páginas 1 a {read} de {total}. Si una página posterior tiene una fecha o una decisión, añade su texto, o Katty puede pasarla por alto.",
- "Add all {count} dates to my calendar": "Añadir las {count} fechas a mi calendario"
+ "Add all {count} dates to my calendar": "Añadir las {count} fechas a mi calendario",
+ "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini está ocupado ahora, así que esta es una explicación que Katty tiene preparada para esta carta de ejemplo.",
+ "It is in English.": "Está en inglés."
 }

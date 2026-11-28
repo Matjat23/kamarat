@@ -438,5 +438,7 @@
  "Keep this list on your phone and computer": "Bu listeyi telefonunuzda ve bilgisayarınızda tutun",
  "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "Bu metin bir fotoğraftan okundu; bu yüzden bir ad veya numara mektubunuzdakinden farklı yazılmış olabilir. \"Nelerin gönderileceği\" kısmını kâğıt mektubunuzla karşılaştırın.",
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "{total} sayfadan yalnızca 1 ile {read} arası okundu. Sonraki bir sayfada bir tarih veya karar varsa onun metnini ekleyin, yoksa Katty bunu gözden kaçırabilir.",
- "Add all {count} dates to my calendar": "{count} tarihin hepsini takvimime ekle"
+ "Add all {count} dates to my calendar": "{count} tarihin hepsini takvimime ekle",
+ "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini şu anda meşgul; bu yüzden bu, Katty'nin bu örnek mektup için hazır tuttuğu bir açıklama.",
+ "It is in English.": "İngilizcedir."
 }

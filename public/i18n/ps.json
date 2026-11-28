@@ -438,5 +438,7 @@
  "Keep this list on your phone and computer": "دا لېست په خپل ټلیفون او کمپیوټر کې وساتئ",
  "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "دا متن له یوه عکس څخه لوستل شوی، نو کېدای شي یو نوم یا شمېره ستاسو له لیک څخه بل ډول لیکل شوې وي. «څه به ولیږل شي» له خپل کاغذي لیک سره پرتله کړئ.",
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "یوازې له {total} پاڼو څخه ۱ تر {read} پاڼې ولوستل شوې. که په وروستۍ پاڼه کې نېټه یا پرېکړه وي، د هغې متن ور زیات کړئ، که نه Katty یې کېدای شي له پامه وغورځوي.",
- "Add all {count} dates to my calendar": "ټولې {count} نېټې زما کلیز ته ور زیاتې کړئ"
+ "Add all {count} dates to my calendar": "ټولې {count} نېټې زما کلیز ته ور زیاتې کړئ",
+ "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini اوس بوخت دی، نو دا هغه تشریح ده چې Katty د دې بېلګې لیک لپاره چمتو ساتلې ده.",
+ "It is in English.": "په انګرېزي ده."
 }

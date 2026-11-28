@@ -438,5 +438,7 @@
  "Keep this list on your phone and computer": "Майте цей список на телефоні й комп'ютері",
  "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "Цей текст прочитано з фото, тому ім'я чи номер можуть бути написані інакше, ніж у вашому листі. Порівняйте «Що буде надіслано» з паперовим листом.",
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "Прочитано лише сторінки з 1 по {read} із {total}. Якщо на наступній сторінці є дата чи рішення, додайте її текст, інакше Katty може його пропустити.",
- "Add all {count} dates to my calendar": "Додати всі дати ({count}) до мого календаря"
+ "Add all {count} dates to my calendar": "Додати всі дати ({count}) до мого календаря",
+ "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini зараз зайнятий, тому це пояснення, яке Katty заздалегідь підготувала для цього прикладу листа.",
+ "It is in English.": "Воно англійською."
 }

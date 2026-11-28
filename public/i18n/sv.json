@@ -438,5 +438,7 @@
  "Keep this list on your phone and computer": "Ha listan på både telefonen och datorn",
  "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "Texten lästes från ett foto, så ett namn eller ett nummer kan vara stavat annorlunda än i ditt brev. Jämför ”Det här skickas” med ditt pappersbrev.",
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "Bara sidorna 1 till {read} av {total} lästes. Om en senare sida har ett datum eller ett beslut, lägg till dess text, annars kan Katty missa det.",
- "Add all {count} dates to my calendar": "Lägg in alla {count} datum i min kalender"
+ "Add all {count} dates to my calendar": "Lägg in alla {count} datum i min kalender",
+ "Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.": "Gemini är upptaget just nu, så det här är en förklaring som Katty har färdig för just det här exempelbrevet.",
+ "It is in English.": "Den är på engelska."
 }
