@@ -60,6 +60,8 @@ VITE_APPCHECK_DEBUG_TOKEN=your-debug-token
 
 and register the same token in the Firebase console under App Check, Apps, Manage debug tokens.
 
+About the keys in this repo: the `apiKey` in `src/firebase.js` is the Firebase web config key, and the reCAPTCHA site key in `.env.production` is a public site key. Both are meant to be public and ship to every browser that opens the app. They are not secrets, and there are no private keys in this repo. The Gemini calls are protected by Firebase App Check, so only requests from the app itself get through.
+
 ## Testing the privacy check
 
 The `tools` folder has two small Python scripts:
