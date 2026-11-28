@@ -18,6 +18,7 @@ import { countryNameEnglish, weekendDays, weekendText, dayNames } from './countr
 import { hostOf, isOfficialDomain } from './officialDomains'
 import { t, dateLocale } from './i18n'
 import { withDeadline } from './deadline'
+import { exampleAnswer } from './exampleAnswers'
 
 // Languages Katty can answer in. Each one is shown in its own script, so
 // people can find theirs. English first, then by English name. The screens of
@@ -240,6 +241,8 @@ export async function explainNotice(sharedText, language, onStatus = () => {}, c
       result = await askOnDevice(buildPrompt(sharedText, deviceLanguage, true, country), code)
     } catch (deviceErr) {
       console.warn('On-device explanation failed too.', deviceErr)
+      const example = exampleAnswer(sharedText)
+      if (example) return exampleResult(example, sharedText, language)
       if (err.quota) throw err
       throw new Error(
         'Cloud Gemini is busy right now and on-device AI is not available here. Please try again in a minute',
@@ -249,10 +252,18 @@ export async function explainNotice(sharedText, language, onStatus = () => {}, c
   return readAnswer(result, sharedText, note)
 }
 
+// The prepared answer for an example letter, read like a Gemini answer so the
+// same checks run on it. It is written in English.
+function exampleResult(example, sharedText, language) {
+  const inEnglish = language !== 'English'
+  const note = `${t('Gemini is busy right now, so this is an explanation Katty keeps ready for this example letter.')}${inEnglish ? ` ${t('It is in English.')}` : ''}`
+  return { ...readAnswer({ response: { text: () => JSON.stringify(example) } }, sharedText, note), inEnglish }
+}
+
 // The language an explanation is really in. When on-device AI cannot write the
 // chosen language it answers in English, and the note says so.
 export function explainedIn(result, language) {
-  return result.note?.includes('this is in English') ? 'English' : language
+  return result.inEnglish || result.note?.includes('this is in English') ? 'English' : language
 }
 
 function buildPrompt(sharedText, language, includeRules = false, country = '') {
