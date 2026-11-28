@@ -15,13 +15,10 @@ import {
 import { languageProps, explainNotice } from '../explain'
 import { SOURCES } from '../sources'
 import { WORRY, assessWorry, daysUntil, whenText, closeness } from '../worry'
-import { t, dateLocale } from '../i18n'
+import { t } from '../i18n'
+import { shortDateWithYear } from '../dates'
 import LetterView from './LetterView'
 import { ArrowIcon, LockIcon } from './Icons'
-
-function shortDate(date) {
-  return date.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric' })
-}
 
 export function SavedLetter({ id, language, country, onBack }) {
   const [paper, setPaper] = useState(() => listPapers().find((p) => p.id === id) ?? null)
@@ -165,7 +162,7 @@ export default function MyPapers({ onOpen, onNew }) {
                     <button className={`coming-item ${closeness(date)}`} onClick={() => onOpen(paper.id)}>
                       <span className={`coming-when ${daysUntil(date) < 7 ? 'is-soon' : ''}`}>
                         {whenText(date)}
-                        <span className="small muted">{shortDate(date)}</span>
+                        <span className="small muted">{shortDateWithYear(date)}</span>
                       </span>
                       <span className="coming-body">
                         <strong {...languageProps(paper.language)}>{action.title}</strong>
@@ -209,7 +206,7 @@ export default function MyPapers({ onOpen, onNew }) {
                       </span>
                       <span className="small paper-summary" {...languageProps(paper.language)}>{paper.summary}</span>
                       <span className="small muted">
-                        {t('Kept {date}', { date: shortDate(new Date(paper.savedAt)) })}
+                        {t('Kept {date}', { date: shortDateWithYear(new Date(paper.savedAt)) })}
                         {todo.length > 0 && ` · ${t('{done} of {total} done', { done: doneCount, total: todo.length })}`}
                       </span>
                     </button>

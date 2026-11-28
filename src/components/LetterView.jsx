@@ -8,7 +8,8 @@ import { useId, useRef, useState } from 'react'
 import { languageProps, languageCode } from '../explain'
 import { prepareActions } from '../papers'
 import { WORRY, assessWorry, daysUntil, whenText } from '../worry'
-import { t, msg, dateLocale } from '../i18n'
+import { t, msg } from '../i18n'
+import { formatDate, shortDate, longDate } from '../dates'
 import { downloadDeadline } from '../calendar'
 import { speak, stopSpeaking, canSpeak, spokenPhrases, spokenDate } from '../speak'
 import AskKatty from './AskKatty'
@@ -40,14 +41,6 @@ const GROUPS = [
   { kind: 'UNCLEAR', title: msg('Not clear yet') },
 ]
 
-function shortDate(date) {
-  return date.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short' })
-}
-
-function longDate(date) {
-  return date.toLocaleDateString(dateLocale(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-}
-
 function initials(name) {
   return (name || '?')
     .split(/\s+/)
@@ -68,9 +61,9 @@ function addToCalendar(action, sender) {
 function DateTile({ date }) {
   return (
     <div className="date-tile" aria-hidden="true">
-      <span className="date-month">{date.toLocaleDateString(dateLocale(), { month: 'short' })}</span>
+      <span className="date-month">{formatDate(date, { month: 'short' })}</span>
       <span className="date-day">{date.getDate()}</span>
-      <span className="date-weekday">{date.toLocaleDateString(dateLocale(), { weekday: 'short' })}</span>
+      <span className="date-weekday">{formatDate(date, { weekday: 'short' })}</span>
     </div>
   )
 }
