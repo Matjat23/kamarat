@@ -435,5 +435,8 @@
  "Optional: keep My move on all your devices": "Optional: „Mein Umzug“ auf allen Ihren Geräten",
  "Not synced right now": "Gerade nicht synchronisiert",
  "Synced with your account": "Mit Ihrem Konto synchronisiert",
- "Keep this list on your phone and computer": "Diese Liste auf Handy und Computer haben"
+ "Keep this list on your phone and computer": "Diese Liste auf Handy und Computer haben",
+ "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "Dieser Text wurde aus einem Foto gelesen. Ein Name oder eine Zahl kann deshalb anders geschrieben sein als in Ihrem Brief. Vergleichen Sie „Was gesendet wird“ mit Ihrem Papierbrief.",
+ "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "Nur die Seiten 1 bis {read} von {total} wurden gelesen. Steht auf einer späteren Seite ein Datum oder eine Entscheidung, fügen Sie deren Text hinzu, sonst kann Katty sie übersehen.",
+ "Add all {count} dates to my calendar": "Alle {count} Termine in meinen Kalender eintragen"
 }

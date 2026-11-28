@@ -435,5 +435,8 @@
  "Optional: keep My move on all your devices": "اختیاری: «جابه‌جایی من» روی همه دستگاه‌هایتان",
  "Not synced right now": "الان همگام نیست",
  "Synced with your account": "با حساب کاربری شما همگام است",
- "Keep this list on your phone and computer": "این فهرست را روی تلفن و رایانه‌تان داشته باشید"
+ "Keep this list on your phone and computer": "این فهرست را روی تلفن و رایانه‌تان داشته باشید",
+ "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "این متن از یک عکس خوانده شده است، پس ممکن است نام یا عددی با نامه شما فرق داشته باشد. «آنچه فرستاده می‌شود» را با نامه کاغذی‌تان مقایسه کنید.",
+ "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "فقط صفحه‌های ۱ تا {read} از {total} خوانده شد. اگر صفحه‌ای بعدی تاریخ یا تصمیمی دارد، متنش را اضافه کنید، وگرنه ممکن است Katty آن را نبیند.",
+ "Add all {count} dates to my calendar": "همه {count} تاریخ را به تقویمم اضافه کن"
 }

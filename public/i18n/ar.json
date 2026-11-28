@@ -435,5 +435,8 @@
  "Optional: keep My move on all your devices": "اختياري: احتفظ بقائمة انتقالي على كل أجهزتك",
  "Not synced right now": "غير متزامن الآن",
  "Synced with your account": "متزامن مع حسابك",
- "Keep this list on your phone and computer": "احتفظ بهذه القائمة على هاتفك وحاسوبك"
+ "Keep this list on your phone and computer": "احتفظ بهذه القائمة على هاتفك وحاسوبك",
+ "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "قُرئ هذا النص من صورة، لذلك قد يُكتب اسم أو رقم بشكل مختلف عمّا في رسالتك. قارن \"ما سيتم إرساله\" برسالتك الورقية.",
+ "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "تمت قراءة الصفحات من 1 إلى {read} فقط من أصل {total}. إذا كان في صفحة لاحقة تاريخ أو قرار، فأضف نصها، وإلا فقد لا تراه Katty.",
+ "Add all {count} dates to my calendar": "أضف كل التواريخ ({count}) إلى تقويمي"
 }

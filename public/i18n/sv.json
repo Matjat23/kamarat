@@ -435,5 +435,8 @@
  "Optional: keep My move on all your devices": "Valfritt: Min flytt på alla dina enheter",
  "Not synced right now": "Inte synkad just nu",
  "Synced with your account": "Synkad med ditt konto",
- "Keep this list on your phone and computer": "Ha listan på både telefonen och datorn"
+ "Keep this list on your phone and computer": "Ha listan på både telefonen och datorn",
+ "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "Texten lästes från ett foto, så ett namn eller ett nummer kan vara stavat annorlunda än i ditt brev. Jämför ”Det här skickas” med ditt pappersbrev.",
+ "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "Bara sidorna 1 till {read} av {total} lästes. Om en senare sida har ett datum eller ett beslut, lägg till dess text, annars kan Katty missa det.",
+ "Add all {count} dates to my calendar": "Lägg in alla {count} datum i min kalender"
 }
