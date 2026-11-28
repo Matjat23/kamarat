@@ -9,12 +9,15 @@ import { countryList, countryName, guessCountry, COUNTRY_ALIASES } from '../coun
 import { t } from '../i18n'
 import { Wordmark, CheckIcon, ArrowIcon, LockIcon, Dots } from './Icons'
 
-// Lower case without accents, so "francais" finds "Français".
+// Lower case without accents, dots or apostrophes, so "francais" finds
+// "Français", "U.S." finds the United States (US) and "cote d'ivoire" finds
+// "Côte d’Ivoire".
 const plain = (text) =>
   text
     .toLowerCase()
     .normalize('NFD')
     .replace(/\p{M}/gu, '')
+    .replace(/[.'‘’ʼ`]/g, '')
 
 // How well an item matches the search, lower is better: 0 the whole name or a
 // short form ("us", "uk"), 1 the name on screen starts with it, 2 another name
