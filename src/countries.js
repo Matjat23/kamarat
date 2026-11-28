@@ -35,6 +35,28 @@ export function countryName(code, locale = dateLocale()) {
   }
 }
 
+// Other names people search for, when the official one is different.
+export const COUNTRY_ALIASES = {
+  US: ['USA', 'America', 'United States of America'],
+  GB: ['UK', 'Great Britain', 'Britain', 'England', 'Scotland', 'Wales', 'Northern Ireland'],
+  AE: ['UAE', 'Emirates'],
+  CD: ['DRC', 'DR Congo', 'Democratic Republic of the Congo'],
+  CG: ['Republic of the Congo'],
+  CI: ['Ivory Coast'],
+  CZ: ['Czech Republic', 'Czechia'],
+  NL: ['Holland'],
+  KR: ['South Korea'],
+  KP: ['North Korea'],
+  TR: ['Turkey', 'Türkiye'],
+  MM: ['Burma'],
+  SZ: ['Swaziland'],
+  MK: ['Macedonia'],
+  CV: ['Cape Verde'],
+  TL: ['East Timor'],
+  PS: ['Palestine'],
+  VA: ['Vatican'],
+}
+
 // For the AI, the country is always named in English.
 export const countryNameEnglish = (code) => countryName(code, 'en')
 

@@ -264,7 +264,8 @@ export default function App() {
   }, [])
 
   // On every new screen: stop reading aloud, scroll up, and move focus to the
-  // screen's heading for keyboard and screen reader users.
+  // screen's heading for keyboard and screen reader users. Finishing setup
+  // counts as a new screen too, so Home does not open where setup was scrolled.
   const routeKey = screenKey(route)
   useEffect(() => {
     screenNow.current = routeKey
@@ -279,7 +280,7 @@ export default function App() {
       const heading = [...document.querySelectorAll('[data-step-heading]')].find((el) => el.offsetParent)
       heading?.focus({ preventScroll: true })
     })
-  }, [routeKey])
+  }, [routeKey, setupDone])
 
   // The Ask chat is kept (hidden) once it has been opened, like an open letter.
   const [guideOpened, setGuideOpened] = useState(false)

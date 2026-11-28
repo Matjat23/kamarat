@@ -5,7 +5,7 @@
 // even before Katty's own texts are translated.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { LANGUAGES } from '../explain'
-import { countryList, countryName, guessCountry } from '../countries'
+import { countryList, countryName, guessCountry, COUNTRY_ALIASES } from '../countries'
 import { t } from '../i18n'
 import { Wordmark, CheckIcon, ArrowIcon, LockIcon, Dots } from './Icons'
 
@@ -16,6 +16,20 @@ const plain = (text) =>
     .normalize('NFD')
     .replace(/\p{M}/gu, '')
 
+// How well an item matches the search, lower is better: 0 the whole name or a
+// short form ("us", "uk"), 1 the name on screen starts with it, 2 another name
+// or a word in a name starts with it, 3 only somewhere inside a word. -1 is no
+// match. The first entry of item.search is the name on screen, so "d" lists
+// Denmark before Congo - Kinshasa (also called DRC).
+function matchRank(item, q) {
+  const names = item.search.map(plain)
+  if (names.includes(q) || (item.exact ?? []).some((s) => plain(s) === q)) return 0
+  if (names[0].startsWith(q)) return 1
+  if (names.some((s) => s.startsWith(q) || s.split(/[^\p{L}\p{N}]+/u).some((word) => word.startsWith(q)))) return 2
+  if (names.some((s) => s.includes(q))) return 3
+  return -1
+}
+
 // A searchable list. Only one option is in the tab order; the arrow keys move
 // between options, and Enter or Space chooses one.
 function SearchList({ label, items, value, onChange, placeholder }) {
@@ -23,7 +37,12 @@ function SearchList({ label, items, value, onChange, placeholder }) {
   const listRef = useRef(null)
   const shown = useMemo(() => {
     const q = plain(query.trim())
-    return q ? items.filter((item) => item.search.some((s) => plain(s).includes(q))) : items
+    if (!q) return items
+    const ranked = items.map((item) => ({ item, rank: matchRank(item, q) })).filter((m) => m.rank >= 0)
+    // "us" should not list Australia and Belarus: letters inside a word only
+    // count when nothing starts with them (names without spaces, like 美国).
+    const good = ranked.filter((m) => m.rank < 3)
+    return (good.length ? good : ranked).sort((a, b) => a.rank - b.rank).map((m) => m.item)
   }, [items, query])
   const tabbable = shown.some((item) => item.id === value) ? value : shown[0]?.id
 
@@ -117,7 +136,10 @@ export function CountryPicker({ value, onChange, locale = 'en' }) {
         id: c.code,
         title: countryName(c.code, locale),
         note: c.code === guess ? t('our guess') : '',
-        search: [countryName(c.code, locale), countryName(c.code, 'en'), c.code],
+        search: [countryName(c.code, locale), countryName(c.code, 'en'), ...(COUNTRY_ALIASES[c.code] ?? [])],
+        // The two-letter code only counts as a whole ("se", "us"), so typing
+        // "d" does not show Germany (DE).
+        exact: [c.code],
       }))
       .sort((a, b) => a.title.localeCompare(b.title, locale))
     const first = list.find((c) => c.id === guess)
