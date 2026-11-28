@@ -436,7 +436,7 @@
  "Not synced right now": "এখন সিঙ্ক হয়নি",
  "Synced with your account": "আপনার অ্যাকাউন্টের সাথে সিঙ্ক করা",
  "Keep this list on your phone and computer": "এই তালিকাটি আপনার ফোন আর কম্পিউটারে রাখুন",
- "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "এই লেখাটি একটি ছবি থেকে পড়া হয়েছে, তাই কোনো নাম বা নম্বর আপনার চিঠির থেকে আলাদা বানানে আসতে পারে। \"যা পাঠানো হবে\" অংশটি আপনার কাগজের চিঠির সাথে মিলিয়ে দেখুন।",
+ "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "এই লেখাটি একটি ছবি থেকে পড়া হয়েছে, তাই কোনো নাম বা নম্বর আপনার চিঠির থেকে আলাদা বানানে আসতে পারে। \"কী পাঠানো হবে\" অংশটি আপনার কাগজের চিঠির সাথে মিলিয়ে দেখুন।",
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "{total}টির মধ্যে শুধু ১ থেকে {read} পর্যন্ত পাতা পড়া হয়েছে। পরের কোনো পাতায় তারিখ বা সিদ্ধান্ত থাকলে তার লেখা যোগ করুন, না হলে Katty তা বাদ দিয়ে ফেলতে পারে।",
  "Add all {count} dates to my calendar": "সবগুলো {count}টি তারিখ আমার ক্যালেন্ডারে যোগ করুন"
 }

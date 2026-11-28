@@ -436,7 +436,7 @@
  "Not synced right now": "अभी सिंक नहीं है",
  "Synced with your account": "आपके खाते के साथ सिंक",
  "Keep this list on your phone and computer": "यह सूची अपने फ़ोन और कंप्यूटर पर रखें",
- "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "यह टेक्स्ट एक फ़ोटो से पढ़ा गया है, इसलिए कोई नाम या नंबर आपके पत्र से अलग लिखा हो सकता है। \"जो भेजा जाएगा\" को अपने कागज़ी पत्र से मिलाकर देखें।",
+ "This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare \"What will be sent\" with your paper letter.": "यह टेक्स्ट एक फ़ोटो से पढ़ा गया है, इसलिए कोई नाम या नंबर आपके पत्र से अलग लिखा हो सकता है। \"क्या भेजा जाएगा\" को अपने कागज़ी पत्र से मिलाकर देखें।",
  "Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.": "{total} में से सिर्फ़ पेज 1 से {read} तक पढ़े गए। अगर किसी बाद वाले पेज पर कोई तारीख या फ़ैसला है, तो उसका टेक्स्ट जोड़ें, वरना Katty उसे छोड़ सकती है।",
  "Add all {count} dates to my calendar": "सभी {count} तारीखें मेरे कैलेंडर में जोड़ें"
 }
