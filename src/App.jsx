@@ -137,6 +137,8 @@ export default function App() {
   const [guideSession, setGuideSession] = useState(0)
   const [guideCountry, setGuideCountry] = useState('')
   const [movePlan, setMovePlan] = useState(loadMovePlan)
+  // How the current letter was read from a file: { method, missing, pages }.
+  const [readInfo, setReadInfo] = useState(null)
   // The Ask chat is kept (hidden) once it has been opened, like an open letter.
   const [guideOpened, setGuideOpened] = useState(() => readRoute().view === 'ask')
   const menuButton = useRef(null)
@@ -317,6 +319,7 @@ export default function App() {
     }
     detectRun.current += 1
     readRun.current += 1
+    setReadInfo(null)
     setShared('')
     setLabelMap({})
     setLiveSavedId(null)
@@ -338,7 +341,7 @@ export default function App() {
     setReading(t('Opening the file on your device...'))
     try {
       const lang = LANGUAGES.find((l) => l.name === language)
-      const { text: found, method, note, missing } = await readFile(
+      const { text: found, method, note, missing, pages } = await readFile(
         file,
         (status) => run === readRun.current && setReading(status),
         readerLanguages(lang?.code, country),
@@ -346,6 +349,7 @@ export default function App() {
       // Another letter was started while this one was read: drop this one.
       if (run !== readRun.current) return
       setText(found)
+      setReadInfo({ method, missing, pages })
       setMessage({
         kind: missing ? 'warn' : 'check',
         text: `${t(METHOD_TEXT[method] ?? METHOD_TEXT.pdf)} ${note} ${t('Check that the text matches your letter, especially numbers and dates.')}`.replace(/\s+/g, ' '),
@@ -361,7 +365,10 @@ export default function App() {
     setMessage(null)
     try {
       const copied = await readClipboard()
-      if (copied.trim()) setText(copied)
+      if (copied.trim()) {
+        setText(copied)
+        setReadInfo(null)
+      }
       else setMessage({ kind: 'warn', text: t('The clipboard is empty. Copy the text of your letter first.') })
     } catch (err) {
       setMessage({ kind: 'warn', text: err.message })
@@ -378,6 +385,7 @@ export default function App() {
     if (fresh && !beginNewLetter()) return
     readRun.current += 1
     setReading('')
+    setReadInfo(null)
     setText(example.text)
     setMessage(null)
     go('new')
@@ -652,6 +660,7 @@ export default function App() {
             text={text}
             details={details}
             detection={detection}
+            readInfo={readInfo}
             language={language}
             setLanguage={setLanguage}
             onToggle={toggleDetail}
@@ -687,6 +696,7 @@ export default function App() {
               shared={shared}
               labelMap={labelMap}
               details={details}
+              readInfo={readInfo}
               language={language}
               country={country}
               onSavedChange={setLiveSavedId}

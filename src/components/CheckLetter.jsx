@@ -30,6 +30,7 @@ export default function CheckLetter({
   text,
   details,
   detection,
+  readInfo,
   language,
   setLanguage,
   onToggle,
@@ -125,6 +126,16 @@ export default function CheckLetter({
         <LockIcon width={16} height={16} /> {t('{count} hidden', { count: hiddenCount })}
         {sentCount > 0 && <span className="count-sent"> · {t('{count} will be sent', { count: sentCount })}</span>}
       </span>
+      {readInfo?.method === 'tesseract' && detection.mode !== 'ai' && (
+        <p className="notice notice-warn small" role="status">
+          {t('This text was read from a photo, so a name or number can be spelled differently than on your letter. Compare "What will be sent" with your paper letter.')}
+        </p>
+      )}
+      {readInfo?.missing && (
+        <p className="notice notice-warn small" role="status">
+          {t('Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.', readInfo.pages)}
+        </p>
+      )}
       {noCapitals && (
         <p className="notice notice-warn small" role="alert">
           {t('This letter uses a script without capital letters, so Katty cannot find names in it here. Look for names yourself and hide them below.')}

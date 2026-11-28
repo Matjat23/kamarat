@@ -18,8 +18,9 @@ import { SOURCES } from '../sources'
 import { WORRY, assessWorry, daysUntil, whenText, closeness } from '../worry'
 import { t } from '../i18n'
 import { shortDateWithYear } from '../dates'
+import { downloadDeadlines, deadlineDetails } from '../calendar'
 import LetterView from './LetterView'
-import { ArrowIcon, LockIcon } from './Icons'
+import { ArrowIcon, CalendarIcon, LockIcon } from './Icons'
 
 export function SavedLetter({ id, language, country, onBack }) {
   const [paper, setPaper] = useState(() => listPapers().find((p) => p.id === id) ?? null)
@@ -170,6 +171,18 @@ export default function MyPapers({ onOpen, onNew }) {
                   </li>
                 ))}
               </ul>
+              {dated.length > 1 && (
+                <button
+                  className="secondary"
+                  onClick={() =>
+                    downloadDeadlines(
+                      dated.map(({ paper, action, date }) => ({ title: action.title, date, details: deadlineDetails(action, paper.sender) })),
+                    )
+                  }
+                >
+                  <CalendarIcon width={18} height={18} /> {t('Add all {count} dates to my calendar', { count: dated.length })}
+                </button>
+              )}
             </section>
           )}
 

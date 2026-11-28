@@ -35,7 +35,7 @@ function Progress({ stage, status }) {
   )
 }
 
-export default function ExplainStep({ shared, labelMap, details, language, country, onSavedChange, onBack, onHome }) {
+export default function ExplainStep({ shared, labelMap, details, readInfo, language, country, onSavedChange, onBack, onHome }) {
   const [state, setState] = useState({ phase: 'loading', status: '' })
   const [stage, setStage] = useState(0)
   const [receivedDate, setReceivedDate] = useState('')
@@ -162,7 +162,7 @@ export default function ExplainStep({ shared, labelMap, details, language, count
   return (
     <div ref={rootRef}>
     <LetterView
-      letter={{ ...state.result, shared }}
+      letter={{ ...state.result, shared, pagesMissing: readInfo?.missing ? readInfo.pages : null }}
       currentLanguage={language}
       onExplainAgain={send}
       receivedDate={receivedDate}

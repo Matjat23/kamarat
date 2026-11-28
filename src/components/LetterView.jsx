@@ -10,7 +10,7 @@ import { prepareActions } from '../papers'
 import { WORRY, assessWorry, daysUntil, whenText } from '../worry'
 import { t, msg } from '../i18n'
 import { formatDate, shortDate, longDate } from '../dates'
-import { downloadDeadline } from '../calendar'
+import { downloadDeadline, deadlineDetails } from '../calendar'
 import { speak, stopSpeaking, canSpeak, spokenPhrases, spokenDate } from '../speak'
 import AskKatty from './AskKatty'
 import DraftReply from './DraftReply'
@@ -54,7 +54,7 @@ function addToCalendar(action, sender) {
   downloadDeadline({
     title: action.title,
     date: action.info.date,
-    details: `${action.explanation}\n\n${t('From {sender}', { sender })}: "${action.quote}"\n\n${action.info.basis}\n${t('Made with Katty. Always check the original letter.')}`,
+    details: deadlineDetails(action, sender),
   })
 }
 
@@ -262,6 +262,11 @@ export default function LetterView({
         {assessed.raised && <p className="small">{assessed.raised}</p>}
         {worry.help && <p className="small worry-help">{worry.help}</p>}
         {letter.note && <p className="small muted">{letter.note}</p>}
+        {letter.pagesMissing && (
+          <p className="notice notice-warn small" role="status">
+            {t('Only pages 1 to {read} of {total} were read. If a later page has a date or a decision, add its text, or Katty can miss it.', letter.pagesMissing)}
+          </p>
+        )}
 
         {currentLanguage && currentLanguage !== letter.language && onExplainAgain && (
           <div className="language-change" role="status">

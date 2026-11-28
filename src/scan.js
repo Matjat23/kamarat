@@ -114,7 +114,7 @@ async function readPdf(file, onProgress, languages) {
   if (missing) {
     note += ` ${t('Pages {from} to {to} were not read. If they matter, paste their text below the rest.', { from: limit + 1, to: total })}`
   }
-  return { text, method: imagePages === limit ? reader?.method ?? 'pdf' : 'pdf', note, missing }
+  return { text, method: imagePages === limit ? reader?.method ?? 'pdf' : 'pdf', note, missing, pages: { read: limit, total } }
 }
 
 async function renderPage(page) {
