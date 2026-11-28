@@ -1,15 +1,6 @@
-// "Ask Katty about this notice": a short chat under the next steps.
-//
-// - A question you type is checked on this device first: details already
-//   hidden in the notice get the same label, numbers and emails are hidden,
-//   and Gemini Nano looks for names and other details when it can. Then you
-//   always see exactly what will be sent and choose to send it. The suggested
-//   questions are Katty's own text, so they are sent with one tap.
-// - Answers come only from the notice. Each one shows what it is based on, and
-//   the code checks that quoted sentences are really in the notice.
-// - When the notice does not say, Katty suggests asking the sender and can
-//   start that reply for you.
-// - The chat is not saved anywhere.
+// The Ask tab of a letter: a short chat answered only from that letter. A typed
+// question is masked on this device and shown before it is sent. The chat is
+// not saved anywhere.
 import { useId, useRef, useState } from 'react'
 import { askAboutNotice, MAX_QUESTIONS, SUGGESTED_QUESTIONS } from '../ask'
 import { maskNote } from '../reply'
@@ -97,7 +88,7 @@ export default function AskKatty({ shared, labelMap, details, language, onAskSen
   const input = useRef(null)
   const uid = useId()
 
-  const busy = checking || turns.some((t) => t.status === 'loading')
+  const busy = checking || turns.some((turn) => turn.status === 'loading')
   const left = MAX_QUESTIONS - turns.length
   const preview = question.trim() ? maskNote(question.trim(), details, labelMap).masked : ''
 
@@ -142,9 +133,9 @@ export default function AskKatty({ shared, labelMap, details, language, onAskSen
     setReview(null)
     if (fromInput) setQuestion('')
     const id = nextId.current++
-    const history = turns.filter((t) => t.status === 'done').map((t) => ({ question: t.question, answer: t.answer }))
+    const history = turns.filter((turn) => turn.status === 'done').map((turn) => ({ question: turn.question, answer: turn.answer }))
     setTurns((list) => [...list, { id, question: masked, status: 'loading', statusText: t('Reading your letter again...') }])
-    const update = (patch) => setTurns((list) => list.map((t) => (t.id === id ? { ...t, ...patch } : t)))
+    const update = (patch) => setTurns((list) => list.map((turn) => (turn.id === id ? { ...turn, ...patch } : turn)))
     try {
       const answer = await askAboutNotice({
         shared,

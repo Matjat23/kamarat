@@ -1,6 +1,5 @@
-// Step 3: the reviewed text is explained as soon as this screen opens (the
-// person already chose to send it). While waiting, Katty shows what it is
-// doing. Then the letter screen takes over.
+// Step 3: the reviewed text is explained as soon as this screen opens, since
+// the person already chose to send it. Then the letter screen takes over.
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { explainNotice, explainedIn } from '../explain'
 import { savePaper, updatePaper, listPapers, explanationForPaper, PAPERS_CHANGED } from '../papers'

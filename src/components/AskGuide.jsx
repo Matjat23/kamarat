@@ -1,19 +1,6 @@
-// "Ask Katty": questions about moving to and living in the new country.
-//
-// - A question you type is checked on this device first: numbers and emails
-//   are hidden, and Gemini Nano looks for names and other details when it is
-//   available. Then you always see exactly what will be sent and choose to
-//   send it. Katty's own suggested questions have nothing personal in them,
-//   so they are sent with one tap.
-// - The country the answers are about is shown at the top. The choice is
-//   remembered, and changing it starts a new chat, so answers about two
-//   countries are never mixed.
-// - Answers name who can help, with a link only when it is an official site or
-//   a well-known non-profit, and say which of the two it is. Otherwise there is
-//   a web search link, clearly marked as a search.
-// - Answers that had numbers in them get a note to check them. Legal problems
-//   get a note about free legal advice, shown before the answer.
-// - The chat is not saved anywhere. "New chat" starts again.
+// "Ask Katty": questions about moving to and living in a new country, on the
+// Ask page and in the chat panel. A typed question is masked on this device and
+// shown before it is sent. The chat is not saved anywhere.
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { askGuide, GUIDE_QUESTIONS, MAX_GUIDE_QUESTIONS } from '../guide'
 import { loadMovePlan, MOVE_CHANGED } from '../move'
@@ -176,7 +163,8 @@ export default function AskGuide({ country, language, startQuestion, startCountr
     setReview({ masked: full.masked, namesChecked, found: full.masked !== base.masked })
   }
 
-  // Katty's own questions (suggestions and follow-ups) go straight away.
+  // Katty's own questions (suggestions and follow-ups) have nothing personal in
+  // them, so they go straight away.
   function askSuggested(text) {
     if (!where || busy || left <= 0) return
     submit(text, false)

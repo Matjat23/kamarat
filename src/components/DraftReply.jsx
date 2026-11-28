@@ -1,7 +1,5 @@
-// "Draft my reply": cloud Gemini writes the reply with labels, and this device
-// fills your real details back in. Shown under the next steps.
-//
-// Safety rules here:
+// The Reply tab: cloud Gemini writes the reply with labels, and this device
+// fills your real details back in.
 // - Katty never guesses who you are: you choose your own name for the signature.
 // - Your own message is checked on the device, and you see exactly what Gemini
 //   will get before it is sent.
